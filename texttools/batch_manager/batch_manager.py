@@ -7,6 +7,7 @@ from openai import OpenAI
 from openai.lib._pydantic import to_strict_json_schema
 # from openai.lib._parsing._completions import type_to_response_format_param
 from pydantic import BaseModel
+from jsonschema import validate, ValidationError
 
 
 class SimpleBatchManager:
@@ -18,9 +19,11 @@ class SimpleBatchManager:
         prompt_template: str,
         handlers: Optional[List[Any]] = None,
         state_dir: Path = Path(".batch_jobs"),
+        need_id=False,
         custom_json_schema_obj_str: Optional[dict] = None,
         **client_kwargs: Any,
     ):
+        self.need_id = need_id
         self.client = client
         self.model = model
         self.output_model = output_model
@@ -35,6 +38,7 @@ class SimpleBatchManager:
         if self.custom_json_schema_obj_str is not dict:
             raise ValueError(
                     "schema should be a dict")
+        
     def _state_file(self, job_name: str) -> Path:
         return self.state_dir / f"{job_name}.json"
 
@@ -94,7 +98,39 @@ class SimpleBatchManager:
         }
 
     def _prepare_file(self, payload: List[str]) -> Path:
-        tasks = [self._build_task(text, i) for i, text in enumerate(payload)]
+        if self.need_id==False:
+            schema = {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": { "anyOf": [
+                            {"type": "integer"},
+                            {"type": "string"}
+                        ]},
+                        "text": {"type": "string"}
+                    },
+                    "required": ["id", "text"],
+                    "additionalProperties": False  
+                }
+            }
+            try:
+                validate(instance=payload, schema=schema)
+            except ValidationError as e:
+                return f" the structure is not standard. Validation Error: {e}"            
+            tasks = [self._build_task(d["text"], d["id"]) for d in payload]
+        elif self.need_id==True:
+            schema = {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+            try:
+                validate(instance=payload, schema=schema)
+            except ValidationError as e:
+                return f" the structure is not standard. Validation Error: {e}"          
+            tasks = [self._build_task(text, i) for i, text in enumerate(payload)]
         file_path = self.state_dir / f"batch_{uuid.uuid4().hex}.jsonl"
         with open(file_path, "w", encoding="utf-8") as f:
             for task in tasks:
