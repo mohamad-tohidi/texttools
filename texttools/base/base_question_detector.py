@@ -24,7 +24,7 @@ class BaseQuestionDetector(ABC):
         """
         Optional text preprocessing step.
         """
-        return text
+        return text.strip()
 
     def _dispatch(self, result: dict) -> None:
         """
