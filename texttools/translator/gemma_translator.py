@@ -183,10 +183,22 @@ class GemmaTranslator(BaseTranslator):
 
         if not raw.startswith("{"):
             raw = "{" + raw
+
         try:
             parsed = json.loads(raw)
         except json.JSONDecodeError as e:
-            raise ValueError(f"Failed to parse JSON: {e}\nRaw output: {raw}")
+            try:
+                prefix, sep, remainder = raw.partition('"translated_text":')
+                value_str = remainder.strip()
+                if value_str.startswith('"') and value_str.endswith('"}'):
+                    inner = value_str[1:-2]
+                    sanitized_inner = inner.replace('"', '\\"')
+                    raw = f"{prefix}{sep}\"{sanitized_inner}\"}}"
+                    parsed = json.loads(raw)
+                else:
+                    raise
+            except Exception:
+                raise ValueError(f"Failed to parse JSON after sanitation: {e}\nRaw output: {raw}")
 
         result = parsed.get("translated_text")
         if not isinstance(result, str):  # This check is still valid and important!
