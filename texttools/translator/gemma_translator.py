@@ -199,8 +199,11 @@ class GemmaTranslator(BaseTranslator):
                 raise ValueError(f"Failed to parse JSON after sanitation: {e}\nRaw output: {raw}")
 
         result = parsed.get("translated_text")
-        if not isinstance(result, str):  # This check is still valid and important!
+        if not isinstance(result, str):
             raise ValueError(f"Invalid response schema, got: {parsed}")
+
+        # Replace all double quotes in the translated text with single quotes
+        result = result.replace('"', "'")
 
         # dispatch and return
         self._dispatch(
