@@ -79,7 +79,24 @@ class GemmaTranslator(BaseTranslator):
             messages.append(
                 {
                     "role": "user",
-                    "content": f"Translate the following text to {target_language}:",
+                    "content": f"""
+        Please translate the following text  to {target_language}**.
+
+        Important instructions:
+        - **Do NOT translate** proper nouns such as:
+        - Names of people
+        - Names of Qur’an surahs or religious terms
+        - Place names
+        - Other culturally specific or significant terms
+        - Accurately preserve the original **meaning**, **tone**, and **context**.
+        - Use fluent, natural language in the target translation.
+
+        
+        the target language is {target_language}
+        
+        --- Begin text ---
+
+        """,
                 }
             )
 
