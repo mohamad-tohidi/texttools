@@ -1,2 +1,2 @@
 from texttools.question_detector.llm_detector import LLMQuestionDetector
-from texttools.question_detector.gemma_detectpr import GemmaQuestionDetector
+from texttools.question_detector.gemma_detector import GemmaQuestionDetector
