@@ -1,1 +1,2 @@
 from texttools.summarizer.llm_summerizer import LLMSummarizer
+from texttools.summarizer.gemma_summarizer import GemmaSummarizer
