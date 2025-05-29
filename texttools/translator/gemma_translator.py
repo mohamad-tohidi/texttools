@@ -70,7 +70,6 @@ class GemmaTranslator(BaseTranslator):
         
         the target language is {target_language}
         
-        --- Begin text ---
 
         """,
                 }
@@ -94,7 +93,6 @@ class GemmaTranslator(BaseTranslator):
         
         the target language is {target_language}
         
-        --- Begin text ---
 
         """,
                 }
@@ -106,7 +104,7 @@ class GemmaTranslator(BaseTranslator):
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
 
-        messages.append({"role": "user", "content": clean_text})
+        messages.append({"role": "user", "content": "here is the text that has to be translated:" + clean_text})
         messages.append({"role": "assistant", "content": "{"})
         return messages
 
