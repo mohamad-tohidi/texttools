@@ -104,8 +104,24 @@ class GemmaTranslator(BaseTranslator):
                 "role": "user",
                 "content": f"""
                     We need to translate the following text.
-                    Analyze the text for its content, context, and any specific nuances that might affect translation from {source_language or "the original language"} to {target_language}.
-                    Provide a concise summary of your analysis that will help in accurate translation.
+
+                    First, carefully analyze the text for:
+                    - Its content, context, tone, and any nuances that may affect translation from {source_language or "the original language"} to {target_language}.
+                    - **Special terms that must be preserved or handled carefully**, such as:
+                    - Names of people
+                    - Names of Qur’an surahs or other religious references
+                    - Place names
+                    - Culturally significant terms or expressions
+
+                    Identify and **remember** these special words or phrases for accurate handling during translation.  
+                    Provide a concise summary of your analysis, highlighting:
+                    - The key ideas or themes
+                    - Any challenging parts of the text
+                    - A list (or description) of special terms and how they should be treated in translation
+                    
+                    DONT OVER ANALYZE
+                    
+                    
                     """,
             },
             {
