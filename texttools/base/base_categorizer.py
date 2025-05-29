@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from texttools.handlers import ResultHandler, NoOpResultHandler
 
+
 class BaseCategorizer(ABC):
     def __init__(
         self,
@@ -18,7 +19,7 @@ class BaseCategorizer(ABC):
         handlers: List of ResultHandler objects that will process results after categorization.
         """
         self.categories = categories
-        self.handlers = handlers or [NoOpResultHandler()] 
+        self.handlers = handlers or [NoOpResultHandler()]
 
     @abstractmethod
     def categorize(self, text: str) -> Enum:
@@ -33,10 +34,12 @@ class BaseCategorizer(ABC):
         Optional: Preprocess text before categorization.
         """
         return text
-    
-    def _dispatch(self, results: Dict[str, Enum]) -> None:
+
+    def _dispatch(self, results: dict) -> None:
         for handler in self.handlers:
             try:
                 handler.handle(results)
             except Exception as e:
-                logging.error(f"Handler {handler.__class__.__name__} failed", exc_info=True)
+                logging.error(
+                    f"Handler {handler.__class__.__name__} failed", exc_info=True
+                )
