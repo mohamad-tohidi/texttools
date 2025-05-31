@@ -58,7 +58,9 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
         messages.append(
             {
                 "role": "user",
-                "content": "Given the following answer, generate a single, appropriate question that this answer would directly respond to.",
+                "content": """Given the following answer, generate a single, appropriate question that this answer would directly respond to.
+                the generated answer should be independently meaningful, and not mentioning any verbs like, this, that, he or she ... on the question.
+                """,
             }
         )
         messages.append({"role": "user", "content": clean_answer})
