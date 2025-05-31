@@ -7,6 +7,16 @@ from texttools.base.base_categorizer import BaseCategorizer
 from texttools.handlers import ResultHandler
 
 
+class Category(Enum):
+    CATEGORY_A = "باورهای دینی"
+    CATEGORY_B = "اخلاق اسلامی"
+    CATEGORY_C = "احکام و فقه"
+    CATEGORY_D = "تاریخ اسلام و شخصیت‌ها"
+    CATEGORY_E = "منابع دینی"
+    CATEGORY_F = "دین و جامعه/سیاست"
+    CATEGORY_G = "عرفان و معنویت"
+
+
 class GemmaCategorizer(BaseCategorizer):
     """
     Categorizer for Gemma-style models. It requires a predefined Enum of categories
@@ -21,7 +31,7 @@ class GemmaCategorizer(BaseCategorizer):
         client: OpenAI,
         *,
         model: str,
-        categories: Enum,  # REQUIRED: An Enum class representing categories
+        categories: Enum = Category,  # REQUIRED: An Enum class representing categories
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: Optional[str] = None,
@@ -43,7 +53,8 @@ class GemmaCategorizer(BaseCategorizer):
         self.prompt_template = prompt_template
 
         self.json_schema = {
-            "category": "string"  # LLM still returns a string, we convert it to Enum
+            "main_tag": "string",
+            "secondary_tags": ["string"],
         }
 
     def _build_messages(
@@ -64,14 +75,54 @@ class GemmaCategorizer(BaseCategorizer):
                 {"role": "user", "content": f"Based on this analysis: {reason}"}
             )
 
-        # Dynamically build the prompt with the allowed category names from the Enum
-        category_list_str = ", ".join(
-            [f"'{cat_name}'" for cat_name in self._category_names]
-        )
+        # # Dynamically build the prompt with the allowed category names from the Enum
+        # category_list_str = ", ".join(
+        #     [f"'{cat_name}'" for cat_name in self._category_names]
+        # )
         messages.append(
             {
                 "role": "user",
-                "content": f"Analyze the following text and determine its single most relevant category from this predefined list: {category_list_str}. You MUST choose one category name from this list. If the text does not fit any category perfectly, choose the one that is the closest match.",
+                "content": """
+تو یک متخصص علوم دینی اسلامی هستی و وظیفه‌ات دسته‌بندی سوالات دینی در یکی از هفت دسته زیر است. وظیفه دارید هر سوال دینی را با توجه به معنای دقیق آن در یکی از دسته‌های اصلی موضوعی قرار دهید، و در صورت نیاز، تگ‌های فرعی نیز به آن اختصاص دهید.
+
+خروجی شما باید شامل دو بخش باشد:
+main_tag (اجباری، فقط یکی از دسته‌های زیر)
+secondary_tags (اختیاری، صفر تا چند مورد از دسته‌های دیگر)
+
+در تعیین main_tag، توجه داشته باشید که نوع سوال (یعنی نوع پاسخ مورد انتظار) مهم‌تر از موضوع ظاهری آن است.
+
+اگر سوال از جواز، حرمت، وجوب یا حکم شرعی یک عمل سوال کند، حتی اگر موضوع آن رفتاری اخلاقی یا ظاهری باشد (مانند اصلاح صورت، نگاه، یا لباس)، باید در دسته "احکام و فقه" قرار گیرد.
+
+فقط اگر سوال به شکل کلی درباره خوبی یا بدی اخلاقی، نیت‌ها، صفات درونی یا رفتاری بدون اشاره به حکم شرعی باشد، در دسته "اخلاق اسلامی" قرار می‌گیرد.
+
+تمام تگ‌ها باید دقیقاً از میان 7 دسته زیر انتخاب شوند:
+"باورهای دینی"
+پرسش‌هایی درباره اصول بنیادین دین اسلام مانند توحید، نبوت، معاد، امامت، خداشناسی، فلسفه دین، چیستی انسان، فطرت، عدل الهی، و همچنین دیدگاه اسلام درباره سایر ادیان، ادیان الهی یا غیرالهی، و باورهای فلسفی.
+"اخلاق اسلامی"
+سوال‌هایی که درباره فضائل و رذائل اخلاقی (شخصیتی، اجتماعی، روانی یا ارتباط با خدا) هستند، مانند پرسش درباره گناه، دعا، رفتار فردی یا اجتماعی بر اساس اخلاق اسلامی.
+"احکام و فقه"
+پرسش‌هایی درباره احکام عملی اسلام شامل عبادات (نماز، روزه، حج)، معاملات و امور مالی (خمس، زکات، ربا، بیع)، احکام فردی (طهارت، نجاست) و اجتماعی (حجاب، امر به معروف)، طبقه‌بندی شرعی اعمال (واجب، حرام...)، و فلسفه احکام.
+"تاریخ اسلام و شخصیت‌ها"
+پرسش‌هایی درباره وقایع تاریخی مهم در اسلام، زندگی پیامبران، اهل بیت، صحابه، خلفا، دشمنان دین، سیره و سبک زندگی ایشان، وقایعی مانند غدیر، عاشورا، هجرت، و جنبش‌ها و جریان‌های دینی در تاریخ اسلام.
+"منابع دینی"
+سوال‌هایی که مرتبط با قرآن، حدیث، تفسیر قرآن، معنای یک حدیث، اعتبار منابع دینی یا علوم قرآن و حدیث هستند.
+"دین و جامعه/سیاست"
+سوال‌هایی که درباره نقش دین در اجتماع و سیاست هستند، مانند مذاهب اسلامی، مراسم‌های دینی، مراکز دینی، حضور دین در عرصه‌های اجتماعی، یا مسائل سیاسی مرتبط با دین.
+"عرفان و معنویت"
+سلوک عرفانی، تهذیب نفس، ذکر، عشق الهی، حالات عرفانی، فناء و بقاء.
+
+ قوانین مهم:
+main_tag باید فقط یکی از دسته‌ها باشد.
+secondary_tags یکی از دسته های بالا که به شکل فرعی یا ضمنی در سوال حضور دارند.
+اگر سوال فقط در یک دسته جا می‌گیرد، secondary_tags را خالی بگذارید.
+اگر سوال به هیچ‌کدام مرتبط نیست، main_tag را نامربوط قرار دهید و secondary_tags را خالی بگذارید.
+ خروجی خود را دقیقاً به صورت زیر ارائه دهید:
+json
+{
+  "main_tag": "احکام و فقه",
+  "secondary_tags": ["اخلاق اسلامی", "عرفان و معنویت"]
+}
+""",
             }
         )
         messages.append({"role": "user", "content": clean_text})
@@ -141,7 +192,7 @@ class GemmaCategorizer(BaseCategorizer):
                 f"Failed to parse JSON for categorization: {e}\nRaw output: {raw}"
             )
 
-        category_name = parsed.get("category")
+        category_name = parsed.get("main_tag")
 
         # --- Crucial step: Convert string output to Enum member ---
         if not isinstance(category_name, str):
@@ -149,14 +200,28 @@ class GemmaCategorizer(BaseCategorizer):
                 f"Invalid response schema for categorization. Expected 'category' as a string, got: {parsed}"
             )
 
-        try:
-            # Attempt to convert the LLM's string output to an Enum member
-            detected_category_enum = self.categories[category_name]
-        except KeyError:
+        if not category_name not in self._category_names:
             raise ValueError(
                 f"LLM returned category '{category_name}' which is not a valid member of the provided Enum: {self._category_names}. Raw output: {raw}"
             )
 
-        # dispatch and return - Note: _dispatch expects Dict[str, Enum]
-        self._dispatch(results={"category": detected_category_enum})
-        return detected_category_enum
+        secondary_tags = parsed.get("secondary_tags")
+        if not isinstance(secondary_tags, list):
+            raise ValueError(
+                f"Invalid response schema for categorization. Expected 'secondary_tags' as a list, got: {parsed}"
+            )
+        if not all(isinstance(tag, str) for tag in secondary_tags):
+            raise ValueError(
+                f"Invalid response schema for categorization. All items in 'secondary_tags' should be strings, got: {parsed}"
+            )
+
+        if not all(tag in self._category_names for tag in secondary_tags):
+            raise ValueError(
+                f"LLM returned secondary tags that are not valid members of the provided Enum: {secondary_tags}. Valid categories: {self._category_names}"
+            )
+
+        # dispatch and return - Note: _dispatch expects dict
+        self._dispatch(
+            results={"main_tag": category_name, "secondary_tags": secondary_tags}
+        )
+        return {"main_tag": category_name, "secondary_tags": secondary_tags}
