@@ -48,7 +48,7 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
         messages.append({"role": "user", "content": clean})
-        messages.append({"role": "assistant", "content": "{"})
+        messages.append({"role": "assistant", "content": "{\n"})
         return messages
 
     def _reason(self, text: str) -> list:
