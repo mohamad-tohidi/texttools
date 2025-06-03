@@ -30,9 +30,7 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         self.temperature = temperature
         self.client_kwargs = client_kwargs
 
-        self.chat_formatter = chat_formatter or Gemma3Formatter(
-            add_generation_prompt=True
-        )
+        self.chat_formatter = chat_formatter or Gemma3Formatter()
 
         self.use_reason = use_reason
         self.prompt_template = prompt_template
