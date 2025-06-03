@@ -1,1 +1,1 @@
-from texttools.tools.translator.gemma_translator import GemmaTranslator
+from texttools.tools.keyword_extractor.gemma_extractor import GemmaKeywordExtractor
