@@ -1,8 +1,8 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import json
 from openai import OpenAI
 from texttools.base.base_question_detector import BaseQuestionDetector
-
+from texttools.formatter import Gemma3Formatter
 
 class GemmaQuestionDetector(BaseQuestionDetector):
     """
@@ -17,6 +17,7 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         client: OpenAI,
         *,
         model: str,
+        chat_formatter: Optional[Any] = None,
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: str = None,
@@ -28,6 +29,8 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         self.model = model
         self.temperature = temperature
         self.client_kwargs = client_kwargs
+
+        self.chat_formatter = chat_formatter or Gemma3Formatter()
 
         self.use_reason = use_reason
         self.prompt_template = prompt_template
@@ -48,8 +51,15 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
         messages.append({"role": "user", "content": clean})
-        messages.append({"role": "assistant", "content": "{"})
-        return messages
+        messages.append({"role": "assistant", "content": "{\n"})
+        
+        # this line will restructure the messages
+        # based on the formatter that we provided
+        # some models will require custom settings
+        restructured = self.chat_formatter.format(messages=messages)
+        
+        
+        return restructured
 
     def _reason(self, text: str) -> list:
         messages = [
