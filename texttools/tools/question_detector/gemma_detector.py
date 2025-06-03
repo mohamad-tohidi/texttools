@@ -82,9 +82,11 @@ class GemmaQuestionDetector(BaseQuestionDetector):
             }
         ]
         
+        restructured = self.chat_formatter.format(messages=messages)
+        
         resp = self.client.chat.completions.create(
             model=self.model,
-            messages=messages,
+            messages=restructured,
             temperature=self.temperature,
             **self.client_kwargs,
         )
