@@ -1,1 +1,1 @@
-from texttools.translator.gemma_translator import GemmaTranslator
+from texttools.tools.translator.gemma_translator import GemmaTranslator

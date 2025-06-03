@@ -1,1 +1,1 @@
-from texttools.ner.gemma_ner_extractor import GemmaNERExtractor
+from texttools.tools.ner.gemma_ner_extractor import GemmaNERExtractor
