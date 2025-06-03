@@ -32,8 +32,9 @@ class SimpleBatchManager:
         self.custom_json_schema_obj_str = custom_json_schema_obj_str
         self.client_kwargs = client_kwargs
 
-        if self.custom_json_schema_obj_str is not dict:
-            raise ValueError("schema should be a dict")
+        if self.custom_json_schema_obj_str:
+            if self.custom_json_schema_obj_str is not dict:
+                raise ValueError("schema should be a dict")
 
     def _state_file(self, job_name: str) -> Path:
         return self.state_dir / f"{job_name}.json"
@@ -54,7 +55,7 @@ class SimpleBatchManager:
         if path.exists():
             path.unlink()
 
-    def _build_task(self, text: str, idx: int) -> Dict[str, Any]:
+    def _build_task(self, text: str, idx: str) -> Dict[str, Any]:
         response_format_config: Dict[str, Any]
         if self.custom_json_schema_obj_str:
             # try:
@@ -97,7 +98,7 @@ class SimpleBatchManager:
         if isinstance(payload, list):
             tasks = [self._build_task(text, uuid.uuid4().hex) for text in payload]
         elif isinstance(payload, dict):
-            tasks = [self._build_task(text, idx) for idx, text in payload.items()]
+            tasks = [self._build_task(dic["text"], dic["id"]) for dic in payload.items()]
         else:
             raise TypeError(
                 "The input must be either a list of texts or a dictionary in the form {'id': 'text'}."
