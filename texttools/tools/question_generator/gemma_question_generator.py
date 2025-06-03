@@ -76,7 +76,7 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
         messages.append({"role": "user", "content": schema_instr})
 
         messages.append(
-            {"role": "assistant", "content": "{"}
+            {"role": "assistant", "content": "{\n"}
         )  # Hint to start JSON output
         
         
