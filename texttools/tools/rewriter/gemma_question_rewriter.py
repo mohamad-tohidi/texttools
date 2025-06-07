@@ -2,6 +2,11 @@ from typing import Any, Dict, List, Optional
 import json
 from openai import OpenAI
 from texttools.base.base_question_rewriter import BaseQuestionRewriter, RewriteMode
+from texttools.formatter import Gemma3Formatter
+from pydantic import BaseModel
+
+class QuestionGeneration(BaseModel):
+    generated_question: str
 
 
 class GemmaQuestionRewriter(BaseQuestionRewriter):
@@ -19,6 +24,7 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         client: OpenAI,
         *,
         model: str,
+        chat_formatter: Optional[Any] = None,
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: Optional[str] = None,
@@ -30,6 +36,9 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         self.model = model
         self.temperature = temperature
         self.client_kwargs = client_kwargs
+        
+        self.chat_formatter = chat_formatter or Gemma3Formatter()
+        
 
         self.use_reason = use_reason
         self.prompt_template = prompt_template
@@ -62,24 +71,35 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
                 "Rewrite the following question using completely different wording and phrasing, "
                 "ensuring its original meaning is perfectly preserved. The rewritten question "
                 "should be distinct from the original but convey the exact same inquiry."
+                "**respond in the language of the question**"
             )
         elif mode == RewriteMode.DIFFERENT_MEANING_SIMILAR_WORDING:
             instruction = (
                 "Rewrite the following question using *very similar wording and phrasing* "
                 "to the original, but ensure the rewritten question has a *completely different meaning*. "
                 "Focus on subtle changes that drastically alter the intent or subject of the question."
+                "**respond in the language of the question**"
             )
         else:
             raise ValueError(f"Unsupported rewrite mode: {mode}")
 
         messages.append({"role": "user", "content": instruction})
-        messages.append({"role": "user", "content": clean_question})
+        messages.append({"role": "user", "content": f"here is the question: {clean_question}"})
 
-        schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
+        # schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
+        schema_instr = f"Respond only in with the asked question, without any additional information."
         messages.append({"role": "user", "content": schema_instr})
 
-        messages.append({"role": "assistant", "content": "{"})
-        return messages
+        # messages.append({"role": "assistant", "content": "{"})
+        # deprecated method for structured output
+        
+        
+        # this line will restructure the messages
+        # based on the formatter that we provided
+        # some models will require custom settings
+        restructured = self.chat_formatter.format(messages=messages)
+        
+        return restructured
 
     def _reason(self, question: str, mode: RewriteMode) -> str:
         """
@@ -88,20 +108,29 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         """
         if mode == RewriteMode.SAME_MEANING_DIFFERENT_WORDING:
             reason_prompt = """
-                Analyze the following question to identify its core intent, key concepts, and the specific information it is seeking.
-                Provide a brief, summarized understanding of the question's meaning that will help in rephrasing it accurately without changing its intent.
+                Analyze the following question to identify its core intent, key concepts, 
+                and the specific information it is seeking.
+                Provide a brief, summarized understanding of the question's meaning that
+                will help in rephrasing it accurately without changing its intent.
+                
+                **respond in the language of the question**
+                
                 """
         elif mode == RewriteMode.DIFFERENT_MEANING_SIMILAR_WORDING:
             reason_prompt = """
-                Analyze the following question to identify its exact wording, phrasing, and the literal meaning it conveys.
-                Provide a brief, summarized analysis of its linguistic structure and current meaning, which will then be used to create a new question with similar words but a different meaning.
+                Analyze the following question to identify its exact wording, phrasing,
+                and the literal meaning it conveys.
+                Provide a brief, summarized analysis of its linguistic structure and current meaning,
+                which will then be used to create a new question with similar words but a different meaning.
+                
+                **respond in the language of the question**
                 """
         else:
             raise ValueError(f"Unsupported rewrite mode for reason: {mode}")
 
         messages = [
             {"role": "user", "content": reason_prompt},
-            {"role": "user", "content": f"{question}"},
+            {"role": "user", "content": f"here is the question: {question}"},
         ]
 
         resp = self.client.chat.completions.create(
@@ -128,36 +157,27 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
             reason_summary = self._reason(question, mode)
 
         messages = self._build_messages(question, mode, reason_summary)
-        resp = self.client.chat.completions.create(
+        
+        completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=messages,
+            response_format=QuestionGeneration,
             temperature=self.temperature,
+            extra_body=dict(guided_decoding_backend="outlines"),
             **self.client_kwargs,
         )
-        raw = resp.choices[0].message.content.strip()
-
-        if not raw.startswith("{"):
-            raw = "{" + raw
-        try:
-            parsed = json.loads(raw)
-        except json.JSONDecodeError as e:
-            raise ValueError(
-                f"Failed to parse JSON for question rewriting: {e}\nRaw output: {raw}"
-            )
-
-        rewritten_question = parsed.get("rewritten_question")
-
-        if not isinstance(rewritten_question, str):
-            raise ValueError(
-                f"Invalid response schema for question rewriting. Expected 'rewritten_question' as a string, got: {parsed}"
-            )
-
-        # Dispatch includes the mode for logging/tracking purposes
+        message = completion.choices[0].message
+        if message.parsed:
+            result = message.parsed.generated_question
+        else:
+            raise ValueError(f"Failed to parse the response. Raw content: {message.content}")
+        
+        # dispatch and return
         self._dispatch(
             {
                 "original_question": question,
-                "rewritten_question": rewritten_question,
-                "mode": mode.value,  # Dispatch the string value of the Enum
+                "rewritten_question": result,
+                "mode": mode.value,  
             }
         )
-        return rewritten_question
+        return result
