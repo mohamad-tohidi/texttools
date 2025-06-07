@@ -75,7 +75,8 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
         messages.append({"role": "user", "content": clean_answer})
 
         # Ensure the schema is dumped as a valid JSON string for the LLM
-        schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
+        # schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
+        schema_instr = f"Respond only in the structured output manner."
         messages.append({"role": "user", "content": schema_instr})
 
         # messages.append(
@@ -109,6 +110,9 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
             {
                 "role": "user",
                 "content": f"""
+                
+                    Here is the content:
+                    
                     {answer}
                     """,
             },
