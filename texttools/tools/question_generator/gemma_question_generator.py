@@ -4,8 +4,8 @@ from texttools.base.base_question_generator import BaseQuestionGenerator
 from texttools.formatter import Gemma3Formatter
 from pydantic import BaseModel
 
-class QuestionGeneration(BaseModel):
-    generated_question: str
+# class QuestionGeneration(BaseModel):
+#     generated_question: str
 
 class GemmaQuestionGenerator(BaseQuestionGenerator):
     """
@@ -75,11 +75,11 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
                 """,
             }
         )
-        messages.append({"role": "user", "content": clean_answer})
+        messages.append({"role": "user", "content": f"here is the text: {clean_answer}"})
 
         # Ensure the schema is dumped as a valid JSON string for the LLM
         # schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
-        schema_instr = f"Respond only in the structured output manner."
+        schema_instr = f"Respond only in with the new generated question, without any additional information."
         messages.append({"role": "user", "content": schema_instr})
 
         # messages.append(
@@ -151,20 +151,37 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
 
         messages = self._build_messages(answer, reason_summary)
         
+        # i am deprecating the usage of structured output in the tasks that
+        # the input and output is str
+        # as we have noticed a huge decrease in the models outputs quality
+
+        # 
+        # completion = self.client.beta.chat.completions.parse(
+        #     model=self.model,
+        #     messages=messages,
+        #     response_format=QuestionGeneration,
+        #     temperature=self.temperature,
+        #     extra_body=dict(guided_decoding_backend="outlines"),
+        #     **self.client_kwargs,
+        # )
+        # message = completion.choices[0].message
+        # if message.parsed:
+        #     result = message.parsed.generated_question
+        # else:
+        #     raise ValueError(f"Failed to parse the response. Raw content: {message.content}")
         
-        completion = self.client.beta.chat.completions.parse(
+        
+
+        resp = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
-            response_format=QuestionGeneration,
             temperature=self.temperature,
-            extra_body=dict(guided_decoding_backend="outlines"),
             **self.client_kwargs,
         )
-        message = completion.choices[0].message
-        if message.parsed:
-            result = message.parsed.generated_question
-        else:
-            raise ValueError(f"Failed to parse the response. Raw content: {message.content}")
+
+        result = resp.choices[0].message.content.strip()
+        
+        
         
         # dispatch and return
         self._dispatch(
