@@ -87,7 +87,7 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         messages.append({"role": "user", "content": f"here is the question: {clean_question}"})
 
         # schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
-        schema_instr = f"Respond only in with the asked question, without any additional information."
+        schema_instr = f"Respond only with the generated question, without any additional information."
         messages.append({"role": "user", "content": schema_instr})
 
         # messages.append({"role": "assistant", "content": "{"})
