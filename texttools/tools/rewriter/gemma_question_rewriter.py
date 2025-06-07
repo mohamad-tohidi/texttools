@@ -132,10 +132,12 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
             {"role": "user", "content": reason_prompt},
             {"role": "user", "content": f"here is the question: {question}"},
         ]
+        
+        restructured = self.chat_formatter.format(messages=messages)
 
         resp = self.client.chat.completions.create(
             model=self.model,
-            messages=messages,
+            messages=restructured,
             temperature=self.temperature,
             **self.client_kwargs,
         )
