@@ -2,6 +2,7 @@ from typing import Any, Dict, List, Optional
 import json
 from openai import OpenAI
 from texttools.base.base_translator import BaseTranslator
+from texttools.formatter.gemma3_fromatter import Gemma3Formatter
 
 
 class GemmaTranslator(BaseTranslator):
@@ -17,6 +18,7 @@ class GemmaTranslator(BaseTranslator):
         client: OpenAI,
         *,
         model: str,
+        chat_formatter: Optional[Any] = None,
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: str = None,
@@ -28,6 +30,8 @@ class GemmaTranslator(BaseTranslator):
         self.model = model
         self.temperature = temperature
         self.client_kwargs = client_kwargs
+
+        self.chat_formatter = chat_formatter or Gemma3Formatter()
 
         self.use_reason = use_reason
         self.prompt_template = prompt_template
@@ -50,7 +54,7 @@ class GemmaTranslator(BaseTranslator):
             messages.append(
                 {"role": "user", "content": f"Based on this reasoning: {reason}"}
             )
-            
+
         if source_language:
             messages.append(
                 {
@@ -104,9 +108,17 @@ class GemmaTranslator(BaseTranslator):
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
 
-        messages.append({"role": "user", "content": "here is the text that has to be translated:" + clean_text})
+        messages.append(
+            {
+                "role": "user",
+                "content": "here is the text that has to be translated:" + clean_text,
+            }
+        )
         messages.append({"role": "assistant", "content": "{"})
-        return messages
+
+        restructured = self.chat_formatter.format(messages=messages)
+
+        return restructured
 
     def _reason(
         self, text: str, target_language: str, source_language: Optional[str] = None
@@ -147,9 +159,11 @@ class GemmaTranslator(BaseTranslator):
             },
         ]
 
+        restructured = self.chat_formatter.format(messages=messages)
+
         resp = self.client.chat.completions.create(
             model=self.model,
-            messages=messages,
+            messages=restructured,
             temperature=self.temperature,
             **self.client_kwargs,
         )
@@ -191,12 +205,14 @@ class GemmaTranslator(BaseTranslator):
                 if value_str.startswith('"') and value_str.endswith('"}'):
                     inner = value_str[1:-2]
                     sanitized_inner = inner.replace('"', '\\"')
-                    raw = f"{prefix}{sep}\"{sanitized_inner}\"}}"
+                    raw = f'{prefix}{sep}"{sanitized_inner}"}}'
                     parsed = json.loads(raw)
                 else:
                     raise
             except Exception:
-                raise ValueError(f"Failed to parse JSON after sanitation: {e}\nRaw output: {raw}")
+                raise ValueError(
+                    f"Failed to parse JSON after sanitation: {e}\nRaw output: {raw}"
+                )
 
         result = parsed.get("translated_text")
         if not isinstance(result, str):
