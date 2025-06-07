@@ -70,7 +70,7 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
                 appropriate question that this answer would directly respond to.
                 the generated answer should be independently meaningful,
                 and not mentioning any verbs like, this, that, he or she ... on the question.
-                **the generated answer will be in the language of the users input**
+                # **the generated question will be in the language of the users input**
                 
                 """,
             }
@@ -115,6 +115,8 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
                     
                     provide the summary in the language of the content.
                     just mention the keypoints that was provided in the answer
+                    
+                    
                     """,
             },
             {
@@ -124,6 +126,8 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
                     Here is the content:
                     
                     {answer}
+                    
+                    respond only with the language of the content
                     """,
             },
         ]
