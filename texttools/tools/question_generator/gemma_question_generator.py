@@ -79,8 +79,10 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
 
         # Ensure the schema is dumped as a valid JSON string for the LLM
         # schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
-        schema_instr = f"Respond only with the new generated question, without any additional information."
-        messages.append({"role": "user", "content": schema_instr})
+        messages.append({"role": "user", "content": """
+        Respond only with the new generated question, without any additional information.
+        **the generated question will be in the language of the users input**
+                         """})
 
         # messages.append(
         #     {"role": "assistant", "content": "{\n"}
