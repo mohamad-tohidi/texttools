@@ -5,8 +5,8 @@ from texttools.base.base_question_rewriter import BaseQuestionRewriter, RewriteM
 from texttools.formatter import Gemma3Formatter
 from pydantic import BaseModel
 
-class QuestionGeneration(BaseModel):
-    generated_question: str
+# class QuestionGeneration(BaseModel):
+#     generated_question: str
 
 
 class GemmaQuestionRewriter(BaseQuestionRewriter):
@@ -159,20 +159,36 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
             reason_summary = self._reason(question, mode)
 
         messages = self._build_messages(question, mode, reason_summary)
+
+        # for structured output formatting
+        # but now i want to try somthing else
+        # i want to see if i could get the results without structured output        
+        # completion = self.client.beta.chat.completions.parse(
+        #     model=self.model,
+        #     messages=messages,
+        #     response_format=QuestionGeneration,
+        #     temperature=self.temperature,
+        #     extra_body=dict(guided_decoding_backend="outlines"),
+        #     **self.client_kwargs,
+        # )
+        # message = completion.choices[0].message
+        # if message.parsed:
+        #     result = message.parsed.generated_question
+        # else:
+        #     raise ValueError(f"Failed to parse the response. Raw content: {message.content}")
         
-        completion = self.client.beta.chat.completions.parse(
+
+        resp = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
-            response_format=QuestionGeneration,
             temperature=self.temperature,
-            extra_body=dict(guided_decoding_backend="outlines"),
             **self.client_kwargs,
         )
-        message = completion.choices[0].message
-        if message.parsed:
-            result = message.parsed.generated_question
-        else:
-            raise ValueError(f"Failed to parse the response. Raw content: {message.content}")
+
+        result = resp.choices[0].message.content.strip()
+
+
+        
         
         # dispatch and return
         self._dispatch(
