@@ -107,8 +107,13 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
             {
                 "role": "user",
                 "content": """
-                    Analyze the following answer to identify its key facts, main subject, and what kind of information it provides.
-                    Provide a brief, summarized understanding of the answer's content that will help in formulating a relevant and direct question.
+                    Analyze the following answer to identify its key facts,
+                    main subject, and what kind of information it provides.
+                    Provide a brief, summarized understanding of the answer's content that will 
+                    help in formulating a relevant and direct question.
+                    
+                    provide the summary in the language of the content.
+                    just mention the keypoints that was provided in the answer
                     """,
             },
             {
