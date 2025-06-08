@@ -37,24 +37,14 @@ class SimpleBatchManager:
             if self.custom_json_schema_obj_str is not dict:
                 raise ValueError("schema should be a dict")
 
-<<<<<<< HEAD
-=======
-        if self.custom_json_schema_obj_str:
-            if self.custom_json_schema_obj_str is not dict:
-                raise ValueError("schema should be a dict")
-
->>>>>>> b9d47caf90fe00d2e41c2f54ad6459644e967346
     def _state_file(self, job_name: str) -> Path:
         return self.state_dir / f"{job_name}.json"
 
     def _load_state(self, job_name: str) -> List[Dict[str, Any]]:
-<<<<<<< HEAD
         """
         Loads the state (job information) from the state file for the given job name.
         Returns an empty list if the state file does not exist.
         """
-=======
->>>>>>> b9d47caf90fe00d2e41c2f54ad6459644e967346
         path = self._state_file(job_name)
         if path.exists():
             with open(path, "r", encoding="utf-8") as f:
@@ -77,12 +67,9 @@ class SimpleBatchManager:
             path.unlink()
 
     def _build_task(self, text: str, idx: str) -> Dict[str, Any]:
-<<<<<<< HEAD
         """
         Builds a single task dictionary for the batch job, including the prompt, model, and response format configuration.
         """
-=======
->>>>>>> b9d47caf90fe00d2e41c2f54ad6459644e967346
         response_format_config: Dict[str, Any]
         if self.custom_json_schema_obj_str:
             # try:
@@ -121,7 +108,6 @@ class SimpleBatchManager:
             },
         }
 
-<<<<<<< HEAD
     def _prepare_file(self, payload: List[str] | List[Dict[str, str]]) -> Path:
         """
         Prepares a JSONL file containing all tasks for the batch job, based on the input payload.
@@ -137,16 +123,6 @@ class SimpleBatchManager:
         else:
             raise TypeError(
                 "The input must be either a list of texts or a dictionary in the form {'id': str, 'text': str}."
-=======
-    def _prepare_file(self, payload: List[str] | Dict[str, str]) -> Path:
-        if isinstance(payload, list):
-            tasks = [self._build_task(text, uuid.uuid4().hex) for text in payload]
-        elif isinstance(payload, dict):
-            tasks = [self._build_task(dic["text"], dic["id"]) for dic in payload.items()]
-        else:
-            raise TypeError(
-                "The input must be either a list of texts or a dictionary in the form {'id': 'text'}."
->>>>>>> b9d47caf90fe00d2e41c2f54ad6459644e967346
             )
 
         file_path = self.state_dir / f"batch_{uuid.uuid4().hex}.jsonl"
@@ -155,20 +131,10 @@ class SimpleBatchManager:
                 f.write(json.dumps(task) + "\n")
         return file_path
 
-<<<<<<< HEAD
     def start(self, payload: List[str | Dict[str, str]], job_name: str):
         """
         Starts a new batch job by uploading the prepared file and creating a batch job on the server.
         If a job with the same name already exists, it does nothing.
-=======
-    def start(self, payload: List[str] | Dict[str, str], job_name: str):
-        """
-        The data is sent to the server as a single batch for processing.
-
-        Args:
-            payload (List[str] | Dict[str, str]): The data can be input either as a list of texts or as a dictionary in the form {'id': 'text'}. If a list of texts is provided without IDs, the IDs will be generated randomly.
-            job_name (str): The job_name is used so that you can fetch the outputs after they are ready.
->>>>>>> b9d47caf90fe00d2e41c2f54ad6459644e967346
         """
         if self._load_state(job_name):
             return
@@ -249,17 +215,12 @@ class SimpleBatchManager:
                     results[custom_id] = model_instance.model_dump(mode="json")
                 except json.JSONDecodeError:
                     results[custom_id] = {"error": "Failed to parse content as JSON"}
-<<<<<<< HEAD
                     error_d = {custom_id: results[custom_id]}
                     log.append(error_d)
                 except Exception as e:
                     results[custom_id] = {"error": str(e)}
                     error_d = {custom_id: results[custom_id]}
                     log.append(error_d)
-=======
-                except Exception as e:
-                    results[custom_id] = {"error": str(e)}
->>>>>>> b9d47caf90fe00d2e41c2f54ad6459644e967346
             else:
                 error_message = (
                     result["response"]["body"]
@@ -267,7 +228,6 @@ class SimpleBatchManager:
                     .get("message", "Unknown error")
                 )
                 results[custom_id] = {"error": error_message}
-<<<<<<< HEAD
                 error_d = {custom_id: results[custom_id]}
                 log.append(error_d)
 
@@ -285,10 +245,3 @@ class SimpleBatchManager:
         results = self._parsed(results)
         return results , log
     
-=======
-
-        for handler in self.handlers:
-            handler.handle(results)
-        self._clear_state(job_name)
-        return results
->>>>>>> b9d47caf90fe00d2e41c2f54ad6459644e967346
