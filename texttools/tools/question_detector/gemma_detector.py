@@ -1,8 +1,13 @@
 from typing import Any, Dict, List, Optional
+from pydantic import BaseModel
 import json
 from openai import OpenAI
 from texttools.base.base_question_detector import BaseQuestionDetector
 from texttools.formatter import Gemma3Formatter
+
+
+class QuestionDetection(BaseModel):
+    is_question: bool
 
 class GemmaQuestionDetector(BaseQuestionDetector):
     """
@@ -51,7 +56,6 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
         messages.append({"role": "user", "content": clean})
-        messages.append({"role": "assistant", "content": "{\n"})
         
         # this line will restructure the messages
         # based on the formatter that we provided
@@ -107,25 +111,21 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         # print(reason_summary)
         
         messages = self._build_messages(text, reason_summary)
-        resp = self.client.chat.completions.create(
+        
+        completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=messages,
+            response_format=QuestionDetection,
             temperature=self.temperature,
+            extra_body=dict(guided_decoding_backend="outlines"),
             **self.client_kwargs,
         )
-        raw = resp.choices[0].message.content.strip()
-
-        if not raw.startswith("{"):
-            raw = "{" + raw
-        try:
-            parsed = json.loads(raw)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Failed to parse JSON: {e}\nRaw output: {raw}")
-
-        result = parsed.get("is_question")
-        if not isinstance(result, bool):
-            raise ValueError(f"Invalid response schema, got: {parsed}")
-
+        message = completion.choices[0].message
+        if message.parsed:
+            result = message.parsed.is_question
+        else:
+            raise ValueError(f"Failed to parse the response. Raw content: {message.content}")
+        
         # dispatch and return
         self._dispatch({"question": text, "result": result})
         return result

@@ -1,9 +1,11 @@
 from typing import Any, Dict, List, Optional
-import json
 from openai import OpenAI
 from texttools.base.base_question_generator import BaseQuestionGenerator
 from texttools.formatter import Gemma3Formatter
+from pydantic import BaseModel
 
+# class QuestionGeneration(BaseModel):
+#     generated_question: str
 
 class GemmaQuestionGenerator(BaseQuestionGenerator):
     """
@@ -64,21 +66,29 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
         messages.append(
             {
                 "role": "user",
-                "content": """Given the following answer, generate a single, appropriate question that this answer would directly respond to.
-                the generated answer should be independently meaningful, and not mentioning any verbs like, this, that, he or she ... on the question.
+                "content": """Given the following answer, generate a single, 
+                appropriate question that this answer would directly respond to.
+                the generated answer should be independently meaningful,
+                and not mentioning any verbs like, this, that, he or she ... on the question.
+                # **the generated question will be in the language of the users input**
+                
                 """,
             }
         )
-        messages.append({"role": "user", "content": clean_answer})
+        messages.append({"role": "user", "content": f"here is the text: {clean_answer}"})
 
         # Ensure the schema is dumped as a valid JSON string for the LLM
-        schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
-        messages.append({"role": "user", "content": schema_instr})
+        # schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
+        messages.append({"role": "user", "content": """
+        Respond only with the new generated question, without any additional information.
+        **the generated question will be in the language of the users input**
+                         """})
 
-        messages.append(
-            {"role": "assistant", "content": "{"}
-        )  # Hint to start JSON output
-        
+        # messages.append(
+        #     {"role": "assistant", "content": "{\n"}
+        # )  # Hint to start JSON output
+        # in this new version we will use 
+        # parse function of openai library
         
         # this line will restructure the messages
         # based on the formatter that we provided
@@ -98,14 +108,26 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
             {
                 "role": "user",
                 "content": """
-                    Analyze the following answer to identify its key facts, main subject, and what kind of information it provides.
-                    Provide a brief, summarized understanding of the answer's content that will help in formulating a relevant and direct question.
+                    Analyze the following answer to identify its key facts,
+                    main subject, and what kind of information it provides.
+                    Provide a brief, summarized understanding of the answer's content that will 
+                    help in formulating a relevant and direct question.
+                    
+                    provide the summary in the language of the content.
+                    just mention the keypoints that was provided in the answer
+                    
+                    
                     """,
             },
             {
                 "role": "user",
                 "content": f"""
+                
+                    Here is the content:
+                    
                     {answer}
+                    
+                    respond only with the language of the content
                     """,
             },
         ]
@@ -134,35 +156,44 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
             reason_summary = self._reason(answer)
 
         messages = self._build_messages(answer, reason_summary)
+        
+        # i am deprecating the usage of structured output in the tasks that
+        # the input and output is str
+        # as we have noticed a huge decrease in the models outputs quality
+
+        # 
+        # completion = self.client.beta.chat.completions.parse(
+        #     model=self.model,
+        #     messages=messages,
+        #     response_format=QuestionGeneration,
+        #     temperature=self.temperature,
+        #     extra_body=dict(guided_decoding_backend="outlines"),
+        #     **self.client_kwargs,
+        # )
+        # message = completion.choices[0].message
+        # if message.parsed:
+        #     result = message.parsed.generated_question
+        # else:
+        #     raise ValueError(f"Failed to parse the response. Raw content: {message.content}")
+        
+        
+
         resp = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
             temperature=self.temperature,
             **self.client_kwargs,
         )
-        raw = resp.choices[0].message.content.strip()
 
-        if not raw.startswith("{"):
-            raw = "{" + raw
-        try:
-            parsed = json.loads(raw)
-        except json.JSONDecodeError as e:
-            raise ValueError(
-                f"Failed to parse JSON for question generation: {e}\nRaw output: {raw}"
-            )
-
-        generated_question = parsed.get("generated_question")
-
-        if not isinstance(generated_question, str):
-            raise ValueError(
-                f"Invalid response schema for question generation. Expected 'generated_question' as a string, got: {parsed}"
-            )
-
+        result = resp.choices[0].message.content.strip()
+        
+        
+        
         # dispatch and return
         self._dispatch(
             {
                 "original_answer": answer,
-                "generated_question": generated_question,
+                "generated_question": result,
             }
         )
-        return generated_question
+        return result
