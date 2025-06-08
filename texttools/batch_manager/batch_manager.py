@@ -41,6 +41,10 @@ class SimpleBatchManager:
         return self.state_dir / f"{job_name}.json"
 
     def _load_state(self, job_name: str) -> List[Dict[str, Any]]:
+        """
+        Loads the state (job information) from the state file for the given job name.
+        Returns an empty list if the state file does not exist.
+        """
         path = self._state_file(job_name)
         if path.exists():
             with open(path, "r", encoding="utf-8") as f:
@@ -48,15 +52,24 @@ class SimpleBatchManager:
         return []
 
     def _save_state(self, job_name: str, jobs: List[Dict[str, Any]]):
+        """
+        Saves the job state to the state file for the given job name.
+        """
         with open(self._state_file(job_name), "w", encoding="utf-8") as f:
             json.dump(jobs, f)
 
     def _clear_state(self, job_name: str):
+        """
+        Deletes the state file for the given job name if it exists.
+        """
         path = self._state_file(job_name)
         if path.exists():
             path.unlink()
 
     def _build_task(self, text: str, idx: str) -> Dict[str, Any]:
+        """
+        Builds a single task dictionary for the batch job, including the prompt, model, and response format configuration.
+        """
         response_format_config: Dict[str, Any]
         if self.custom_json_schema_obj_str:
             # try:
@@ -96,6 +109,10 @@ class SimpleBatchManager:
         }
 
     def _prepare_file(self, payload: List[str] | List[Dict[str, str]]) -> Path:
+        """
+        Prepares a JSONL file containing all tasks for the batch job, based on the input payload.
+        Returns the path to the created file.
+        """
         if not payload:
             raise ValueError("Payload must not be empty")
         if isinstance(payload[0], str):
@@ -116,11 +133,8 @@ class SimpleBatchManager:
 
     def start(self, payload: List[str | Dict[str, str]], job_name: str):
         """
-        The data is sent to the server as a single batch for processing.
-
-        Args:
-            payload (List[str] | Dict[str, str]): The data can be input either as a list of texts or as a dictionary in the form {'id': 'text'}. If a list of texts is provided without IDs, the IDs will be generated randomly.
-            job_name (str): The job_name is used so that you can fetch the outputs after they are ready.
+        Starts a new batch job by uploading the prepared file and creating a batch job on the server.
+        If a job with the same name already exists, it does nothing.
         """
         if self._load_state(job_name):
             return
@@ -134,6 +148,10 @@ class SimpleBatchManager:
         self._save_state(job_name, [job])
 
     def check_status(self, job_name: str) -> str:
+        """
+        Checks and returns the current status of the batch job with the given job name.
+        Updates the job state with the latest information from the server.
+        """
         job = self._load_state(job_name)[0]
         if not job:
             return "completed"
@@ -145,6 +163,10 @@ class SimpleBatchManager:
         return job["status"]
 
     def _parsed (result: dict):
+        """
+        Parses the result dictionary, extracting the desired output or error for each item.
+        Returns a list of dictionaries with 'id' and 'output' keys.
+        """
         modified_result = []
         # errors = []
         for key, d in result.items():
@@ -158,6 +180,10 @@ class SimpleBatchManager:
         # return modified_result , errors
     
     def fetch_results(self, job_name: str, save = False, remove_cache = True) -> tuple[Dict[str, str], list]:
+        """
+        Fetches the results of a completed batch job. Optionally saves the results to a file and/or removes the job cache.
+        Returns a tuple containing the parsed results and a log of errors (if any).
+        """
         job = self._load_state(job_name)[0]
         if not job:
             return {}
