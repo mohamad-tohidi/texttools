@@ -5,7 +5,7 @@ how to use it?
 install it like this
 
 ```bash
-pip install -U  git+https://github.com/HadithAi/texttools
+pip install -U  git+https://git.t.etratnet.ir/AI/texttools
 ```
 
 ---

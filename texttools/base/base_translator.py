@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
-class BaseQuestionDetector(ABC):
+
+class BaseTranslator(ABC):
     """
-    Base class for all detectors that output a boolean (True/False).
+    Base class for all translators that output a translated string.
     """
 
     def __init__(
@@ -13,10 +14,13 @@ class BaseQuestionDetector(ABC):
         self.handlers = handlers or []
 
     @abstractmethod
-    def detect(self, text: str) -> bool:
+    def translate(
+        self, text: str, target_language: str, source_language: Optional[str] = None
+    ) -> str:
         """
-        Detect if the input text meets the condition.
-        Should return True or False.
+        Translate the input text from the source language to the target language.
+        Should return the translated string.
+        The source_language can be optional if the LLM can detect it automatically.
         """
         pass
 

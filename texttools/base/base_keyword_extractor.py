@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
-class BaseQuestionDetector(ABC):
+
+class BaseKeywordExtractor(ABC):
     """
-    Base class for all detectors that output a boolean (True/False).
+    Base class for all detectors that output a list of keywords.
     """
 
     def __init__(
@@ -13,10 +14,10 @@ class BaseQuestionDetector(ABC):
         self.handlers = handlers or []
 
     @abstractmethod
-    def detect(self, text: str) -> bool:
+    def extract_keywords(self, text: str) -> List[str]:
         """
-        Detect if the input text meets the condition.
-        Should return True or False.
+        Extract keywords from the input text.
+        Should return a list of strings, where each string is a keyword.
         """
         pass
 
