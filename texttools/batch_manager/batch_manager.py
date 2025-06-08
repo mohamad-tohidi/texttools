@@ -179,7 +179,7 @@ class SimpleBatchManager:
         return modified_result 
         # return modified_result , errors
     
-    def fetch_results(self, job_name: str, save = False, remove_cache = True) -> tuple[Dict[str, str], list]:
+    def fetch_results(self, job_name: str, remove_cache = True) -> tuple[Dict[str, str], list]:
         """
         Fetches the results of a completed batch job. Optionally saves the results to a file and/or removes the job cache.
         Returns a tuple containing the parsed results and a log of errors (if any).
@@ -231,17 +231,15 @@ class SimpleBatchManager:
                 error_d = {custom_id: results[custom_id]}
                 log.append(error_d)
 
+
+
         for handler in self.handlers:
             handler.handle(results)
         if remove_cache == True:
             self._clear_state(job_name)
-        if save==True:
-            job_dump = job_name + ".json"
-            with open (job_dump, 'w', encoding='utf-8') as file2:
-                json.dump(results, file2, ensure_ascii=False, indent=4)
-        # if self.dict_input == False:
-        #     return results, log
-        # else:
-        results = self._parsed(results)
-        return results , log
+        results = {"results": results, "log": log}
+        # print(log)
+        return results 
+        # return results , logs
+    
     
