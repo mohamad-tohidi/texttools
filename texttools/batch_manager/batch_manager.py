@@ -162,7 +162,7 @@ class SimpleBatchManager:
         print("HERE is the job", job)
         return job["status"]
 
-    def _parsed (result: dict):
+    def _parsed (self, result: dict):
         """
         Parses the result dictionary, extracting the desired output or error for each item.
         Returns a list of dictionaries with 'id' and 'output' keys.
