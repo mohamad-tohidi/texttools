@@ -215,9 +215,12 @@ class SimpleBatchManager:
                     results[custom_id] = model_instance.model_dump(mode="json")
                 except json.JSONDecodeError:
                     results[custom_id] = {"error": "Failed to parse content as JSON"}
+                    error_d = {custom_id: results[custom_id]}
+                    log.append(error_d)
                 except Exception as e:
                     results[custom_id] = {"error": str(e)}
-                    log.append(results[custom_id])
+                    error_d = {custom_id: results[custom_id]}
+                    log.append(error_d)
             else:
                 error_message = (
                     result["response"]["body"]
@@ -225,6 +228,8 @@ class SimpleBatchManager:
                     .get("message", "Unknown error")
                 )
                 results[custom_id] = {"error": error_message}
+                error_d = {custom_id: results[custom_id]}
+                log.append(error_d)
 
         for handler in self.handlers:
             handler.handle(results)
