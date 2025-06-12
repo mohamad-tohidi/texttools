@@ -36,17 +36,19 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         self.model = model
         self.temperature = temperature
         self.client_kwargs = client_kwargs
-        
+
         self.chat_formatter = chat_formatter or Gemma3Formatter()
-        
 
         self.use_reason = use_reason
+        self.reason_summary = None
         self.prompt_template = prompt_template
 
         self.json_schema = {"rewritten_question": "string"}
 
     def _build_messages(
-        self, question: str, mode: RewriteMode, reason: Optional[str] = None
+        self,
+        question: str,
+        mode: RewriteMode,
     ) -> List[Dict[str, str]]:
         """
         Builds the message list for the LLM API call for question rewriting,
@@ -58,11 +60,11 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
 
-        if reason:
+        if self.reason_summary:
             messages.append(
                 {
                     "role": "user",
-                    "content": f"Based on this analysis: {reason}",
+                    "content": f"Based on this analysis: {self.reason_summary}",
                 }
             )
 
@@ -84,23 +86,29 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
             raise ValueError(f"Unsupported rewrite mode: {mode}")
 
         messages.append({"role": "user", "content": instruction})
-        messages.append({"role": "user", "content": f"here is the question: {clean_question}"})
+        messages.append(
+            {"role": "user", "content": f"here is the question: {clean_question}"}
+        )
 
         # schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
-        messages.append({"role": "user", "content": """
+        messages.append(
+            {
+                "role": "user",
+                "content": """
         Respond only with the new generated question, without any additional information.
         **the generated question will be in the language of the users input**
-                         """})
+                         """,
+            }
+        )
 
         # messages.append({"role": "assistant", "content": "{"})
         # deprecated method for structured output
-        
-        
+
         # this line will restructure the messages
         # based on the formatter that we provided
         # some models will require custom settings
         restructured = self.chat_formatter.format(messages=messages)
-        
+
         return restructured
 
     def _reason(self, question: str, mode: RewriteMode) -> str:
@@ -134,7 +142,7 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
             {"role": "user", "content": reason_prompt},
             {"role": "user", "content": f"here is the question: {question}"},
         ]
-        
+
         restructured = self.chat_formatter.format(messages=messages)
 
         resp = self.client.chat.completions.create(
@@ -145,7 +153,7 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         )
 
         reason_summary = resp.choices[0].message.content.strip()
-        return reason_summary
+        self.reason_summary = reason_summary
 
     def rewrite_question(
         self,
@@ -156,15 +164,15 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         Rewrites the input `question` based on the specified `mode`.
         Optionally uses an internal reasoning step for better accuracy.
         """
-        reason_summary = None
-        if self.use_reason:
-            reason_summary = self._reason(question, mode)
 
-        messages = self._build_messages(question, mode, reason_summary)
+        if self.use_reason:
+            self._reason(question, mode)
+
+        messages = self._build_messages(question, mode)
 
         # for structured output formatting
         # but now i want to try somthing else
-        # i want to see if i could get the results without structured output        
+        # i want to see if i could get the results without structured output
         # completion = self.client.beta.chat.completions.parse(
         #     model=self.model,
         #     messages=messages,
@@ -178,7 +186,6 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         #     result = message.parsed.generated_question
         # else:
         #     raise ValueError(f"Failed to parse the response. Raw content: {message.content}")
-        
 
         resp = self.client.chat.completions.create(
             model=self.model,
@@ -189,15 +196,15 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
 
         result = resp.choices[0].message.content.strip()
 
-
-        
-        
         # dispatch and return
         self._dispatch(
             {
                 "original_question": question,
                 "rewritten_question": result,
-                "mode": mode.value,  
+                "mode": mode.value,
             }
         )
         return result
+
+    def get_reason(self):
+        return self.reason_summary
