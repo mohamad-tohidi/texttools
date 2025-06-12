@@ -29,7 +29,6 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         temperature: float = 0.0,
         prompt_template: Optional[str] = None,
         handlers: Optional[List[Any]] = None,
-        reason_summary: str = None,
         **client_kwargs: Any,
     ):
         super().__init__(handlers)
@@ -41,7 +40,7 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         self.chat_formatter = chat_formatter or Gemma3Formatter()
 
         self.use_reason = use_reason
-        self.reason_summary = reason_summary
+        self.reason_summary = None
         self.prompt_template = prompt_template
 
         self.json_schema = {"rewritten_question": "string"}
@@ -160,14 +159,17 @@ class GemmaQuestionRewriter(BaseQuestionRewriter):
         self,
         question: str,
         mode: RewriteMode = RewriteMode.SAME_MEANING_DIFFERENT_WORDING,
+        reason_summary: str = None,
     ) -> str:
         """
         Rewrites the input `question` based on the specified `mode`.
         Optionally uses an internal reasoning step for better accuracy.
         """
 
-        if self.use_reason and not self.reason_summary:
+        if self.use_reason and not reason_summary:
             self._reason(question, mode)
+        elif reason_summary:
+            self.reason_summary = reason_summary
 
         messages = self._build_messages(question, mode)
 
