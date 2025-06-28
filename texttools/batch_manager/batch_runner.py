@@ -16,6 +16,11 @@ class OutputModel(BaseModel):
 def exporting_data(data):
     '''
     this function that produces a structure of the following form from an initial data structure
+    form:
+    {
+        "id": str,
+        "content": str
+    }
     '''
     return data
     
