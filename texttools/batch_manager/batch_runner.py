@@ -123,7 +123,7 @@ class BatchJobRunner:
                 print(f"Status: {status}")
                 if status == "completed":
                     print("Job completed. Fetching results...")
-                    output_data, log = self.manager.fetch_results(job_name=part_job_name, save=True, remove_cache=False)
+                    output_data, log = self.manager.fetch_results(job_name=part_job_name, remove_cache=False)
                     output_data = self.config.import_function(output_data)
                     self._save_results(output_data, log, part_idx)
                     print("Fetched and saved results for this part.")

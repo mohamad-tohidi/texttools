@@ -237,9 +237,8 @@ class SimpleBatchManager:
             handler.handle(results)
         if remove_cache == True:
             self._clear_state(job_name)
-        results = {"results": results, "log": log}
-        # print(log)
-        return results 
-        # return results , logs
+        # results = {"results": results, "log": log}
+        # return results 
+        return results , log
     
     
