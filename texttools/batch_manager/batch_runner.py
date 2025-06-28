@@ -2,7 +2,7 @@ import json
 import os
 import time
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Callable
 
 from openai import OpenAI
 from pydantic import BaseModel
@@ -15,42 +15,44 @@ class OutputModel(BaseModel):
     
 def exporting_data(data):
     '''
-    this function that produces a structure of the following form from an initial data structure
-    form:
-    {
-        "id": str,
-        "content": str
-    }
+    Produces a structure of the following form from an initial data structure:
+    [
+        {"id": str, "content": str},...
+    ]
     '''
     return data
     
 def importing_data(data):
     '''
-    this function that takes the output and adds and aggregates it to the original structure.
+    Takes the output and adds and aggregates it to the original structure.
     '''
     return data
 
 @dataclass
 class BatchConfig:
-    MAX_BATCH_SIZE = 100  # Number of items per batch part
-    MAX_TOTAL_TOKENS = 2000000  # Max total tokens for all parts
-    CHARS_PER_TOKEN = 2.7
-    PROMPT_TOKEN_MULTIPLIER = 1000  # As in original code
-    BASE_OUTPUT_DIR = "Data/batch_entity_result"
+    """
+    Configuration for batch job runner.
+    """
     system_prompt: str = ""
-    job_name: str
-    input_data_path: str
-    output_data_filename: str
-    model: str = "gpt-4.1-mini" # defualt
-    import_function = importing_data()
-    export_function = exporting_data()
-
-
+    job_name: str = ""
+    input_data_path: str = ""
+    output_data_filename: str = ""
+    model: str = "gpt-4.1-mini"
+    MAX_BATCH_SIZE: int = 100
+    MAX_TOTAL_TOKENS: int = 2000000
+    CHARS_PER_TOKEN: float = 2.7
+    PROMPT_TOKEN_MULTIPLIER: int = 1000
+    BASE_OUTPUT_DIR: str = "Data/batch_entity_result"
+    import_function: Callable = importing_data
+    export_function: Callable = exporting_data
 
 class BatchJobRunner:
+    """
+    Handles running batch jobs using a batch manager and configuration.
+    """
     def __init__(self, 
-                 config=BatchConfig(),
-                 output_model = OutputModel()):
+                 config: BatchConfig = BatchConfig(),
+                 output_model: type = OutputModel):
         self.config = config
         self.system_prompt = config.system_prompt
         self.job_name = config.job_name
@@ -61,7 +63,6 @@ class BatchJobRunner:
         self.manager = self._init_manager()
         self.data = self._load_data()
         self.parts: List[List[Dict[str, Any]]] = []
-        # self._load_data()
         self._partition_data()
         Path(self.config.BASE_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
 
@@ -80,6 +81,14 @@ class BatchJobRunner:
         with open(self.input_data_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
         data = self.config.export_function(data)
+        # Validation: ensure data is a list of dicts with 'id' and 'content' as strings
+        if not isinstance(data, list):
+            raise ValueError('Exported data must be a list in this form:  [ {"id": str, "content": str},...]')
+        for item in data:
+            if not (isinstance(item, dict) and 'id' in item and 'content' in item):
+                raise ValueError("Each item must be a dict with 'id' and 'content' keys.")
+            if not (isinstance(item['id'], str) and isinstance(item['content'], str)):
+                raise ValueError("'id' and 'content' must be strings.")
         return data
 
     def _partition_data(self):
@@ -131,7 +140,8 @@ class BatchJobRunner:
         part_suffix = f"_part_{part_idx+1}" if len(self.parts) > 1 else ""
         result_path = Path(self.config.BASE_OUTPUT_DIR) / f"{Path(self.output_data_filename).stem}{part_suffix}.json"
         if not output_data:
-            exit()
+            print("No output data to save. Skipping this part.")
+            return
         else:
             with open(result_path, 'w', encoding='utf-8') as f:
                 json.dump(output_data, f, ensure_ascii=False, indent=4)
@@ -142,9 +152,11 @@ class BatchJobRunner:
                 
 if __name__=="__main__":
     print("=== Batch Job Runner ===")
-    system_prompt = ""
-    job_name = "job_name"
-    input_data_path = "Data.json"
-    output_data_filename = "output" #file prefix path
-    runner = BatchJobRunner(system_prompt, job_name, input_data_path, output_data_filename)
+    config = BatchConfig(
+        system_prompt="",
+        job_name="job_name",
+        input_data_path="Data.json",
+        output_data_filename="output"
+    )
+    runner = BatchJobRunner(config)
     runner.run()
