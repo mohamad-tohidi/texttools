@@ -8,16 +8,9 @@ from openai import OpenAI
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from texttools.batch_manager import SimpleBatchManager
+from dataclasses import dataclass
 
-
-class BatchConfig:
-    MAX_BATCH_SIZE = 100  # Number of items per batch part
-    MAX_TOTAL_TOKENS = 2000000  # Max total tokens for all parts
-    CHARS_PER_TOKEN = 2.7
-    PROMPT_TOKEN_MULTIPLIER = 1000  # As in original code
-    BASE_OUTPUT_DIR = "Data/batch_entity_result"
-
-class Output_model(BaseModel):
+class OutputModel(BaseModel):
     desired_output: str
     
 def exporting_data(data):
@@ -32,20 +25,33 @@ def importing_data(data):
     '''
     return data
 
+@dataclass
+class BatchConfig:
+    MAX_BATCH_SIZE = 100  # Number of items per batch part
+    MAX_TOTAL_TOKENS = 2000000  # Max total tokens for all parts
+    CHARS_PER_TOKEN = 2.7
+    PROMPT_TOKEN_MULTIPLIER = 1000  # As in original code
+    BASE_OUTPUT_DIR = "Data/batch_entity_result"
+    system_prompt: str = ""
+    job_name: str
+    input_data_path: str
+    output_data_filename: str
+    model: str = "gpt-4.1-mini" # defualt
+    import_function = importing_data()
+    export_function = exporting_data()
+
+
+
 class BatchJobRunner:
     def __init__(self, 
-                 system_prompt: str, 
-                 job_name: str, 
-                 input_data_path: str, 
-                 output_data_filename: str,
-                 model: str = "gpt-4.1-mini", # defualt
-                 output_model=Output_model):
-        self.config = BatchConfig()
-        self.system_prompt = system_prompt
-        self.job_name = job_name
-        self.input_data_path = input_data_path
-        self.output_data_filename = output_data_filename
-        self.model = model
+                 config=BatchConfig(),
+                 output_model = OutputModel()):
+        self.config = config
+        self.system_prompt = config.system_prompt
+        self.job_name = config.job_name
+        self.input_data_path = config.input_data_path
+        self.output_data_filename = config.output_data_filename
+        self.model = config.model
         self.output_model = output_model
         self.manager = self._init_manager()
         self.data = self._load_data()
@@ -68,7 +74,7 @@ class BatchJobRunner:
     def _load_data(self):
         with open(self.input_data_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        data = exporting_data(data)
+        data = self.config.export_function(data)
         return data
 
     def _partition_data(self):
@@ -104,7 +110,7 @@ class BatchJobRunner:
                 if status == "completed":
                     print("Job completed. Fetching results...")
                     output_data, log = self.manager.fetch_results(job_name=part_job_name, save=True, remove_cache=False)
-                    output_data = importing_data(output_data)
+                    output_data = self.config.import_function(output_data)
                     self._save_results(output_data, log, part_idx)
                     print("Fetched and saved results for this part.")
                     return
