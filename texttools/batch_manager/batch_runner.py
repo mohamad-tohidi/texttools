@@ -109,6 +109,9 @@ class BatchJobRunner:
 
     def run(self):
         for idx, part in enumerate(self.parts):
+            if self._result_exists(idx):
+                print(f"Skipping part {idx+1}: result already exists.")
+                continue
             part_job_name = f"{self.job_name}_part_{idx+1}" if len(self.parts) > 1 else self.job_name
             print(f"\n--- Processing part {idx+1}/{len(self.parts)}: {part_job_name} ---")
             self._process_part(part, part_job_name, idx)
@@ -149,6 +152,10 @@ class BatchJobRunner:
             log_path = Path(self.config.BASE_OUTPUT_DIR) / f"{Path(self.output_data_filename).stem}{part_suffix}_log.json"
             with open(log_path, 'w', encoding='utf-8') as f:
                 json.dump(log, f, ensure_ascii=False, indent=4)
+    def _result_exists(self, part_idx: int) -> bool:
+        part_suffix = f"_part_{part_idx+1}" if len(self.parts) > 1 else ""
+        result_path = Path(self.config.BASE_OUTPUT_DIR) / f"{Path(self.output_data_path).stem}{part_suffix}.json"
+        return result_path.exists()
                 
 if __name__=="__main__":
     print("=== Batch Job Runner ===")
