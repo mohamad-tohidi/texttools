@@ -117,7 +117,7 @@ class GemmaQuestionDetector(BaseQuestionDetector):
             messages=messages,
             response_format=QuestionDetection,
             temperature=self.temperature,
-            extra_body=dict(guided_decoding_backend="outlines"),
+            extra_body=dict(guided_decoding_backend="auto"),
             **self.client_kwargs,
         )
         message = completion.choices[0].message
