@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
+from pydantic import BaseModel
 
 from texttools.base.base_categorizer import BaseCategorizer
 from texttools.formatter import Gemma3Formatter
@@ -17,6 +18,11 @@ class Category(Enum):
     CATEGORY_E = "منابع دینی"
     CATEGORY_F = "دین و جامعه/سیاست"
     CATEGORY_G = "عرفان و معنویت"
+
+
+class Output(BaseModel):
+    main_tag: str = None
+    secondary_tags: str = None
 
 
 class GemmaCategorizer(BaseCategorizer):
@@ -134,9 +140,9 @@ json
         schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
         messages.append({"role": "user", "content": schema_instr})
 
-        messages.append(
-            {"role": "assistant", "content": "{"}
-        )  # Hint to start JSON output
+        # messages.append(
+        #     {"role": "assistant", "content": "{"}
+        # )  # Hint to start JSON output
 
         # this line will restructure the messages
         # based on the formatter that we provided
@@ -187,50 +193,18 @@ json
             reason_summary = self._reason(text)
 
         messages = self._build_messages(text, reason_summary)
-        resp = self.client.chat.completions.create(
+        completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=messages,
+            response_format=Output,
             temperature=self.temperature,
+            extra_body=dict(guided_decoding_backend="auto"),
             **self.client_kwargs,
         )
-        raw = resp.choices[0].message.content.strip()
+        message = completion.choices[0].message
 
-        if not raw.startswith("{"):
-            raw = "{" + raw
-        try:
-            parsed = json.loads(raw)
-        except json.JSONDecodeError as e:
-            raise ValueError(
-                f"Failed to parse JSON for categorization: {e}\nRaw output: {raw}"
-            )
-
-        category_name = parsed.get("main_tag")
-
-        # --- Crucial step: Convert string output to Enum member ---
-        if not isinstance(category_name, str):
-            raise ValueError(
-                f"Invalid response schema for categorization. Expected 'category' as a string, got: {parsed}"
-            )
-
-        if not category_name not in self._category_names:
-            raise ValueError(
-                f"LLM returned category '{category_name}' which is not a valid member of the provided Enum: {self._category_names}. Raw output: {raw}"
-            )
-
-        secondary_tags = parsed.get("secondary_tags")
-        if not isinstance(secondary_tags, list):
-            raise ValueError(
-                f"Invalid response schema for categorization. Expected 'secondary_tags' as a list, got: {parsed}"
-            )
-        if not all(isinstance(tag, str) for tag in secondary_tags):
-            raise ValueError(
-                f"Invalid response schema for categorization. All items in 'secondary_tags' should be strings, got: {parsed}"
-            )
-
-        if not all(tag in self._category_names for tag in secondary_tags):
-            raise ValueError(
-                f"LLM returned secondary tags that are not valid members of the provided Enum: {secondary_tags}. Valid categories: {self._category_names}"
-            )
+        category_name = message.parsed.main_tag
+        secondary_tags = message.parsed.secondary_tags
 
         # dispatch and return - Note: _dispatch expects dict
         self._dispatch(
