@@ -1,9 +1,11 @@
-from typing import Any, Dict, List, Optional
 import json
 from enum import Enum
-from openai import OpenAI
-from texttools.base.base_categorizer import BaseCategorizer
+from typing import Any, Dict, List, Optional
 
+from openai import OpenAI
+
+from texttools.base.base_categorizer import BaseCategorizer
+from texttools.formatter import Gemma3Formatter
 from texttools.handlers import ResultHandler
 
 
@@ -32,6 +34,7 @@ class GemmaCategorizer(BaseCategorizer):
         *,
         model: str,
         categories: Enum = Category,  # REQUIRED: An Enum class representing categories
+        chat_formatter: Optional[Any] = None,
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: Optional[str] = None,
@@ -45,6 +48,7 @@ class GemmaCategorizer(BaseCategorizer):
         self.temperature = temperature
         self.client_kwargs = client_kwargs
 
+        self.chat_formatter = chat_formatter or Gemma3Formatter()
         # Extract actual string values/names from the Enum for prompting the LLM
         # We'll use the .name of the enum members
         self._category_names = [member.name for member in self.categories]
@@ -133,7 +137,13 @@ json
         messages.append(
             {"role": "assistant", "content": "{"}
         )  # Hint to start JSON output
-        return messages
+
+        # this line will restructure the messages
+        # based on the formatter that we provided
+        # some models will require custom settings
+        restructured = self.chat_formatter.format(messages=messages)
+
+        return restructured
 
     def _reason(self, text: str) -> str:
         """
@@ -155,9 +165,11 @@ json
             },
         ]
 
+        restrucruted = self.chat_formatter.format(messages=messages)
+
         resp = self.client.chat.completions.create(
             model=self.model,
-            messages=messages,
+            messages=restrucruted,
             temperature=self.temperature,
             **self.client_kwargs,
         )

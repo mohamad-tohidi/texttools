@@ -1,13 +1,15 @@
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel
-import json
+
 from openai import OpenAI
+from pydantic import BaseModel
+
 from texttools.base.base_question_detector import BaseQuestionDetector
 from texttools.formatter import Gemma3Formatter
 
 
 class QuestionDetection(BaseModel):
     is_question: bool
+
 
 class GemmaQuestionDetector(BaseQuestionDetector):
     """
@@ -27,7 +29,7 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         temperature: float = 0.0,
         prompt_template: str = None,
         handlers: List[Any] = None,
-        **client_kwargs: Any
+        **client_kwargs: Any,
     ):
         super().__init__(handlers)
         self.client = client
@@ -39,14 +41,12 @@ class GemmaQuestionDetector(BaseQuestionDetector):
 
         self.use_reason = use_reason
         self.prompt_template = prompt_template
-        
-        self.json_schema = {
-            "is_question": bool
-            }
+
+        self.json_schema = {"is_question": bool}
 
     def _build_messages(self, text: str, reason: str = None) -> List[Dict[str, str]]:
         clean = self.preprocess(text)
-        schema_instr = f'respond only in JSON format: {self.json_schema}'
+        schema_instr = f"respond only in JSON format: {self.json_schema}"
         messages: List[Dict[str, str]] = []
 
         if reason:
@@ -56,45 +56,43 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
         messages.append({"role": "user", "content": clean})
-        
+
         # this line will restructure the messages
         # based on the formatter that we provided
         # some models will require custom settings
         restructured = self.chat_formatter.format(messages=messages)
-        
-        
+
         return restructured
 
     def _reason(self, text: str) -> list:
         messages = [
             {
                 "role": "user",
-                "content": 
-                    """
+                "content": """
                     we want to analyze this text snippet to see if it contains any question
                     or request of some kind or not
                     read the text, and reason about it being a request or not
                     summerized
                     short answer
-                    """},
+                    """,
+            },
             {
                 "role": "user",
-                "content":
-                    f"""
+                "content": f"""
                     {text}
-                    """
-            }
+                    """,
+            },
         ]
-        
+
         restructured = self.chat_formatter.format(messages=messages)
-        
+
         resp = self.client.chat.completions.create(
             model=self.model,
             messages=restructured,
             temperature=self.temperature,
             **self.client_kwargs,
         )
-        
+
         reason = resp.choices[0].message.content.strip()
         return reason
 
@@ -107,11 +105,10 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         if self.use_reason:
             reason_summary = self._reason(text)
 
-        
         # print(reason_summary)
-        
+
         messages = self._build_messages(text, reason_summary)
-        
+
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=messages,
@@ -124,8 +121,10 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         if message.parsed:
             result = message.parsed.is_question
         else:
-            raise ValueError(f"Failed to parse the response. Raw content: {message.content}")
-        
+            raise ValueError(
+                f"Failed to parse the response. Raw content: {message.content}"
+            )
+
         # dispatch and return
         self._dispatch({"question": text, "result": result})
         return result
