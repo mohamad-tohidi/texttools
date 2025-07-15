@@ -1,24 +1,21 @@
 # base_categorizer.py
 
 import logging
-
-from typing import Dict, List, Optional
 from abc import ABC, abstractmethod
 from enum import Enum
-from texttools.handlers import ResultHandler, NoOpResultHandler
+from typing import List, Optional
+
+from texttools.handlers import NoOpResultHandler, ResultHandler
 
 
 class BaseCategorizer(ABC):
     def __init__(
         self,
-        categories: Enum,
         handlers: Optional[List[ResultHandler]] = None,
     ):
         """
-        categories: An Enum class where each member represents a category.
         handlers: List of ResultHandler objects that will process results after categorization.
         """
-        self.categories = categories
         self.handlers = handlers or [NoOpResultHandler()]
 
     @abstractmethod
@@ -39,7 +36,7 @@ class BaseCategorizer(ABC):
         for handler in self.handlers:
             try:
                 handler.handle(results)
-            except Exception as e:
+            except Exception:
                 logging.error(
                     f"Handler {handler.__class__.__name__} failed", exc_info=True
                 )
