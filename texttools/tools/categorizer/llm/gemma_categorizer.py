@@ -73,10 +73,6 @@ class GemmaCategorizer(BaseCategorizer):
                 {"role": "user", "content": f"Based on this analysis: {reason}"}
             )
 
-        # # Dynamically build the prompt with the allowed category names from the Enum
-        # category_list_str = ", ".join(
-        #     [f"'{cat_name}'" for cat_name in self._category_names]
-        # )
         messages.append(
             {
                 "role": "user",
@@ -107,14 +103,6 @@ class GemmaCategorizer(BaseCategorizer):
             }
         )
         messages.append({"role": "user", "content": clean_text})
-
-        # messages.append(
-        #     {"role": "assistant", "content": "{"}
-        # )  # Hint to start JSON output
-
-        # this line will restructure the messages
-        # based on the formatter that we provided
-        # some models will require custom settings
         restructured = self.chat_formatter.format(messages=messages)
 
         return restructured
@@ -131,7 +119,7 @@ class GemmaCategorizer(BaseCategorizer):
                 متن رو بخون و ایده اصلی و آنالیزی کوتاه از اون رو ارائه بده
                 
                 بسیار خلاصه باشه خروجی تو
-                
+                نهایتا 20 کلمه
                     """,
             },
             {
