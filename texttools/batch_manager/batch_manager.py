@@ -32,7 +32,7 @@ class SimpleBatchManager:
         self.custom_json_schema_obj_str = custom_json_schema_obj_str
         self.client_kwargs = client_kwargs
         self.dict_input = False
-        
+
         if self.custom_json_schema_obj_str:
             if self.custom_json_schema_obj_str is not dict:
                 raise ValueError("schema should be a dict")
@@ -119,7 +119,7 @@ class SimpleBatchManager:
             tasks = [self._build_task(text, uuid.uuid4().hex) for text in payload]
         elif isinstance(payload[0], dict):
             tasks = [self._build_task(dic["text"], dic["id"]) for dic in payload]
-            
+
         else:
             raise TypeError(
                 "The input must be either a list of texts or a dictionary in the form {'id': str, 'text': str}."
@@ -162,7 +162,7 @@ class SimpleBatchManager:
         print("HERE is the job", job)
         return job["status"]
 
-    def _parsed (self, result: dict):
+    def _parsed(self, result: dict):
         """
         Parses the result dictionary, extracting the desired output or error for each item.
         Returns a list of dictionaries with 'id' and 'output' keys.
@@ -176,10 +176,12 @@ class SimpleBatchManager:
             else:
                 new_dict = {"id": key, "output": d["error"]}
                 modified_result.append(new_dict)
-        return modified_result 
+        return modified_result
         # return modified_result , errors
-    
-    def fetch_results(self, job_name: str, remove_cache = True) -> tuple[Dict[str, str], list]:
+
+    def fetch_results(
+        self, job_name: str, remove_cache=True
+    ) -> tuple[Dict[str, str], list]:
         """
         Fetches the results of a completed batch job. Optionally saves the results to a file and/or removes the job cache.
         Returns a tuple containing the parsed results and a log of errors (if any).
@@ -231,14 +233,10 @@ class SimpleBatchManager:
                 error_d = {custom_id: results[custom_id]}
                 log.append(error_d)
 
-
-
         for handler in self.handlers:
             handler.handle(results)
         if remove_cache == True:
             self._clear_state(job_name)
         # results = {"results": results, "log": log}
-        # return results 
-        return results , log
-    
-    
+        # return results
+        return results, log

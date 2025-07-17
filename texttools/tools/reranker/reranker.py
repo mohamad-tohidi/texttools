@@ -2,9 +2,11 @@
 
 import logging
 from typing import Any, Dict, List, Optional
+
 from openai import OpenAI
 
 from texttools.base.base_task_performer import BaseTaskPerformer
+
 from .scorer import GemmaScorer
 from .sorter import GemmaSorter
 

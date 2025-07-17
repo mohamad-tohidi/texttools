@@ -1,9 +1,12 @@
 from enum import Enum
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, create_model
+
 from openai import OpenAI
+from pydantic import BaseModel, create_model
+
 from texttools.base import BaseCategorizer
 from texttools.handlers import NoOpResultHandler
+
 
 class LLMCategorizer(BaseCategorizer):
     """
@@ -20,7 +23,7 @@ class LLMCategorizer(BaseCategorizer):
         temperature: float = 0.0,
         prompt_template: str = None,
         handlers: Optional[List[NoOpResultHandler]] = None,
-        **client_kwargs: Any
+        **client_kwargs: Any,
     ):
         """
         :param client: an instantiated OpenAI client
@@ -38,13 +41,12 @@ class LLMCategorizer(BaseCategorizer):
         self.client_kwargs = client_kwargs
 
         self.prompt_template = prompt_template or (
-            "You are a text classifier. "
-            "Choose exactly one category from the list."
+            "You are a text classifier. Choose exactly one category from the list."
         )
 
         self._OutputModel = create_model(
             "CategorizationOutput",
-            category=(self.categories, ...),  
+            category=(self.categories, ...),
         )
 
     def _build_messages(self, text: str) -> List[Dict[str, str]]:
@@ -72,7 +74,7 @@ class LLMCategorizer(BaseCategorizer):
         )
 
         output: BaseModel = resp.output_parsed
-        
+
         self._dispatch({"text": text, "category": output.category})
 
         return output.category

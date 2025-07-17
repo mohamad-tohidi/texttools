@@ -1,9 +1,9 @@
 from typing import Any, Dict, List, Optional
-import json
+
 from openai import OpenAI
+
 from texttools.base.base_question_rewriter import BaseQuestionRewriter, RewriteMode
 from texttools.formatter import Gemma3Formatter
-from pydantic import BaseModel
 
 # class QuestionGeneration(BaseModel):
 #     generated_question: str

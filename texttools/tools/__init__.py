@@ -1,12 +1,13 @@
 from .categorizer import EmbeddingCategorizer, GemmaCategorizer, LLMCategorizer
 from .keyword_extractor import GemmaKeywordExtractor
-from .summarizer import GemmaSummarizer, LLMSummarizer
 from .ner import GemmaNERExtractor
 from .question_detector import GemmaQuestionDetector, LLMQuestionDetector
 from .question_generator import GemmaQuestionGenerator
-from .reranker import GemmaScorer, GemmaSorter, GemmaReranker
-from .translator import GemmaTranslator
+from .reranker import GemmaReranker, GemmaScorer, GemmaSorter
 from .rewriter import GemmaQuestionRewriter, RewriteMode
+from .subject_to_question import GemmaQuestionGeneratorFromSubject
+from .summarizer import GemmaSummarizer, LLMSummarizer
+from .translator import GemmaTranslator
 
 __all__ = [
     "EmbeddingCategorizer",
@@ -24,5 +25,6 @@ __all__ = [
     "GemmaReranker",
     "GemmaQuestionRewriter",
     "RewriteMode",
-    "GemmaKeywordExtractor"
+    "GemmaKeywordExtractor",
+    "GemmaQuestionGeneratorFromSubject",
 ]

@@ -1,6 +1,8 @@
-from typing import Any, Dict, List, Optional
 import json
+from typing import Any, Dict, List, Optional
+
 from openai import OpenAI
+
 from texttools.base.base_keyword_extractor import BaseKeywordExtractor
 
 

@@ -2,8 +2,9 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Optional, List
-from texttools.handlers import ResultHandler, NoOpResultHandler
+from typing import List, Optional
+
+from texttools.handlers import NoOpResultHandler, ResultHandler
 
 
 class BaseSummarizer(ABC):
@@ -28,7 +29,7 @@ class BaseSummarizer(ABC):
     def preprocess(self, text: str) -> str:
         """
         Optional: Preprocess the input text before summarization.
-        
+
         :param text: Raw input text.
         :return: Preprocessed text.
         """
@@ -37,7 +38,7 @@ class BaseSummarizer(ABC):
     def _dispatch(self, summary: str, original_text: Optional[str] = None) -> None:
         """
         Send the summary result to any registered result handlers.
-        
+
         :param summary: The generated summary.
         :param original_text: Optionally pass the original text.
         """
@@ -51,4 +52,6 @@ class BaseSummarizer(ABC):
             try:
                 handler.handle(result_data)
             except Exception:
-                logging.error(f"Handler {handler.__class__.__name__} failed", exc_info=True)
+                logging.error(
+                    f"Handler {handler.__class__.__name__} failed", exc_info=True
+                )

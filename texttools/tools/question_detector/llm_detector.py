@@ -1,7 +1,10 @@
 from typing import Any, Dict, List
-from pydantic import BaseModel, create_model
+
 from openai import OpenAI
+from pydantic import BaseModel, create_model
+
 from texttools.base.base_question_detector import BaseQuestionDetector
+
 
 class LLMQuestionDetector(BaseQuestionDetector):
     """
@@ -32,7 +35,7 @@ class LLMQuestionDetector(BaseQuestionDetector):
         is_question = detector.detect("How are you today?")
         # is_question == True
         ```
-        
+
     Parameters:
         client (OpenAI):
             Instantiated OpenAI client. Make sure your API key is configured.
@@ -62,7 +65,7 @@ class LLMQuestionDetector(BaseQuestionDetector):
         temperature: float = 0.0,
         prompt_template: str = None,
         handlers: List[Any] = None,
-        **client_kwargs: Any
+        **client_kwargs: Any,
     ):
         """
         :param client: an instantiated OpenAI client
@@ -85,14 +88,14 @@ class LLMQuestionDetector(BaseQuestionDetector):
 
         self._OutputModel = create_model(
             "DetectionOutput",
-            result=(bool, ...),  
+            result=(bool, ...),
         )
 
     def _build_messages(self, text: str) -> List[Dict[str, str]]:
         clean = self.preprocess(text)
         return [
             {"role": "system", "content": self.prompt_template},
-            {"role": "user",   "content": clean},
+            {"role": "user", "content": clean},
         ]
 
     def detect(self, text: str) -> bool:
@@ -105,8 +108,5 @@ class LLMQuestionDetector(BaseQuestionDetector):
             **self.client_kwargs,
         )
         output: BaseModel = resp.output_parsed
-        self._dispatch({
-            "question": text,             
-            "result":   output.result     
-        })
+        self._dispatch({"question": text, "result": output.result})
         return output.result

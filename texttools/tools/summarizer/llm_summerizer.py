@@ -1,6 +1,8 @@
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, create_model
+
 from openai import OpenAI
+from pydantic import BaseModel, create_model
+
 from texttools.base.base_summarizer import BaseSummarizer
 
 
@@ -52,7 +54,7 @@ class LLMSummarizer(BaseSummarizer):
         temperature: float = 0.7,
         prompt_template: Optional[str] = None,
         handlers: Optional[List[Any]] = None,
-        **client_kwargs: Any
+        **client_kwargs: Any,
     ):
         super().__init__(handlers)
         self.client = client

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
+
 class BaseQuestionDetector(ABC):
     """
     Base class for all detectors that output a boolean (True/False).

@@ -1,8 +1,9 @@
-from typing import Any, Dict, List, Optional
 import json
-from openai import OpenAI
-from texttools.base.base_summarizer import BaseSummarizer
+from typing import Any, Dict, List, Optional
 
+from openai import OpenAI
+
+from texttools.base.base_summarizer import BaseSummarizer
 from texttools.handlers import ResultHandler
 
 

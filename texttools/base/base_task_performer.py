@@ -2,7 +2,7 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Dict
+from typing import Any, Dict, List, Optional
 
 
 class BaseTaskPerformer(ABC):

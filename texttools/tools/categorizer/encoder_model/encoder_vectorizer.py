@@ -1,8 +1,11 @@
-import numpy as np
 from enum import Enum
 from typing import Any, List, Optional
+
+import numpy as np
+
 from texttools.base import BaseCategorizer
 from texttools.handlers import ResultHandler
+
 
 class EmbeddingCategorizer(BaseCategorizer):
     """
@@ -13,7 +16,7 @@ class EmbeddingCategorizer(BaseCategorizer):
         self,
         categories: Enum,
         embedding_model: Any,
-        handlers: Optional[List[ResultHandler]] = None
+        handlers: Optional[List[ResultHandler]] = None,
     ):
         """
         :param categories: your Enum class, whose members have `.embeddings`
@@ -39,7 +42,6 @@ class EmbeddingCategorizer(BaseCategorizer):
                 if score > best_score:
                     best_score = score
                     best_cat = cat
-
 
         self._dispatch({text: best_cat})
         return best_cat

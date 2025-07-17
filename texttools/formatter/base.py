@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Any
+from typing import Any, Optional
+
 
 class ChatFormatter(ABC):
     """
     Given (raw_text, reason, maybe other hints), produce whatever payload
-    A) single string prompt (for providers that don t support multiple messages), or 
-    B) list of {role, content} dicts, or 
+    A) single string prompt (for providers that don t support multiple messages), or
+    B) list of {role, content} dicts, or
     C) whatever shape the provider needs.
     """
+
     @abstractmethod
     def format(
         self,

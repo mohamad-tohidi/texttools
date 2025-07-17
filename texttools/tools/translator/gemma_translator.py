@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Optional
+
 from openai import OpenAI
+
 from texttools.base.base_translator import BaseTranslator
 from texttools.formatter.gemma3_fromatter import Gemma3Formatter
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union, Literal
+from typing import Dict, List, Literal
 
 
 class Gemma3Formatter:
@@ -8,8 +8,7 @@ class Gemma3Formatter:
     """
 
     def format(
-        self,
-        messages: List[Dict[Literal["role", "content"], str]]
+        self, messages: List[Dict[Literal["role", "content"], str]]
     ) -> List[Dict[str, str]]:
         """
         :param messages: a list of {"role": "user"|"assistant", "content": <string>}
