@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Literal
 
 from openai import OpenAI
 from pydantic import BaseModel
@@ -42,12 +42,12 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         self.use_reason = use_reason
         self.prompt_template = prompt_template
 
-        self.json_schema = {"is_question": bool}
+        self.json_schema = QuestionDetection.model_json_schema()
 
-    def _build_messages(self, text: str, reason: str = None) -> List[Dict[str, str]]:
+    def _build_messages(self, text: str, reason: str = None) -> List[Dict[Literal["role", "content"], str]]:
         clean = self.preprocess(text)
         schema_instr = f"respond only in JSON format: {self.json_schema}"
-        messages: List[Dict[str, str]] = []
+        messages: List[Dict[Literal["role", "content"], str]] = []
 
         if reason:
             messages.append({"role": "user", "content": reason})
@@ -65,16 +65,17 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         return restructured
 
     def _reason(self, text: str) -> list:
-        messages = [
-            {
-                "role": "user",
-                "content": """
+        prompt = """
                     we want to analyze this text snippet to see if it contains any question
                     or request of some kind or not
                     read the text, and reason about it being a request or not
                     summerized
                     short answer
-                    """,
+                    """
+        messages = [
+            {
+                "role": "user",
+                "content": prompt
             },
             {
                 "role": "user",

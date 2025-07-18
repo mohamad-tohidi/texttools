@@ -10,12 +10,12 @@ class Gemma3Formatter:
     def format(
         self,
         messages: List[Dict[Literal["role", "content"], str]]
-    ) -> List[Dict[str, str]]:
+    ) -> List[Dict[Literal["role", "content"], str]]:
         """
         :param messages: a list of {"role": "user"|"assistant", "content": <string>}
         :return: a new list where consecutive "user" messages have been merged.
         """
-        merged: List[Dict[str, str]] = []
+        merged: List[Dict[Literal["role", "content"], str]] = []
 
         for msg in messages:
             role = msg["role"]
