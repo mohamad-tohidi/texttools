@@ -1,18 +1,24 @@
 from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
+from pydantic import BaseModel
 
 from texttools.base.base_question_generator import BaseQuestionGeneratorFromSubject
 from texttools.formatter import Gemma3Formatter
 
-# class QuestionGeneration(BaseModel):
-#     generated_question: str
+
+class QuestionGeneration(BaseModel):
+    """
+    we use this structue, the model will feel this class
+    """
+
+    reasoning: str
+    questions: list
 
 
 class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
     """
     Question Generator for Gemma-style models with optional reasoning step.
-    Outputs JSON with a single string field: {"generated_question": "..."}.
 
     Allows optional extra instructions via `prompt_template`.
     """
@@ -45,7 +51,7 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         # self.json_schema = {"generated_question": "string"}
 
     def _build_messages(
-        self, subject: str, reason: Optional[str] = None
+        self, subject: str, reason: Optional[str] = None, number_of_questions: int = 5
     ) -> List[Dict[str, str]]:
         """
         Builds the message list for the LLM API call for question generation.
@@ -85,9 +91,10 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         messages.append(
             {
                 "role": "user",
-                "content": """
+                "content": f"""
         Respond only with the new generated question, without any additional information.
         **the generated question will be in the language of the users input**
+        generate {number_of_questions} number os question in the questions list.
                          """,
             }
         )
@@ -137,7 +144,14 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
                     {subject}
                     
                     respond only with the language of the content
+                    
                     """,
+            },
+            {
+                "role": "assistant",
+                "content": """
+                    Sure, here is a summerized analysis
+                """,
             },
         ]
 
@@ -153,7 +167,7 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         reason_summary = resp.choices[0].message.content.strip()
         return reason_summary
 
-    def generate_question(self, subject: str) -> str:
+    def generate_question(self, subject: str, number_of_questions: int) -> str:
         """
         Generates a question for the input `subject`.
         Optionally uses an internal reasoning step for better accuracy.
@@ -162,7 +176,7 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         if self.use_reason:
             reason_summary = self._reason(subject)
 
-        messages = self._build_messages(subject, reason_summary)
+        messages = self._build_messages(subject, reason_summary, number_of_questions)
 
         # i am deprecating the usage of structured output in the tasks that
         # the input and output is str
@@ -183,14 +197,16 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         # else:
         #     raise ValueError(f"Failed to parse the response. Raw content: {message.content}")
 
-        resp = self.client.chat.completions.create(
+        resp = self.client.responses.parse(
             model=self.model,
-            messages=messages,
+            input=messages,
             temperature=self.temperature,
+            text_format=QuestionGeneration,
             **self.client_kwargs,
         )
 
-        result = resp.choices[0].message.content.strip()
+        # now this is a list of questions
+        result = resp.output_parsed.questions
 
         # dispatch and return
         self._dispatch(
