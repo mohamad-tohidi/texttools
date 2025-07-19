@@ -51,7 +51,10 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         # self.json_schema = {"generated_question": "string"}
 
     def _build_messages(
-        self, subject: str, reason: Optional[str] = None, number_of_questions: int = 5
+        self, subject: str,
+        reason: Optional[str] = None,
+        number_of_questions: int = 5,
+        language: str = "farsi/Persian"
     ) -> List[Dict[str, str]]:
         """
         Builds the message list for the LLM API call for question generation.
@@ -73,12 +76,12 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         messages.append(
             {
                 "role": "user",
-                "content": """Given the following subject, generate a single, 
+                "content": f"""Given the following subject, generate a single,
                 appropriate question that this subject would directly respond to.
                 the generated subject should be independently meaningful,
                 and not mentioning any verbs like, this, that, he or she ... on the question.
-                # **the generated question will be in the language of the users input**
-                
+                **the generated question will be in this language {language}**
+
                 """,
             }
         )
@@ -93,7 +96,7 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
                 "role": "user",
                 "content": f"""
         Respond only with the new generated question, without any additional information.
-        **the generated question will be in the language of the users input**
+        **the generated question will be in this language {language}**
         generate {number_of_questions} number os question in the questions list.
                          """,
             }
@@ -125,34 +128,34 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
                     the questions must be meaningfull, some of them should be specific and some should be general
                     but first, in this step we want to analyze the inputted subject that the user asked us to generate questions
                     for it
-                    
+
                     what is the subject
                     we need summerized analysis of the input subject
                     what point of views can we see it and generate questoins from it
-                    
+
                     questions that real users might have
-                    
-                    
+
+
                     """,
             },
             {
                 "role": "user",
                 "content": f"""
-                
+
                     Here is the subject:
-                    
+
                     {subject}
-                    
-                    respond only with the language of the content
-                    
+
+                    respond only with this language {language}
+
                     """,
             },
-            {
-                "role": "assistant",
-                "content": """
-                    Sure, here is a summerized analysis
-                """,
-            },
+            # {
+            #     "role": "assistant",
+            #     "content": """
+            #         Sure, here is a summerized analysis
+            #     """,
+            # },
         ]
 
         restructured = self.chat_formatter.format(messages=messages)
@@ -167,46 +170,35 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         reason_summary = resp.choices[0].message.content.strip()
         return reason_summary
 
-    def generate_question(self, subject: str, number_of_questions: int) -> str:
+    def generate_question(self, subject: str, number_of_questions: int, language: str) -> str:
         """
         Generates a question for the input `subject`.
         Optionally uses an internal reasoning step for better accuracy.
+
+        language: the language of the question
+
         """
         reason_summary = None
         if self.use_reason:
-            reason_summary = self._reason(subject)
+            reason_summary = self._reason(subject,language)
 
-        messages = self._build_messages(subject, reason_summary, number_of_questions)
+        messages = self._build_messages(subject, reason_summary, number_of_questions, language)
 
-        # i am deprecating the usage of structured output in the tasks that
-        # the input and output is str
-        # as we have noticed a huge decrease in the models outputs quality
-
-        #
-        # completion = self.client.beta.chat.completions.parse(
-        #     model=self.model,
-        #     messages=messages,
-        #     response_format=QuestionGeneration,
-        #     temperature=self.temperature,
-        #     extra_body=dict(guided_decoding_backend="outlines"),
-        #     **self.client_kwargs,
-        # )
-        # message = completion.choices[0].message
-        # if message.parsed:
-        #     result = message.parsed.generated_question
-        # else:
-        #     raise ValueError(f"Failed to parse the response. Raw content: {message.content}")
-
-        resp = self.client.responses.parse(
+        completion = self.client.beta.chat.completions.parse(
             model=self.model,
-            input=messages,
+            messages=messages,
+            response_format=QuestionGeneration,
             temperature=self.temperature,
-            text_format=QuestionGeneration,
+            extra_body=dict(guided_decoding_backend="auto"),
             **self.client_kwargs,
         )
-
-        # now this is a list of questions
-        result = resp.output_parsed.questions
+        message = completion.choices[0].message
+        if message.parsed:
+            result = message.parsed.questions
+        else:
+            raise ValueError(
+                f"Failed to parse the response. Raw content: {message.content}"
+            )
 
         # dispatch and return
         self._dispatch(
