@@ -51,10 +51,11 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         # self.json_schema = {"generated_question": "string"}
 
     def _build_messages(
-        self, subject: str,
+        self,
+        subject: str,
         reason: Optional[str] = None,
         number_of_questions: int = 5,
-        language: str = "farsi/Persian"
+        language: str = "farsi/Persian",
     ) -> List[Dict[str, str]]:
         """
         Builds the message list for the LLM API call for question generation.
@@ -115,7 +116,7 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
 
         return restructured
 
-    def _reason(self, subject: str) -> str:
+    def _reason(self, subject: str, language: str) -> str:
         """
         Internal reasoning step to help the model understand the core information
         and implications of the subject.
@@ -170,7 +171,9 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         reason_summary = resp.choices[0].message.content.strip()
         return reason_summary
 
-    def generate_question(self, subject: str, number_of_questions: int, language: str) -> str:
+    def generate_question(
+        self, subject: str, number_of_questions: int, language: str
+    ) -> str:
         """
         Generates a question for the input `subject`.
         Optionally uses an internal reasoning step for better accuracy.
@@ -180,9 +183,11 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         """
         reason_summary = None
         if self.use_reason:
-            reason_summary = self._reason(subject,language)
+            reason_summary = self._reason(subject, language)
 
-        messages = self._build_messages(subject, reason_summary, number_of_questions, language)
+        messages = self._build_messages(
+            subject, reason_summary, number_of_questions, language
+        )
 
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
