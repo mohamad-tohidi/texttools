@@ -194,7 +194,14 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
             messages=messages,
             response_format=QuestionGeneration,
             temperature=self.temperature,
-            extra_body=dict(guided_decoding_backend="auto"),
+            extra_body=dict(
+                guided_decoding_backend="auto",
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": QuestionGeneration.model_json_schema(),
+                    "strict": True,
+                },
+            ),
             **self.client_kwargs,
         )
         message = completion.choices[0].message
