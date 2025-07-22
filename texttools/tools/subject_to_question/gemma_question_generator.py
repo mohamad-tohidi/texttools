@@ -99,6 +99,10 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         Respond only with the new generated question, without any additional information.
         **the generated question will be in this language {language}**
         generate {number_of_questions} number os question in the questions list.
+        
+        You must return ONLY a single JSON object that matches the schema.
+        Do NOT include any explanation before or after the JSON.
+        End the JSON with a closing brace }} and nothing else.
                          """,
             }
         )
