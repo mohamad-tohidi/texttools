@@ -8,7 +8,8 @@ class Gemma3Formatter:
     """
 
     def format(
-        self, messages: List[Dict[Literal["role", "content"], str]]
+        self,
+        messages: List[Dict[Literal["role", "content"], str]]
     ) -> List[Dict[str, str]]:
         """
         :param messages: a list of {"role": "user"|"assistant", "content": <string>}
@@ -20,16 +21,11 @@ class Gemma3Formatter:
             role = msg["role"]
             content = msg["content"].strip()
 
-            if not merged:
-                # First message: just append
-                merged.append({"role": role, "content": content})
+            if merged and role == "user" and merged[-1]["role"] == "user":
+                # Merge with previous user turn
+                merged[-1]["content"] += "\n" + content
             else:
-                last = merged[-1]
-                if role == "user" and last["role"] == "user":
-                    # Merge with previous user turn
-                    last["content"] += "\n" + content
-                else:
-                    # Otherwise, start a new turn
-                    merged.append({"role": role, "content": content})
+                # Start a new turn
+                merged.append({"role": role, "content": content})
 
         return merged
