@@ -8,7 +8,6 @@ class MergingMode(Enum):
     """
     Defines the two modes for question merging.
     """
-
     DEFAULT_MODE = "immediate merging"
     REASON_MODE = "merging with reasoning"
 

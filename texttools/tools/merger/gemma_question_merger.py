@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
-
 from texttools.base.base_question_merger import BaseQuestionsMerger, MergingMode
 from texttools.formatter import Gemma3Formatter
 
