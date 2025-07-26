@@ -103,6 +103,9 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         You must return ONLY a single JSON object that matches the schema.
         Do NOT include any explanation before or after the JSON.
         End the JSON with a closing brace }} and nothing else.
+        there is a `reasoning_summary` key, fill that up with a really summerized version
+        of your thoughts.
+        the `reasoning_summary` must be less than 20 words.
                          """,
             }
         )
