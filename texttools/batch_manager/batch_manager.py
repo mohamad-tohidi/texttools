@@ -1,7 +1,7 @@
 import json
 import uuid
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional, Type, Tuple
 
 from openai import OpenAI
 from openai.lib._pydantic import to_strict_json_schema
@@ -180,8 +180,10 @@ class SimpleBatchManager:
         # return modified_result , errors
 
     def fetch_results(
-        self, job_name: str, remove_cache=True
-    ) -> tuple[Dict[str, str], list]:
+        self,
+        job_name: str,
+        remove_cache=True
+    ) -> Optional[Tuple[Dict[str, str], List]]:
         """
         Fetches the results of a completed batch job. Optionally saves the results to a file and/or removes the job cache.
         Returns a tuple containing the parsed results and a log of errors (if any).
