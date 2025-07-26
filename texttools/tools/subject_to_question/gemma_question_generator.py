@@ -12,7 +12,7 @@ class QuestionGeneration(BaseModel):
     we use this structue, the model will feel this class
     """
 
-    reasoning: str
+    reasoning_summary: str
     questions: list
 
 

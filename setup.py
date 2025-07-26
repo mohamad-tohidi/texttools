@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="texttools",
-    version="0.1.31",
+    version="0.1.32",
     author="Tohidi",
     description="set of my text tools",
     install_requires=["openai==1.77.0"],
