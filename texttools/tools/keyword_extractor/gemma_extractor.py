@@ -1,9 +1,14 @@
-import json
 from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
+from pydantic import BaseModel
 
 from texttools.base.base_keyword_extractor import BaseKeywordExtractor
+from texttools.formatter import Gemma3Formatter
+
+
+class Output(BaseModel):
+    keywords: list
 
 
 class GemmaKeywordExtractor(BaseKeywordExtractor):
@@ -20,6 +25,7 @@ class GemmaKeywordExtractor(BaseKeywordExtractor):
         *,
         model: str,
         use_reason: bool = False,
+        chat_formatter: Optional[Any] = None,
         temperature: float = 0.0,
         prompt_template: str = None,
         handlers: List[Any] = None,
@@ -30,14 +36,11 @@ class GemmaKeywordExtractor(BaseKeywordExtractor):
         self.model = model
         self.temperature = temperature
         self.client_kwargs = client_kwargs
-
+        self.chat_formatter = chat_formatter or Gemma3Formatter()
         self.use_reason = use_reason
         self.prompt_template = prompt_template
 
-        # Define the JSON schema for keyword extraction
-        self.json_schema = {
-            "keywords": ["string"]  # Represents an array of strings
-        }
+        self.output = Output
 
     def _build_messages(
         self, text: str, reason: Optional[str] = None
@@ -63,12 +66,16 @@ class GemmaKeywordExtractor(BaseKeywordExtractor):
         messages.append({"role": "user", "content": clean_text})
 
         # Ensure the schema is dumped as a valid JSON string
-        schema_instr = f"Respond only in JSON format: {json.dumps(self.json_schema)}"
+        schema_instr = f"Respond only in JSON format: {self.output.model_dump_json()}"
         messages.append({"role": "user", "content": schema_instr})
 
-        messages.append(
-            {"role": "assistant", "content": "{"}
-        )  # Start with '{' to hint JSON
+        # Deprecated
+        # messages.append(
+        #     {"role": "assistant", "content": "{"}
+        # )  # Start with '{' to hint JSON
+
+        messages = self.chat_formatter.format(messages=messages)
+
         return messages
 
     def _reason(self, text: str) -> str:
@@ -90,6 +97,7 @@ class GemmaKeywordExtractor(BaseKeywordExtractor):
                     """,
             },
         ]
+        messages = self.chat_formatter.format(messages=messages)
 
         resp = self.client.chat.completions.create(
             model=self.model,
@@ -111,30 +119,20 @@ class GemmaKeywordExtractor(BaseKeywordExtractor):
             reason_summary = self._reason(text)
 
         messages = self._build_messages(text, reason_summary)
-        resp = self.client.chat.completions.create(
+
+        completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=messages,
+            response_format=Output,
             temperature=self.temperature,
+            extra_body=dict(guided_decoding_backend="auto"),
             **self.client_kwargs,
         )
-        raw = resp.choices[0].message.content.strip()
 
-        if not raw.startswith("{"):
-            raw = "{" + raw
-        try:
-            parsed = json.loads(raw)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Failed to parse JSON: {e}\nRaw output: {raw}")
+        message = completion.choices[0].message
 
-        result = parsed.get("keywords")
-        # Validate that the result is a list of strings
-        if not isinstance(result, list) or not all(
-            isinstance(item, str) for item in result
-        ):
-            raise ValueError(
-                f"Invalid response schema, expected a list of strings for 'keywords', got: {parsed}"
-            )
+        keywords = message.parsed.keywords
 
         # dispatch and return
-        self._dispatch({"original_text": text, "keywords": result})
-        return result
+        self._dispatch({"original_text": text, "keywords": keywords})
+        return keywords
