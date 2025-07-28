@@ -7,29 +7,38 @@ class Gemma3Formatter:
     and leaves assistant messages alone. No image‐handling, no extra tokens.
     """
 
-    def format(
-        self, messages: List[Dict[Literal["role", "content"], str]]
-    ) -> List[Dict[str, str]]:
+    ROLE = "role"
+    USER_ROLE = "user"
+    ASSISTANT_ROLE = "assistant"
+    CONTENT = "content"
+    VALID_ROLES = {USER_ROLE, ASSISTANT_ROLE}
+
+    def format(self, messages: List[Dict[Literal["role", "content"], str]]) -> List[Dict[str, str]]:
         """
-        :param messages: a list of {"role": "user"|"assistant", "content": <string>}
-        :return: a new list where consecutive "user" messages have been merged.
+        :param messages: list of {"role": ..., "content": ...}, where role is "user", "assistant", or "system"
+        :return: a new list where consecutive "user" messages are merged into single entries
         """
+
         merged: List[Dict[str, str]] = []
 
         for msg in messages:
-            role = msg["role"]
-            content = msg["content"].strip()
 
-            if not merged:
-                # First message: just append
-                merged.append({"role": role, "content": content})
+            role, content = msg[self.ROLE], msg[self.CONTENT].strip()
+
+            # Replace "system" role with "user" role
+            if role == "system":
+                role = self.USER_ROLE
+
+            # Raise value error if msg["role"] wan't a valid role
+            if role not in self.VALID_ROLES:
+                raise ValueError(f"Unexpected role: {role}")
+
+            # Merge with previous user turn
+            if merged and role == self.USER_ROLE and merged[-1][self.ROLE] == self.USER_ROLE:
+                merged[-1][self.CONTENT] += "\n" + content
+            
+            # Otherwise, start a new turn
             else:
-                last = merged[-1]
-                if role == "user" and last["role"] == "user":
-                    # Merge with previous user turn
-                    last["content"] += "\n" + content
-                else:
-                    # Otherwise, start a new turn
-                    merged.append({"role": role, "content": content})
+                merged.append({self.ROLE: role, self.CONTENT: content})
 
         return merged
