@@ -141,9 +141,25 @@ class GemmaTranslator(BaseTranslator):
         # Create the message for tagging
         messages: List[Dict[str, str]] = []
 
-        main_prompt = """"You're an Islamic specialist. 
-        Identify and extract all Quran texts, hadith and Islamic narrations, and proper names from the following text.
-        For each entity, provide its text. Respond as a JSON array of objects."""
+        main_prompt = """
+        You're an expert in identifying only *verified* Quranic verses (in Arabic) and *authentic* hadiths from canonical Islamic collections. You must also detect well-known Islamic proper names.
+
+        Your job is to **return a JSON list of extracted entities** from the given input, where each item includes:
+        - `text`: The exact matched string from the original.
+        - `type`: One of these strictly limited values:
+        - `"QURAN/HADITH"` – **only** for Arabic Quran verses or Arabic verifiable hadiths from major Sunni collections (e.g., Sahih Bukhari, Muslim). Do not include Persian religious content, general moral teachings, or commentary.
+        - `"Proper Name"` – for proper names of Islamic figures (e.g., "بلعم باعورا", "علی", "بلال حبشی").
+
+        Strict Exclusion Rules:
+        - Do **NOT** include interpretations, religious opinion, or moral lessons—even if they *sound* Islamic.
+        - Do **NOT** include any Persian or non-Arabic statements.
+        - Do **NOT** guess hadiths unless their text is a **verifiable match** to known hadith literature.
+
+        Absolutely exclude any religious-sounding content that is NOT directly from the Quran in Arabic or authentic hadithin Arabic sources.
+        If the text is in Persian, or an interpretation, or simply *discusses religion*, it must NOT be labeled as QURAN/HADITH.
+        If the text is not in Arabic script or does not resemble verse structure, do NOT classify it as Quran/Hadith.
+        """
+
         messages.append({"role": "user", "content": main_prompt})
         
         # Append the text
@@ -155,7 +171,7 @@ class GemmaTranslator(BaseTranslator):
             "entities": [
                 {
                     "text": "نَحْنُ أَقْرَبُ إِلَیْهِ مِنْ حَبْلِ الْوَرید",
-                    "type": "Religious",
+                    "type": "QURAN/HADITH",
                 },
                 {
                     "text": "بلعم باعورا",
