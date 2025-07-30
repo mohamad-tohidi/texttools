@@ -1,9 +1,10 @@
 from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
+import json
 
 from base_translator import BaseTranslator
-from gemma3_fromatter import Gemma3Formatter
+from texttools.formatter.gemma3_fromatter import Gemma3Formatter
 
 class GemmaTranslator(BaseTranslator):
     """
@@ -135,29 +136,46 @@ class GemmaTranslator(BaseTranslator):
         return translated
     
     def preprocess(self, text) -> str:
-        """Preprocessor that tags protected elements (e.g., hadiths and proper names)"""
+        """Preprocessor that tags protected elements (e.g., hadiths, Quran and proper names)"""
         
         # Create the message for tagging
         messages: List[Dict[str, str]] = []
 
-        main_prompt = """You are a Islamic religous specialist who knows the texts that 
-        are refrenced by Quran, or Islamic hadiths and narrations."""
+        main_prompt = """"You're an Islamic specialist. 
+        Identify and extract all Quran texts, hadith and Islamic narrations, and proper names from the following text.
+        For each entity, provide its text. Respond as a JSON array of objects."""
         messages.append({"role": "user", "content": main_prompt})
-
-        # Enforce pure translation output
-        enforce_prompt = """You must output ONLY the tagged version of the original text,
-        without any commentary, metadata, or extra text."""
-        messages.append({"role": "user", "content": enforce_prompt})
-
+        
         # Append the text
-        text_prompt = f"""The text to be tagged is:{text}"""
+        text_prompt = f"""The text is:{text}"""
         messages.append({"role": "user", "content": text_prompt})
 
+        # Enforce json output
+        json_schema = {
+            "entities": [
+                {
+                    "text": "نَحْنُ أَقْرَبُ إِلَیْهِ مِنْ حَبْلِ الْوَرید",
+                    "type": "Religious",
+                },
+                {
+                    "text": "بلعم باعورا",
+                    "type": "Proper Name"
+                }
+            ]
+        }
+        enforce_prompt = f"""Respond only in JSON format: {json.dumps(json_schema)}
+        No addition, no extra things"""
+        messages.append({"role": "user", "content": enforce_prompt})
+
+        # Hint to start JSON output
+        messages.append({"role": "assistant", "content": "{"})
+
+        # Get the response via chat completion
         completion = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
         )
 
-        name_tagged = completion.choices[0].message.content.strip()
+        extractions = completion.choices[0].message.content.strip()
 
-        return name_tagged        
+        return extractions        
