@@ -1,5 +1,3 @@
-# base_summarizer.py
-
 import logging
 from abc import ABC, abstractmethod
 from typing import List, Optional
