@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
+import json
 
 from openai import OpenAI
-import json
 
 from texttools.base.base_translator import BaseTranslator
 from texttools.formatter.gemma3_fromatter import Gemma3Formatter
@@ -41,25 +41,23 @@ class GemmaTranslator(BaseTranslator):
         reason: Optional[str] = None,
         proper_names: Optional[List[str]] = None,
     ) -> List[Dict[str, str]]:
-        clean_text = text.strip()
         messages: List[Dict[str, str]] = []
 
-        # Enforce pure translation output
+        # This prompt will enforce LLM to output in the required format
+        # This prompt also gives initial information about translation like languages and proper names
         enforce_prompt = f"""You are a {source_language}-to-{target_language} translator.
         Output only and only the translated text without any explanations or additions.
-
         - Do NOT translate the following proper names: {proper_names if proper_names else 'None'}
         - For each of these proper names, transliterate them in {target_language}.
-
         DO NOT explain your output. Only return the translated text."""
         messages.append({"role": "user", "content": enforce_prompt})
 
+        clean_text = text.strip()
         if reason:
             reason_prompt = f"""Based on the analysis conducted, translate the following text {"from" + source_language if source_language else ""} to {target_language}.
             The text to be translated is: "{clean_text}"
             The analysis conducted: {reason}"""
             messages.append({"role": "user", "content": reason_prompt})
-        
         else:
             regular_prompt = f"""Translate the following text from {source_language or "original"} to {target_language}: 
             {clean_text}"""
@@ -69,14 +67,13 @@ class GemmaTranslator(BaseTranslator):
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
 
-        # The actual text
-        # messages.append({"role": "user", "content": clean_text})
-
-        # messages = self.chat_formatter.format(messages=messages)
         return messages
 
     def _reason(
-        self, text: str, target_language: str, source_language: Optional[str] = None
+        self,
+        text: str,
+        target_language: str,
+        source_language: Optional[str] = None
     ) -> str:
         """
         Internal reasoning step to help the model with translation.
@@ -100,12 +97,16 @@ class GemmaTranslator(BaseTranslator):
         return completion.choices[0].message.content.strip()
 
     def translate(
-        self, text: str, target_language: str, source_language: Optional[str] = None
+        self,
+        text: str,
+        target_language: str,
+        source_language: Optional[str] = None
     ) -> str:
         """
         Translates text and returns only the translated string.
         """
 
+        # Extract proper names to tell the LLM what names not to translate, but to transliterate
         extracted = self.preprocess(text)
         proper_names = [e["text"] for e in extracted]
 
@@ -114,14 +115,9 @@ class GemmaTranslator(BaseTranslator):
             reason_summary = self._reason(text, target_language, source_language)
 
         messages = self._build_messages(text, target_language, source_language, reason_summary, proper_names)
-        print()
         print(f"Original: {text}")
-        print(
-            f"Translating to {target_language} from {source_language or 'original'}..."
-        )
-        print(
-            f"Reasoning: {reason_summary}" if reason_summary else "No reasoning used."
-        )
+        print(f"Translating to {target_language} from {source_language or 'original'}...")
+        print(f"Reasoning: {reason_summary}" if reason_summary else "No reasoning used.")
 
         completion = self.client.chat.completions.create(
             model=self.model,
@@ -139,32 +135,25 @@ class GemmaTranslator(BaseTranslator):
                 "translated_text": translated,
             }
         )
-        #print(f"Translated: {translated}")
         return translated
     
     def preprocess(self, text) -> List:
-        """Preprocessor that tags protected elements (e.g., hadiths, Quran and proper names)"""
+        """Preprocessor that finds proper names of Islamic figures. The extractions will be given to the
+        LLm in order to know that it shouldn't translate them, but transliterate them."""
         
-        # Create the message for tagging
         messages: List[Dict[str, str]] = []
 
-        main_prompt = """
-        You must detect Islamic proper names of people ONLY.
-
+        main_prompt = """You must detect Islamic proper names of people ONLY.
         Your task is to extract a JSON list of entities from the given input. For each entity, include:
         - `text`: The exact matched string from the original.
         - `type`: Only include "Proper Name" for actual Islamic **names of real people**. 
-
         DO NOT include:
         - General or ambiguous descriptions without an actual name.
         - Roles, or adjectives of people.
-
-        If there is no proper name in the following text, return empty json.
-        """
+        If there is no proper name in the following text, return empty json."""
 
         messages.append({"role": "user", "content": main_prompt})
         
-        # Append the text
         text_prompt = f"""The text to be extracted is:{text}"""
         messages.append({"role": "user", "content": text_prompt})
 
@@ -183,12 +172,10 @@ class GemmaTranslator(BaseTranslator):
         # Hint to start JSON output
         messages.append({"role": "assistant", "content": "{"})
 
-        # Get the response via chat completion
         response = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
         )
-
         raw = response.choices[0].message.content.strip()
 
         # Robustly parse JSON, even if the LLM adds extraneous text before the JSON
@@ -210,8 +197,6 @@ class GemmaTranslator(BaseTranslator):
             and isinstance(item["type"], str)
             for item in entities
         ):
-            raise ValueError(
-                f"Invalid response schema for NER. Expected 'entities' as a list of dicts with 'text' and 'type', got: {parsed}"
-            )
+            raise ValueError("Invalid response schema.")
 
         return entities        
