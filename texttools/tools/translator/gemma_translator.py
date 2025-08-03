@@ -6,6 +6,7 @@ from openai import OpenAI
 from texttools.base.base_translator import BaseTranslator
 from texttools.formatter.gemma3_fromatter import Gemma3Formatter
 
+
 class GemmaTranslator(BaseTranslator):
     """
     Translator for Gemma-style models with optional reasoning step.
@@ -47,8 +48,8 @@ class GemmaTranslator(BaseTranslator):
         # This prompt also gives initial information about translation like languages and proper names
         enforce_prompt = f"""You are a {source_language}-to-{target_language} translator.
         Output only and only the translated text without any explanations or additions.
-        - Do NOT translate the following proper names: {proper_names if proper_names else 'None'}
-        - For each of these proper names, transliterate them in {target_language}.
+        - Do NOT translate any of the following proper names: {proper_names if proper_names else "None"}
+        - For each of these proper names, only transliterate them in {target_language}.
         DO NOT explain your output. Only return the translated text."""
         messages.append({"role": "user", "content": enforce_prompt})
 
@@ -70,20 +71,18 @@ class GemmaTranslator(BaseTranslator):
         return messages
 
     def _reason(
-        self,
-        text: str,
-        target_language: str,
-        source_language: Optional[str] = None
+        self, text: str, target_language: str, source_language: Optional[str] = None
     ) -> str:
         """
         Internal reasoning step to help the model with translation.
         """
+
         reason_step_prompt = f"""Analyze the following text and identify important linguistic considerations for translation.
         Do not translate the text. Point out any idioms, cultural references, or complex structures that need special attention.
         Also, list all proper nouns that should not be translated. Write your analysis in the {target_language}."""
         messages = [
             {"role": "user", "content": reason_step_prompt},
-            {"role": "user", "content": text}
+            {"role": "user", "content": text},
         ]
 
         restructured = self.chat_formatter.format(messages=messages)
@@ -97,10 +96,7 @@ class GemmaTranslator(BaseTranslator):
         return completion.choices[0].message.content.strip()
 
     def translate(
-        self,
-        text: str,
-        target_language: str,
-        source_language: Optional[str] = None
+        self, text: str, target_language: str, source_language: Optional[str] = None
     ) -> str:
         """
         Translates text and returns only the translated string.
@@ -114,10 +110,16 @@ class GemmaTranslator(BaseTranslator):
         if self.use_reason:
             reason_summary = self._reason(text, target_language, source_language)
 
-        messages = self._build_messages(text, target_language, source_language, reason_summary, proper_names)
+        messages = self._build_messages(
+            text, target_language, source_language, reason_summary, proper_names
+        )
         print(f"Original: {text}")
-        print(f"Translating to {target_language} from {source_language or 'original'}...")
-        print(f"Reasoning: {reason_summary}" if reason_summary else "No reasoning used.")
+        print(
+            f"Translating to {target_language} from {source_language or 'original'}..."
+        )
+        print(
+            f"Reasoning: {reason_summary}" if reason_summary else "No reasoning used."
+        )
 
         completion = self.client.chat.completions.create(
             model=self.model,
@@ -136,11 +138,11 @@ class GemmaTranslator(BaseTranslator):
             }
         )
         return translated
-    
+
     def preprocess(self, text) -> List:
         """Preprocessor that finds proper names of Islamic figures. The extractions will be given to the
         LLm in order to know that it shouldn't translate them, but transliterate them."""
-        
+
         messages: List[Dict[str, str]] = []
 
         main_prompt = """You must detect Islamic proper names of people ONLY.
@@ -153,20 +155,15 @@ class GemmaTranslator(BaseTranslator):
         If there is no proper name in the following text, return empty json."""
 
         messages.append({"role": "user", "content": main_prompt})
-        
+
         text_prompt = f"""The text to be extracted is:{text}"""
         messages.append({"role": "user", "content": text_prompt})
 
         # Enforce json output
-        json_schema = {
-            "entities": [
-                {
-                    "text": "a proper name",
-                    "type": "Proper Name"
-                }
-            ]
-        }
-        enforce_prompt = f"""Respond only in JSON format: {json.dumps(json_schema)} No additions."""
+        json_schema = {"entities": [{"text": "a proper name", "type": "Proper Name"}]}
+        enforce_prompt = (
+            f"""Respond only in JSON format: {json.dumps(json_schema)} No additions."""
+        )
         messages.append({"role": "user", "content": enforce_prompt})
 
         # Hint to start JSON output
@@ -175,6 +172,8 @@ class GemmaTranslator(BaseTranslator):
         response = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
+            temperature=self.temperature,
+            **self.client_kwargs,
         )
         raw = response.choices[0].message.content.strip()
 
@@ -199,4 +198,4 @@ class GemmaTranslator(BaseTranslator):
         ):
             raise ValueError("Invalid response schema.")
 
-        return entities        
+        return entities
