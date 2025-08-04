@@ -1,25 +1,10 @@
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
-from pydantic import BaseModel
 
 from texttools.base.base_categorizer import BaseCategorizer
 from texttools.formatter import Gemma3Formatter
 from texttools.handlers import ResultHandler
-
-
-class Output(BaseModel):
-    reason: str
-    main_tag: Literal[
-        "باورهای دینی",
-        "اخلاق اسلامی",
-        "احکام و فقه",
-        "تاریخ اسلام و شخصیت ها",
-        "منابع دینی",
-        "دین و جامعه/سیاست",
-        "عرفان و معنویت",
-        "هیچکدام",
-    ] = None
 
 
 class GemmaCategorizer(BaseCategorizer):
@@ -36,7 +21,6 @@ class GemmaCategorizer(BaseCategorizer):
         client: OpenAI,
         *,
         model: str,
-        output_structure: BaseModel = Output,
         chat_formatter: Optional[Any] = None,
         use_reason: bool = False,
         temperature: float = 0.0,
@@ -49,9 +33,7 @@ class GemmaCategorizer(BaseCategorizer):
         self.model = model
         self.temperature = temperature
         self.client_kwargs = client_kwargs
-        self.output_structure = output_structure
         self.chat_formatter = chat_formatter or Gemma3Formatter()
-
         self.use_reason = use_reason
         self.prompt_template = prompt_template
 
@@ -80,6 +62,8 @@ class GemmaCategorizer(BaseCategorizer):
                 تو یک متخصص علوم دینی هستی
                 من به عنوان کاربر یک متن به تو میدم و از تو میخوام که
                 اون متن رو در یکی از دسته بندی های زیر طبقه بندی کنی
+                در خروجی، فقط و فقط دسته بندی را بنویس.
+                هیچ چیزی به جز دسته بندی را ننویس
                 
         "باورهای دینی",
         "اخلاق اسلامی",
@@ -89,16 +73,7 @@ class GemmaCategorizer(BaseCategorizer):
         "دین و جامعه/سیاست",
         "عرفان و معنویت",
         "هیچکدام",
-
-                
-                در خروجی که از تو خواسته شده بخشی با عنوان reason وجود دارد
-                در اون بخش، دلیل انتخاب دسته بندی رو به صورت خلاصه بیاور
-
-
-                متنی که باید طبقه بندی کنی:
-                
-                
-                
+        متنی که باید طبقه بندی کنی:
                 """,
             }
         )
@@ -155,15 +130,24 @@ class GemmaCategorizer(BaseCategorizer):
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=messages,
-            response_format=Output,
+            extra_body={
+                "guided_choice": [
+                    "باورهای دینی",
+                    "اخلاق اسلامی",
+                    "احکام و فقه",
+                    "تاریخ اسلام و شخصیت ها",
+                    "منابع دینی",
+                    "دین و جامعه/سیاست",
+                    "عرفان و معنویت",
+                    "هیچکدام",
+                ]
+            },
             temperature=self.temperature,
-            extra_body=dict(guided_decoding_backend="auto"),
             **self.client_kwargs,
         )
-        message = completion.choices[0].message
+        response = completion.choices[0].message.content
 
-        category_name = message.parsed.main_tag
-
-        # dispatch and return - Note: _dispatch expects dict
-        self._dispatch(results={"main_tag": category_name})
-        return {"main_tag": category_name}
+        # Dispatch and return - Note: _dispatch expects dict
+        self._dispatch(results={"main_tag": response})
+        print(response)
+        return {"main_tag": response}
