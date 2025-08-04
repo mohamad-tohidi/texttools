@@ -1,7 +1,7 @@
 import json
 import uuid
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Optional, Type
 
 from openai import OpenAI
 from openai.lib._pydantic import to_strict_json_schema
@@ -17,7 +17,7 @@ class SimpleBatchManager:
         model: str,
         output_model: Type[BaseModel],
         prompt_template: str,
-        handlers: Optional[List[Any]] = None,
+        handlers: Optional[list[Any]] = None,
         state_dir: Path = Path(".batch_jobs"),
         custom_json_schema_obj_str: Optional[dict] = None,
         **client_kwargs: Any,
@@ -40,7 +40,7 @@ class SimpleBatchManager:
     def _state_file(self, job_name: str) -> Path:
         return self.state_dir / f"{job_name}.json"
 
-    def _load_state(self, job_name: str) -> List[Dict[str, Any]]:
+    def _load_state(self, job_name: str) -> list[dict[str, Any]]:
         """
         Loads the state (job information) from the state file for the given job name.
         Returns an empty list if the state file does not exist.
@@ -51,7 +51,7 @@ class SimpleBatchManager:
                 return json.load(f)
         return []
 
-    def _save_state(self, job_name: str, jobs: List[Dict[str, Any]]):
+    def _save_state(self, job_name: str, jobs: list[dict[str, Any]]):
         """
         Saves the job state to the state file for the given job name.
         """
@@ -66,11 +66,11 @@ class SimpleBatchManager:
         if path.exists():
             path.unlink()
 
-    def _build_task(self, text: str, idx: str) -> Dict[str, Any]:
+    def _build_task(self, text: str, idx: str) -> dict[str, Any]:
         """
         Builds a single task dictionary for the batch job, including the prompt, model, and response format configuration.
         """
-        response_format_config: Dict[str, Any]
+        response_format_config: dict[str, Any]
         if self.custom_json_schema_obj_str:
             # try:
             # parsed_custom_schema = json.loads(self.custom_json_schema_obj_str)
@@ -108,7 +108,7 @@ class SimpleBatchManager:
             },
         }
 
-    def _prepare_file(self, payload: List[str] | List[Dict[str, str]]) -> Path:
+    def _prepare_file(self, payload: list[str] | list[dict[str, str]]) -> Path:
         """
         Prepares a JSONL file containing all tasks for the batch job, based on the input payload.
         Returns the path to the created file.
@@ -131,7 +131,7 @@ class SimpleBatchManager:
                 f.write(json.dumps(task) + "\n")
         return file_path
 
-    def start(self, payload: List[str | Dict[str, str]], job_name: str):
+    def start(self, payload: list[str | dict[str, str]], job_name: str):
         """
         Starts a new batch job by uploading the prepared file and creating a batch job on the server.
         If a job with the same name already exists, it does nothing.
@@ -181,7 +181,7 @@ class SimpleBatchManager:
 
     def fetch_results(
         self, job_name: str, remove_cache=True
-    ) -> tuple[Dict[str, str], list]:
+    ) -> tuple[dict[str, str], list]:
         """
         Fetches the results of a completed batch job. Optionally saves the results to a file and/or removes the job cache.
         Returns a tuple containing the parsed results and a log of errors (if any).

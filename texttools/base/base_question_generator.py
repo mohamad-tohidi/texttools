@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 
 class BaseQuestionGenerator(ABC):
@@ -8,7 +8,7 @@ class BaseQuestionGenerator(ABC):
     Base class for all systems that generate a question from a given answer.
     """
 
-    def __init__(self, handlers: Optional[List[Any]] = None):
+    def __init__(self, handlers: Optional[list[Any]] = None):
         """
         Initializes the BaseQuestionGenerator with optional result handlers.
 
@@ -57,7 +57,7 @@ class BaseQuestionGeneratorFromSubject(ABC):
 
     """
 
-    def __init__(self, handlers: Optional[List[Any]] = None):
+    def __init__(self, handlers: Optional[list[Any]] = None):
         """
         Initializes the BaseQuestionGeneratorFromSubject with optional result handlers.
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 from texttools.base.base_question_merger import BaseQuestionsMerger, MergingMode
@@ -26,7 +26,7 @@ class GemmaQuestionMerger(BaseQuestionsMerger):
         use_reason: bool = False,
         temperature: float = 0.5,
         prompt_template: Optional[str] = None,
-        handlers: Optional[List[Any]] = None,
+        handlers: Optional[list[Any]] = None,
         **client_kwargs: Any,
     ):
         super().__init__(handlers)
@@ -45,15 +45,15 @@ class GemmaQuestionMerger(BaseQuestionsMerger):
 
     def _build_messages(
         self,
-        questions: List[str],
+        questions: list[str],
         mode: MergingMode,
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """
         Builds the message list for the LLM API call for question merging,
         adapting the prompt based on the chosen mode.
         """
         clean_questions = self.preprocess(questions)
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
@@ -114,7 +114,7 @@ class GemmaQuestionMerger(BaseQuestionsMerger):
 
         return restructured
 
-    def _reason(self, questions: List[str], mode: MergingMode) -> str:
+    def _reason(self, questions: list[str], mode: MergingMode) -> str:
         """
         Internal reasoning step to help the model understand the core meaning
         or structure of the question depending on the mode.
@@ -158,7 +158,7 @@ class GemmaQuestionMerger(BaseQuestionsMerger):
 
     def rewrite_questions(
         self,
-        questions: List[str],
+        questions: list[str],
         mode: MergingMode = MergingMode.DEFAULT_MODE,
         reason_summary: str = None,
     ) -> str:

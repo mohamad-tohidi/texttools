@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class BaseNERExtractor(ABC):
@@ -8,7 +8,7 @@ class BaseNERExtractor(ABC):
     Base class for all Named Entity Recognition (NER) systems.
     """
 
-    def __init__(self, handlers: Optional[List[Any]] = None):
+    def __init__(self, handlers: Optional[list[Any]] = None):
         """
         Initializes the BaseNERExtractor with optional result handlers.
 
@@ -17,7 +17,7 @@ class BaseNERExtractor(ABC):
         self.handlers = handlers or []
 
     @abstractmethod
-    def extract_entities(self, text: str) -> List[Dict[str, str]]:
+    def extract_entities(self, text: str) -> list[dict[str, str]]:
         """
         Extracts named entities from the input text.
 
@@ -38,7 +38,7 @@ class BaseNERExtractor(ABC):
         return text.strip()
 
     def _dispatch(
-        self, entities: List[Dict[str, str]], original_text: Optional[str] = None
+        self, entities: list[dict[str, str]], original_text: Optional[str] = None
     ) -> None:
         """
         Sends the extracted entities to any registered result handlers.

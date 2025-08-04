@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 from pydantic import BaseModel
@@ -28,7 +28,7 @@ class GemmaKeywordExtractor(BaseKeywordExtractor):
         chat_formatter: Optional[Any] = None,
         temperature: float = 0.0,
         prompt_template: str = None,
-        handlers: List[Any] = None,
+        handlers: list[Any] = None,
         **client_kwargs: Any,
     ):
         super().__init__(handlers)
@@ -44,10 +44,10 @@ class GemmaKeywordExtractor(BaseKeywordExtractor):
 
     def _build_messages(
         self, text: str, reason: Optional[str] = None
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         clean_text = self.preprocess(text)
 
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
@@ -109,7 +109,7 @@ class GemmaKeywordExtractor(BaseKeywordExtractor):
         reason_summary = resp.choices[0].message.content.strip()
         return reason_summary
 
-    def extract_keywords(self, text: str) -> List[str]:
+    def extract_keywords(self, text: str) -> list[str]:
         """
         Extracts keywords from `text`.
         Optionally uses an internal reasoning step for better accuracy.

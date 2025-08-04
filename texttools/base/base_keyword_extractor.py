@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 
 class BaseKeywordExtractor(ABC):
@@ -9,12 +9,12 @@ class BaseKeywordExtractor(ABC):
 
     def __init__(
         self,
-        handlers: Optional[List[Any]] = None,
+        handlers: Optional[list[Any]] = None,
     ):
         self.handlers = handlers or []
 
     @abstractmethod
-    def extract_keywords(self, text: str) -> List[str]:
+    def extract_keywords(self, text: str) -> list[str]:
         """
         Extract keywords from the input text.
         Should return a list of strings, where each string is a keyword.

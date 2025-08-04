@@ -1,9 +1,7 @@
-# handlers.py
-
 import json
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Dict
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -15,12 +13,12 @@ class ResultHandler(ABC):
     """
 
     @abstractmethod
-    def handle(self, results: Dict[str, Enum]) -> None:
+    def handle(self, results: dict[str, Enum]) -> None:
         """
         Process the categorization results.
 
         Args:
-            results (Dict[str, Enum]): A dictionary mapping text (or IDs) to categories.
+            results (dict[str, Enum]): A dictionary mapping text (or IDs) to categories.
         """
         pass
 
@@ -31,7 +29,7 @@ class NoOpResultHandler(ResultHandler):
     Useful as a default when no other handler is provided.
     """
 
-    def handle(self, results: Dict[str, Enum]) -> None:
+    def handle(self, results: dict[str, Enum]) -> None:
         pass
 
 
@@ -41,7 +39,7 @@ class PrintResultHandler(ResultHandler):
     Useful for debugging or local tests.
     """
 
-    def handle(self, results: Dict[str, Enum]) -> None:
+    def handle(self, results: dict[str, Enum]) -> None:
         for key, value in results.items():
             print(f"Text ID: {key}, Category: {value.name}")
 
@@ -55,7 +53,7 @@ class SaveToFileResultHandler(ResultHandler):
     def __init__(self, file_path: str):
         self.file_path = file_path
 
-    def handle(self, results: Dict[str, Any]) -> None:
+    def handle(self, results: dict[str, Any]) -> None:
         """
         Expects `results` to be a dict with at least:
           - "question": the original input text

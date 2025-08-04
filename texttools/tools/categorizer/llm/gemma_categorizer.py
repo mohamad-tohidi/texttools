@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal, Optional
 
 from openai import OpenAI
 from pydantic import BaseModel
@@ -41,7 +41,7 @@ class GemmaCategorizer(BaseCategorizer):
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: Optional[str] = None,
-        handlers: Optional[List[ResultHandler]] = None,
+        handlers: Optional[list[ResultHandler]] = None,
         **client_kwargs: Any,
     ):
         super().__init__(handlers=handlers)
@@ -57,13 +57,13 @@ class GemmaCategorizer(BaseCategorizer):
 
     def _build_messages(
         self, text: str, reason: Optional[str] = None
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """
         Builds the message list for the LLM API call for categorization.
         """
         clean_text = self.preprocess(text)
 
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})

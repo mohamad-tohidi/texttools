@@ -1,8 +1,6 @@
-# scorer.py
-
 import json
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 
@@ -24,7 +22,7 @@ class GemmaScorer(BaseTaskPerformer):
         temperature: float = 0.0,
         prompt_template: Optional[str] = None,
         use_reason: bool = False,
-        handlers: Optional[List[Any]] = None,
+        handlers: Optional[list[Any]] = None,
         **client_kwargs: Any,
     ):
         """
@@ -52,7 +50,7 @@ class GemmaScorer(BaseTaskPerformer):
 
     def _build_messages(
         self, query: str, result_text: str, reason: Optional[str] = None
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """
         Constructs the messages payload for the LLM API call to score a single result.
         Now includes an optional 'reason' parameter.
@@ -65,7 +63,7 @@ class GemmaScorer(BaseTaskPerformer):
         clean_query = self._preprocess(query)
         clean_result_text = self._preprocess(result_text)
 
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
