@@ -117,11 +117,13 @@ class GemmaCategorizer(BaseCategorizer):
         completion = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
+            # Use guided choice to have structured output
             extra_body={"guided_choice": self.CATEGORIES},
             temperature=self.temperature,
             **self.client_kwargs,
         )
         response = completion.choices[0].message.content
+
         # Dispatch and return - Note: _dispatch expects dict
         print(response)
         self._dispatch(results={"main_tag": response})

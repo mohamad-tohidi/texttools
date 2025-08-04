@@ -8,4 +8,4 @@ client = OpenAI(api_key=API_KEY, base_url="https://openrouter.ai/api/v1")
 
 categorizer = GemmaCategorizer(client=client, model=model)
 
-categorizer.categorize("حضرت محمد و مسلم بن عقیل بسیار افراد خوبی بودند")
+categorizer.categorize("سلام حالت چطوره عزیزم")
