@@ -55,7 +55,6 @@ class GemmaCategorizer(BaseCategorizer):
         Builds the message list for the LLM API call for categorization.
         """
         clean_text = self.preprocess(text)
-
         messages: List[Dict[str, str]] = []
 
         if self.prompt_template:
