@@ -121,7 +121,7 @@ class GemmaCategorizer(BaseCategorizer):
             "هیچکدام",
         ]
 
-        completion = self.client.beta.chat.completions.parse(
+        completion = self.client.beta.chat.completions.create(
             model=self.model,
             messages=messages,
             extra_body={"guided_choice": categories},
