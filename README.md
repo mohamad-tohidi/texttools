@@ -1,37 +1,39 @@
-## Text tools
+# Text Tools
 
-how to use it?
+### How to Install
 
-install it like this
+Install the package using:
 
 ```bash
-pip install -U  git+https://git.t.etratnet.ir/AI/texttools
+pip install -U git+https://git.t.etratnet.ir/AI/texttools
 ```
 
 ---
 
-# what this library is NOT?
+## What This Library Is *Not*
 
-this is not a set of low level tools
+This is **not** a collection of low-level utilities.
 
-what do i mean when i say its not low level? this library **will not** contain:
-- an standard `regex` 
-- normalization words
-
-
-# What it has is:
-
-this is a set of tools for high level NLprocessing
-
-- question_detector: detecting if an incoming text is a question or not
-- categorizer: no finetuning need, categorizer
-- ... (you tell me what you want)
+To clarify: this library **does not** include things like:
+- An standard `regex`
+- Word normalization utilities
 
 ---
 
-## when to use it?
+## What This Library *Provides*
 
-when you want to:
-- process a lot of data using GPT from openAI, using BATCH API
-- when you want to use an LLM, as a function in python, outputting structured Json or pydantic models
-- when you want to categorize a lot of data, using vector embeddings
+This is a set of **high-level natural language processing (NLP)** tools.
+
+Some of the features include:
+- `question_detector`: Detecting if an incoming text is a question or not
+- `categorizer`: No finetuning need, categorizer
+- ... (Tell me what you want!)
+
+---
+
+## When to Use This Library
+
+Use `texttools` when:
+- You need to **process large volumes of data using OpenAI’s GPT models** via the BATCH API.
+- You want to treat an **LLM as a function** in Python that outputs structured JSON or Pydantic models.
+- You need to **categorize large datasets** using vector embeddings, efficiently and at scale.

@@ -4,7 +4,7 @@ from typing import Any, List, Optional
 
 class BaseTranslator(ABC):
     """
-    Base class for all translators that output a translated string.
+    Base class for all translators that  output a translated string.
     """
 
     def __init__(
