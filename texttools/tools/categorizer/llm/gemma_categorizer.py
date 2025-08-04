@@ -16,6 +16,17 @@ class GemmaCategorizer(BaseCategorizer):
     Allows optional extra instructions via `prompt_template`.
     """
 
+    CATEGORIES = [
+        "باورهای دینی",
+        "اخلاق اسلامی",
+        "احکام و فقه",
+        "تاریخ اسلام و شخصیت ها",
+        "منابع دینی",
+        "دین و جامعه/سیاست",
+        "عرفان و معنویت",
+        "هیچکدام",
+    ]
+
     def __init__(
         self,
         client: OpenAI,
@@ -55,20 +66,12 @@ class GemmaCategorizer(BaseCategorizer):
                 {"role": "user", "content": f"Based on this analysis: {reason}"}
             )
 
-        main_prompt = """تو یک متخصص علوم دینی هستی
+        main_prompt = f"""تو یک متخصص علوم دینی هستی
         من به عنوان کاربر یک متن به تو میدم و از تو میخوام که
         اون متن رو در یکی از دسته بندی های زیر طبقه بندی کنی
+        {[category for category in self.CATEGORIES]}
         در خروجی، فقط و فقط دسته بندی را بنویس.
         هیچ چیزی به جز دسته بندی را ننویس
-        
-        "باورهای دینی",
-        "اخلاق اسلامی",
-        "احکام و فقه",
-        "تاریخ اسلام و شخصیت ها",
-        "منابع دینی",
-        "دین و جامعه/سیاست",
-        "عرفان و معنویت",
-        "هیچکدام",
         متنی که باید طبقه بندی کنی:"""
         messages.append({"role": "user", "content": main_prompt})
         messages.append({"role": "user", "content": clean_text})
@@ -110,27 +113,16 @@ class GemmaCategorizer(BaseCategorizer):
             reason_summary = self._reason(text)
 
         messages = self._build_messages(text, reason_summary)
-        categories = [
-            "باورهای دینی",
-            "اخلاق اسلامی",
-            "احکام و فقه",
-            "تاریخ اسلام و شخصیت ها",
-            "منابع دینی",
-            "دین و جامعه/سیاست",
-            "عرفان و معنویت",
-            "هیچکدام",
-        ]
 
-        completion = self.client.beta.chat.completions.create(
+        completion = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
-            extra_body={"guided_choice": categories},
+            extra_body={"guided_choice": self.CATEGORIES},
             temperature=self.temperature,
             **self.client_kwargs,
         )
-        response = completion.choices[0].message.content.strip()
-
+        response = completion.choices[0].message.content
         # Dispatch and return - Note: _dispatch expects dict
-        self._dispatch(results={"main_tag": response})
         print(response)
+        self._dispatch(results={"main_tag": response})
         return {"main_tag": response}
