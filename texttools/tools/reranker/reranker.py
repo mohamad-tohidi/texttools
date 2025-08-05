@@ -1,7 +1,5 @@
-# reranker.py
-
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 
@@ -28,7 +26,7 @@ class GemmaReranker(BaseTaskPerformer):
         scorer_use_reason: bool = False,
         sorter_use_reason: bool = False,
         temperature: float = 0.0,
-        handlers: Optional[List[Any]] = None,
+        handlers: Optional[list[Any]] = None,
         **client_kwargs: Any,
     ):
         """
@@ -71,8 +69,8 @@ class GemmaReranker(BaseTaskPerformer):
         )
 
     def perform(
-        self, query: str, results: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, query: str, results: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """
         Performs the complete reranking operation: scoring each result and then sorting them.
 
@@ -92,7 +90,7 @@ class GemmaReranker(BaseTaskPerformer):
             )
             return []
 
-        scored_results: List[Dict[str, Any]] = []
+        scored_results: list[dict[str, Any]] = []
 
         # Step 1: Score each individual result
         for i, res in enumerate(results):

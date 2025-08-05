@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 
@@ -23,7 +23,7 @@ class GemmaNERExtractor(BaseNERExtractor):
         temperature: float = 0.0,
         prompt_template: Optional[str] = None,
         # Handlers can be any type that implements a .handle method
-        handlers: Optional[List[Any]] = None,
+        handlers: Optional[list[Any]] = None,
         **client_kwargs: Any,
     ):
         super().__init__(handlers)
@@ -48,13 +48,13 @@ class GemmaNERExtractor(BaseNERExtractor):
 
     def _build_messages(
         self, text: str, reason: Optional[str] = None
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """
         Builds the message list for the LLM API call for entity extraction.
         """
         clean_text = self.preprocess(text)
 
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
@@ -111,7 +111,7 @@ class GemmaNERExtractor(BaseNERExtractor):
         reason_summary = resp.choices[0].message.content.strip()
         return reason_summary
 
-    def extract_entities(self, text: str) -> List[Dict[str, str]]:
+    def extract_entities(self, text: str) -> list[dict[str, str]]:
         """
         Extracts named entities from `text`.
         Optionally uses an internal reasoning step for better accuracy.

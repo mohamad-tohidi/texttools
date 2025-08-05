@@ -1,7 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 
 class RewriteMode(Enum):
@@ -18,7 +18,7 @@ class BaseQuestionRewriter(ABC):
     Base class for all systems that rewrite a question with different wording.
     """
 
-    def __init__(self, handlers: Optional[List[Any]] = None):
+    def __init__(self, handlers: Optional[list[Any]] = None):
         """
         Initializes the BaseQuestionRewriter with optional result handlers.
 

@@ -1,14 +1,12 @@
-# base_summarizer.py
-
 import logging
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import Optional
 
 from texttools.handlers import NoOpResultHandler, ResultHandler
 
 
 class BaseSummarizer(ABC):
-    def __init__(self, handlers: Optional[List[ResultHandler]] = None):
+    def __init__(self, handlers: Optional[list[ResultHandler]] = None):
         """
         Base class for text summarization.
 
