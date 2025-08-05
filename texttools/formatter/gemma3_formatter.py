@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal
+from typing import Literal
 
 
 class Gemma3Formatter:
@@ -14,14 +14,14 @@ class Gemma3Formatter:
     VALID_ROLES = {USER_ROLE, ASSISTANT_ROLE}
 
     def format(
-        self, messages: List[Dict[Literal["role", "content"], str]]
-    ) -> List[Dict[str, str]]:
+        self, messages: list[dict[Literal["role", "content"], str]]
+    ) -> list[dict[str, str]]:
         """
         :param messages: list of {"role": ..., "content": ...}, where role is "user", "assistant", or "system"
         :return: a new list where consecutive "user" messages are merged into single entries
         """
 
-        merged: List[Dict[str, str]] = []
+        merged: list[dict[str, str]] = []
 
         for msg in messages:
             role, content = msg[self.ROLE], msg[self.CONTENT].strip()

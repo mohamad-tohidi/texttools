@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 
@@ -26,7 +26,7 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: Optional[str] = None,
-        handlers: Optional[List[Any]] = None,
+        handlers: Optional[list[Any]] = None,
         **client_kwargs: Any,
     ):
         super().__init__(handlers)
@@ -45,12 +45,12 @@ class GemmaQuestionGenerator(BaseQuestionGenerator):
 
     def _build_messages(
         self, answer: str, reason: Optional[str] = None
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """
         Builds the message list for the LLM API call for question generation.
         """
         clean_answer = self.preprocess(answer)
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})

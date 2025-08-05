@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 import re
 import json
 
@@ -31,7 +31,7 @@ class GemmaTranslator(BaseTranslator):
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: str = None,
-        handlers: List[Any] = None,
+        handlers: list[Any] = None,
         **client_kwargs: Any,
     ):
         super().__init__(handlers)
@@ -49,9 +49,9 @@ class GemmaTranslator(BaseTranslator):
         target_language: str,
         source_language: Optional[str] = None,
         reason: Optional[str] = None,
-        proper_names: Optional[List[str]] = None,
-    ) -> List[Dict[str, str]]:
-        messages: List[Dict[str, str]] = []
+        proper_names: Optional[list[str]] = None,
+    ) -> list[dict[str, str]]:
+        messages: list[dict[str, str]] = []
 
         # This prompt will enforce LLM to output in the required format
         # This prompt also gives initial information about translation like languages and proper names
@@ -103,7 +103,6 @@ class GemmaTranslator(BaseTranslator):
         restructured = self.chat_formatter.format(messages=messages)
         completion = self.client.chat.completions.create(
             model=self.model,
-            response_format=None,
             messages=restructured,
             temperature=self.temperature,
             **self.client_kwargs,
@@ -155,11 +154,11 @@ class GemmaTranslator(BaseTranslator):
         )
         return response
 
-    def preprocess(self, text) -> List:
+    def preprocess(self, text: str) -> list:
         """Preprocessor that finds proper names of Islamic figures. The extractions will be given to the
         LLm in order to know that it shouldn't translate them, but transliterate them."""
 
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         main_prompt = """You must detect proper names of people.
         Your task is to extract a JSON list of entities from the given input. For each entity, include:

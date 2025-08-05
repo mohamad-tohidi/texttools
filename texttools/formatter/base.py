@@ -19,7 +19,7 @@ class ChatFormatter(ABC):
         prompt_template: Optional[str],
     ) -> Any:
         """
-        - For an OpenAI style API, this might return List[{"role": "user"/"assistant", "content": "…"}].
+        - For an OpenAI style API, this might return list[{"role": "user"/"assistant", "content": "…"}].
         - For a one shot “text only” API, this might return a single string combining everything.
         - For some niche service, it might return JSON: {"inputs": […], "parameters": {…}}.
         """

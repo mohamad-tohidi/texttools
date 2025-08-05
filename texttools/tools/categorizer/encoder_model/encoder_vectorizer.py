@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 import numpy as np
 
@@ -16,11 +16,11 @@ class EmbeddingCategorizer(BaseCategorizer):
         self,
         categories: Enum,
         embedding_model: Any,
-        handlers: Optional[List[ResultHandler]] = None,
+        handlers: Optional[list[ResultHandler]] = None,
     ):
         """
         :param categories: your Enum class, whose members have `.embeddings`
-        :param embedding_model: something with `.encode(text: str) -> List[float]`
+        :param embedding_model: something with `.encode(text: str) -> list[float]`
         """
         super().__init__(categories, handlers)
         self.embedding_model = embedding_model

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 from pydantic import BaseModel
@@ -32,7 +32,7 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: Optional[str] = None,
-        handlers: Optional[List[Any]] = None,
+        handlers: Optional[list[Any]] = None,
         **client_kwargs: Any,
     ):
         super().__init__(handlers)
@@ -56,12 +56,12 @@ class GemmaQuestionGeneratorFromSubject(BaseQuestionGeneratorFromSubject):
         reason: Optional[str] = None,
         number_of_questions: int = 5,
         language: str = "farsi/Persian",
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """
         Builds the message list for the LLM API call for question generation.
         """
         clean_subject = self.preprocess(subject)
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})

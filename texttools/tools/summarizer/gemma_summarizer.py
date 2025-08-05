@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 
@@ -23,7 +23,7 @@ class GemmaSummarizer(BaseSummarizer):
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: Optional[str] = None,
-        handlers: Optional[List[ResultHandler]] = None,
+        handlers: Optional[list[ResultHandler]] = None,
         **client_kwargs: Any,
     ):
         super().__init__(handlers)
@@ -40,14 +40,14 @@ class GemmaSummarizer(BaseSummarizer):
 
     def _build_messages(
         self, text: str, reason: Optional[str] = None
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """
         Builds the message list for the LLM API call.
         """
         clean_text = self.preprocess(text)
         # Ensure the schema is dumped as a valid JSON string
 
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
