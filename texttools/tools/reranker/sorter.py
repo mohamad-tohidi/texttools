@@ -1,8 +1,6 @@
-# sorter.py
-
 import json
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 
@@ -23,7 +21,7 @@ class GemmaSorter(BaseTaskPerformer):
         temperature: float = 0.0,
         prompt_template: Optional[str] = None,
         use_reason: bool = False,
-        handlers: Optional[List[Any]] = None,
+        handlers: Optional[list[Any]] = None,
         **client_kwargs: Any,
     ):
         """
@@ -52,9 +50,9 @@ class GemmaSorter(BaseTaskPerformer):
     def _build_sorting_messages(
         self,
         query: str,
-        scored_results: List[Dict[str, Any]],
+        scored_results: list[dict[str, Any]],
         reason: Optional[str] = None,
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """
         Constructs the messages payload for the LLM API call to sort results.
 
@@ -64,7 +62,7 @@ class GemmaSorter(BaseTaskPerformer):
         :return: A list of message dictionaries formatted for the LLM API.
         """
         clean_query = self._preprocess(query)
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
@@ -105,7 +103,7 @@ class GemmaSorter(BaseTaskPerformer):
         messages.append({"role": "assistant", "content": "{"})
         return messages
 
-    def _reason(self, query: str, results: List[Dict[str, Any]]) -> str:
+    def _reason(self, query: str, results: list[dict[str, Any]]) -> str:
         """
         Generates an internal reasoning summary to help the LLM with sorting,
         especially for tie-breaking. This summary is based on the query and initial results.
@@ -144,8 +142,8 @@ class GemmaSorter(BaseTaskPerformer):
         return resp.choices[0].message.content.strip()
 
     def perform(
-        self, query: str, scored_results: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, query: str, scored_results: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """
         Sorts a list of results (each with an assigned score and an '_internal_id')
         based on the query using the configured LLM. This is the main public method for the sorter.
@@ -165,7 +163,7 @@ class GemmaSorter(BaseTaskPerformer):
             return []
 
         # Prepare a map for quick lookup of full result objects by their internal ID
-        id_to_full_result_map: Dict[str, Dict[str, Any]] = {}
+        id_to_full_result_map: dict[str, dict[str, Any]] = {}
         for i, res in enumerate(scored_results):
             if "_internal_id" not in res:
                 # Assign a temporary internal ID if missing, important for LLM interaction
@@ -236,7 +234,7 @@ class GemmaSorter(BaseTaskPerformer):
                 f"LLM returned invalid 'ordered_ids' format: {llm_ordered_ids}"
             )
 
-        final_sorted_results: List[Dict[str, Any]] = []
+        final_sorted_results: list[dict[str, Any]] = []
         ids_placed_by_llm_set = set()
 
         for internal_id in llm_ordered_ids:

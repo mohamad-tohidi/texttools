@@ -3,7 +3,7 @@ import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -70,7 +70,7 @@ class BatchJobRunner:
         self.output_model = output_model
         self.manager = self._init_manager()
         self.data = self._load_data()
-        self.parts: List[List[Dict[str, Any]]] = []
+        self.parts: list[list[dict[str, Any]]] = []
         self._partition_data()
         Path(self.config.BASE_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
 
@@ -137,7 +137,7 @@ class BatchJobRunner:
             self._process_part(part, part_job_name, idx)
 
     def _process_part(
-        self, part: List[Dict[str, Any]], part_job_name: str, part_idx: int
+        self, part: list[dict[str, Any]], part_job_name: str, part_idx: int
     ):
         while True:
             print(f"Starting job for part: {part_job_name}")
@@ -164,7 +164,7 @@ class BatchJobRunner:
                     time.sleep(5)  # Wait before checking again
 
     def _save_results(
-        self, output_data: List[Dict[str, Any]], log: List[Any], part_idx: int
+        self, output_data: list[dict[str, Any]], log: list[Any], part_idx: int
     ):
         part_suffix = f"_part_{part_idx + 1}" if len(self.parts) > 1 else ""
         result_path = (

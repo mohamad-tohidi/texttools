@@ -1,7 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 
 from texttools.handlers import NoOpResultHandler, ResultHandler
 
@@ -9,7 +9,7 @@ from texttools.handlers import NoOpResultHandler, ResultHandler
 class BaseCategorizer(ABC):
     def __init__(
         self,
-        handlers: Optional[List[ResultHandler]] = None,
+        handlers: Optional[list[ResultHandler]] = None,
     ):
         """
         handlers: List of ResultHandler objects that will process results after categorization.

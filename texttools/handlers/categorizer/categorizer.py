@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Dict
 
 from elasticsearch import Elasticsearch, helpers
 
@@ -12,12 +11,12 @@ class ResultHandler(ABC):
     """
 
     @abstractmethod
-    def handle(self, results: Dict[str, Enum]) -> None:
+    def handle(self, results: dict[str, Enum]) -> None:
         """
         Process the categorization results.
 
         Args:
-            results (Dict[str, Enum]): A dictionary mapping text (or IDs) to categories.
+            results (dict[str, Enum]): A dictionary mapping text (or IDs) to categories.
         """
         pass
 

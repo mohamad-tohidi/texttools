@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 
 class BaseTranslator(ABC):
@@ -9,7 +9,7 @@ class BaseTranslator(ABC):
 
     def __init__(
         self,
-        handlers: Optional[List[Any]] = None,
+        handlers: Optional[list[Any]] = None,
     ):
         self.handlers = handlers or []
 

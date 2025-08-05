@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 from pydantic import BaseModel
@@ -28,7 +28,7 @@ class GemmaQuestionDetector(BaseQuestionDetector):
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: str = None,
-        handlers: List[Any] = None,
+        handlers: list[Any] = None,
         **client_kwargs: Any,
     ):
         super().__init__(handlers)
@@ -44,10 +44,10 @@ class GemmaQuestionDetector(BaseQuestionDetector):
 
         self.json_schema = {"is_question": bool}
 
-    def _build_messages(self, text: str, reason: str = None) -> List[Dict[str, str]]:
+    def _build_messages(self, text: str, reason: str = None) -> list[dict[str, str]]:
         clean = self.preprocess(text)
         schema_instr = f"respond only in JSON format: {self.json_schema}"
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         if reason:
             messages.append({"role": "user", "content": reason})

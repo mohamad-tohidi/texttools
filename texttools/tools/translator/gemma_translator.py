@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 
@@ -21,7 +21,7 @@ class GemmaTranslator(BaseTranslator):
         use_reason: bool = False,
         temperature: float = 0.0,
         prompt_template: str = None,
-        handlers: List[Any] = None,
+        handlers: list[Any] = None,
         **client_kwargs: Any,
     ):
         super().__init__(handlers)
@@ -40,9 +40,9 @@ class GemmaTranslator(BaseTranslator):
         target_language: str,
         source_language: Optional[str] = None,
         reason: Optional[str] = None,
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         clean_text = self.preprocess(text)
-        messages: List[Dict[str, str]] = []
+        messages: list[dict[str, str]] = []
 
         # Enforce pure translation output
         messages.append(

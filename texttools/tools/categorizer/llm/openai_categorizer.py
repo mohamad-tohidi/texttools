@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openai import OpenAI
 from pydantic import BaseModel, create_model
@@ -22,7 +22,7 @@ class LLMCategorizer(BaseCategorizer):
         model: str,
         temperature: float = 0.0,
         prompt_template: str = None,
-        handlers: Optional[List[NoOpResultHandler]] = None,
+        handlers: Optional[list[NoOpResultHandler]] = None,
         **client_kwargs: Any,
     ):
         """
@@ -49,7 +49,7 @@ class LLMCategorizer(BaseCategorizer):
             category=(self.categories, ...),
         )
 
-    def _build_messages(self, text: str) -> List[Dict[str, str]]:
+    def _build_messages(self, text: str) -> list[dict[str, str]]:
         """
         Builds the message list for the OpenAI API based on the input text.
         """

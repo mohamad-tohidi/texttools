@@ -1,7 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 
 class MergingMode(Enum):
@@ -18,7 +18,7 @@ class BaseQuestionsMerger(ABC):
     Base class for all systems that merges more that one question with preserving the contents.
     """
 
-    def __init__(self, handlers: Optional[List[Any]] = None):
+    def __init__(self, handlers: Optional[list[Any]] = None):
         """
         Initializes the BaseQuestionsMerger with optional result handlers.
         :param handlers: Optional list of handlers to process the merged results.
@@ -26,7 +26,7 @@ class BaseQuestionsMerger(ABC):
         self.handlers = handlers or []
 
     @abstractmethod
-    def merging_question(self, questions: List[str], mode: MergingMode) -> str:
+    def merging_question(self, questions: list[str], mode: MergingMode) -> str:
         """
         merges the input questions based on the specified mode.
 

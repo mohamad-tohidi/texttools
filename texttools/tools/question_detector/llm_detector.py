@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from openai import OpenAI
 from pydantic import BaseModel, create_model
@@ -45,7 +45,7 @@ class LLMQuestionDetector(BaseQuestionDetector):
             Sampling temperature; 0.0 yields deterministic outputs.
         prompt_template (str, optional):
             System‐level instructions guiding the classification.
-        handlers (List[callable], optional):
+        handlers (list[callable], optional):
             List of callables that receive {"text": bool} after each detect().
         client_kwargs (Any):
             Additional parameters passed directly to OpenAI (e.g., max_tokens, top_p).
@@ -64,7 +64,7 @@ class LLMQuestionDetector(BaseQuestionDetector):
         model: str,
         temperature: float = 0.0,
         prompt_template: str = None,
-        handlers: List[Any] = None,
+        handlers: list[Any] = None,
         **client_kwargs: Any,
     ):
         """
@@ -91,7 +91,7 @@ class LLMQuestionDetector(BaseQuestionDetector):
             result=(bool, ...),
         )
 
-    def _build_messages(self, text: str) -> List[Dict[str, str]]:
+    def _build_messages(self, text: str) -> list[dict[str, str]]:
         clean = self.preprocess(text)
         return [
             {"role": "system", "content": self.prompt_template},

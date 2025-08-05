@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class BaseTaskPerformer(ABC):
@@ -10,7 +10,7 @@ class BaseTaskPerformer(ABC):
     to registered handlers.
     """
 
-    def __init__(self, handlers: Optional[List[Any]] = None):
+    def __init__(self, handlers: Optional[list[Any]] = None):
         """
         Initializes the BaseTaskPerformer with optional result handlers.
 
@@ -37,7 +37,7 @@ class BaseTaskPerformer(ABC):
         """
         pass
 
-    def _dispatch(self, result_data: Dict[str, Any]) -> None:
+    def _dispatch(self, result_data: dict[str, Any]) -> None:
         """
         Dispatches the component's results to any registered result handlers.
         Each handler receives a dictionary of result data.
