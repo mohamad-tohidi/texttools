@@ -1,10 +1,27 @@
-from typing import Any, Optional
+from typing import Any, Optional, Literal
+import re
+import json
 
 from openai import OpenAI
+from pydantic import BaseModel
 
 from texttools.base.base_categorizer import BaseCategorizer
 from texttools.formatter import Gemma3Formatter
 from texttools.handlers import ResultHandler
+
+
+class Output(BaseModel):
+    reason: str
+    main_tag: Literal[
+        "باورهای دینی",
+        "اخلاق اسلامی",
+        "احکام و فقه",
+        "تاریخ اسلام و شخصیت ها",
+        "منابع دینی",
+        "دین و جامعه/سیاست",
+        "عرفان و معنویت",
+        "هیچکدام",
+    ] = None
 
 
 class GemmaCategorizer(BaseCategorizer):
@@ -70,8 +87,15 @@ class GemmaCategorizer(BaseCategorizer):
         من به عنوان کاربر یک متن به تو میدم و از تو میخوام که
         اون متن رو در یکی از دسته بندی های زیر طبقه بندی کنی
         {[category for category in self.CATEGORIES]}
-        در خروجی، فقط و فقط دسته بندی را بنویس.
-        هیچ چیزی به جز دسته بندی را ننویس
+        در خروجی که از تو خواسته شده بخشی با عنوان reason وجود دارد
+        در اون بخش، دلیل انتخاب دسته بندی رو به صورت خلاصه بیاور
+        در پاسخ، فقط یک شیء JSON برگردان که دو فیلد داشته باشد:
+
+        ```json
+        {{
+        "reason": "دلیل کوتاه برای انتخاب این دسته‌بندی",
+        "main_tag": "نام دقیق یکی از دسته‌بندی‌ها"
+        }}
         متنی که باید طبقه بندی کنی:"""
         messages.append({"role": "user", "content": main_prompt})
         messages.append({"role": "user", "content": clean_text})
@@ -114,17 +138,29 @@ class GemmaCategorizer(BaseCategorizer):
 
         messages = self._build_messages(text, reason_summary)
 
-        completion = self.client.chat.completions.create(
+        completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=messages,
             # Use guided choice to have structured output
             extra_body={"guided_choice": self.CATEGORIES},
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "NER",
+                    "schema": Output.model_json_schema(),
+                },
+            },
             temperature=self.temperature,
             **self.client_kwargs,
         )
         response = completion.choices[0].message.content
 
+        # Remove Markdown-style triple backticks and any optional language tag like "json"
+        if response.startswith("```"):
+            response = re.sub(r"^```(?:json)?\s*|```$", "", response.strip())
+
+        entities = json.loads(response)
+        main_tag = entities["main_tag"]
         # Dispatch and return - Note: _dispatch expects dict
-        print(response)
-        self._dispatch(results={"main_tag": response})
-        return {"main_tag": response}
+        self._dispatch(results={"main_tag": main_tag})
+        return {"main_tag": main_tag}
