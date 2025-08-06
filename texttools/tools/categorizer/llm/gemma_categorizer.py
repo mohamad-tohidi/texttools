@@ -146,7 +146,7 @@ class GemmaCategorizer(BaseCategorizer):
             response_format={
                 "type": "json_schema",
                 "json_schema": {
-                    "name": "NER",
+                    "name": "categorization",
                     "schema": Output.model_json_schema(),
                 },
             },
