@@ -83,7 +83,8 @@ class GemmaCategorizer(BaseCategorizer):
                 {"role": "user", "content": f"Based on this analysis: {reason}"}
             )
 
-        main_prompt = f"""تو یک متخصص علوم دینی هستی
+        main_prompt = f"""
+        تو یک متخصص علوم دینی هستی
         من به عنوان کاربر یک متن به تو میدم و از تو میخوام که
         اون متن رو در یکی از دسته بندی های زیر طبقه بندی کنی
         {[category for category in self.CATEGORIES]}
@@ -91,12 +92,12 @@ class GemmaCategorizer(BaseCategorizer):
         در اون بخش، دلیل انتخاب دسته بندی رو به صورت خلاصه بیاور
         در پاسخ، فقط یک شیء JSON برگردان که دو فیلد داشته باشد:
 
-        ```json
         {{
         "reason": "دلیل کوتاه برای انتخاب این دسته‌بندی",
         "main_tag": "نام دقیق یکی از دسته‌بندی‌ها"
         }}
-        متنی که باید طبقه بندی کنی:"""
+        متنی که باید طبقه بندی کنی:
+        """
         messages.append({"role": "user", "content": main_prompt})
         messages.append({"role": "user", "content": clean_text})
 
@@ -108,11 +109,13 @@ class GemmaCategorizer(BaseCategorizer):
         """
         Internal reasoning step to help the model analyze the text for categorization.
         """
-        reason_prompt = f"""هدف ما طبقه بندی متن هست
+        reason_prompt = f"""
+        هدف ما طبقه بندی متن هست
         متن رو بخون و ایده اصلی و آنالیزی کوتاه از اون رو ارائه بده
         بسیار خلاصه باشه خروجی تو
         نهایتا 20 کلمه 
-        {text}"""
+        {text}
+        """
         messages = [{"role": "user", "content": reason_prompt}]
 
         restrucruted = self.chat_formatter.format(messages=messages)
