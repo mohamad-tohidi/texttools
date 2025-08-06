@@ -1,5 +1,15 @@
 # Text Tools
 
+<p align="center">
+  <img src="https://img.shields.io/badge/TextTools-Python%20Text%20Processing-black?style=for-the-badge&logo=python&logoColor=white">
+</p>
+
+
+<p align="center">
+  <img src="docs/logo.png" alt="Preview" width="300" height="300">
+</p>
+
+
 ### How to Install
 
 Install the package using:
@@ -7,6 +17,7 @@ Install the package using:
 ```bash
 pip install -U git+https://git.t.etratnet.ir/AI/texttools
 ```
+
 
 ---
 
