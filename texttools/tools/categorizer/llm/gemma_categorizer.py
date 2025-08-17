@@ -4,7 +4,7 @@ from openai import OpenAI
 from pydantic import BaseModel
 
 from texttools.base.base_categorizer import BaseCategorizer
-from texttools.formatter import Gemma3Formatter
+from texttools.formatter.gemma3_formatter import Gemma3Formatter
 from texttools.handlers import ResultHandler
 
 
