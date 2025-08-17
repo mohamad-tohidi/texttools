@@ -1,6 +1,6 @@
 from typing import Literal
 
-from .base import ChatFormatter
+from texttools.formatter.base import ChatFormatter
 
 
 class Gemma3Formatter(ChatFormatter):
