@@ -25,8 +25,15 @@ class Gemma3Formatter(ChatFormatter):
 
         merged: list[dict[str, str]] = []
 
-        for msg in messages:
-            role, content = msg[self.ROLE], msg[self.CONTENT].strip()
+        for message in messages:
+            # Validate keys strictly
+            expected_keys = {"role", "content"}
+            if set(message.keys()) != expected_keys:
+                raise ValueError(
+                    f"Message dict keys must be exactly {expected_keys}, got {set(message.keys())}"
+                )
+
+            role, content = message[self.ROLE], message[self.CONTENT].strip()
 
             # Replace "system" role with "user" role
             if role == "system":
