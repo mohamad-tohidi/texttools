@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 
@@ -75,7 +75,7 @@ class BatchJobRunner:
         Path(self.config.BASE_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
 
     def _init_manager(self) -> SimpleBatchManager:
-        load_dotenv()
+        # load_dotenv()
         api_key = os.getenv("OPENAI_API_KEY")
         client = OpenAI(api_key=api_key)
         return SimpleBatchManager(
