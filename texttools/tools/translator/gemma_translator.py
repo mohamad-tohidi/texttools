@@ -1,12 +1,12 @@
-from typing import Any, Optional
-import re
 import json
+import re
+from typing import Any, Optional
 
 from openai import OpenAI
 from pydantic import BaseModel
 
 from texttools.base.base_translator import BaseTranslator
-from texttools.formatter.gemma3_fromatter import Gemma3Formatter
+from texttools.formatter.gemma3_formatter import Gemma3Formatter
 
 
 # Pydantic BaseModel to specify the output format of preprocessor
