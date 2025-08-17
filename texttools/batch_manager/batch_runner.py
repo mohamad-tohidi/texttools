@@ -89,6 +89,7 @@ class BatchJobRunner:
         with open(self.input_data_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         data = self.config.export_function(data)
+
         # Validation: ensure data is a list of dicts with 'id' and 'content' as strings
         if not isinstance(data, list):
             raise ValueError(

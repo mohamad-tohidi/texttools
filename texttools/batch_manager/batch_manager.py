@@ -3,11 +3,10 @@ import uuid
 from pathlib import Path
 from typing import Any, Optional, Type
 
+from pydantic import BaseModel
 from openai import OpenAI
 from openai.lib._pydantic import to_strict_json_schema
-
 # from openai.lib._parsing._completions import type_to_response_format_param
-from pydantic import BaseModel
 
 
 class SimpleBatchManager:
@@ -51,14 +50,14 @@ class SimpleBatchManager:
                 return json.load(f)
         return []
 
-    def _save_state(self, job_name: str, jobs: list[dict[str, Any]]):
+    def _save_state(self, job_name: str, jobs: list[dict[str, Any]]) -> None:
         """
         Saves the job state to the state file for the given job name.
         """
         with open(self._state_file(job_name), "w", encoding="utf-8") as f:
             json.dump(jobs, f)
 
-    def _clear_state(self, job_name: str):
+    def _clear_state(self, job_name: str) -> None:
         """
         Deletes the state file for the given job name if it exists.
         """
@@ -162,7 +161,7 @@ class SimpleBatchManager:
         print("HERE is the job", job)
         return job["status"]
 
-    def _parsed(self, result: dict):
+    def _parsed(self, result: dict) -> list:
         """
         Parses the result dictionary, extracting the desired output or error for each item.
         Returns a list of dictionaries with 'id' and 'output' keys.
@@ -180,7 +179,7 @@ class SimpleBatchManager:
         # return modified_result , errors
 
     def fetch_results(
-        self, job_name: str, remove_cache=True
+        self, job_name: str, remove_cache: bool = True
     ) -> tuple[dict[str, str], list]:
         """
         Fetches the results of a completed batch job. Optionally saves the results to a file and/or removes the job cache.
@@ -235,7 +234,7 @@ class SimpleBatchManager:
 
         for handler in self.handlers:
             handler.handle(results)
-        if remove_cache == True:
+        if remove_cache:
             self._clear_state(job_name)
         # results = {"results": results, "log": log}
         # return results

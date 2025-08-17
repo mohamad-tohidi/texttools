@@ -53,8 +53,7 @@ class GemmaTranslator(BaseTranslator):
     ) -> list[dict[str, str]]:
         messages: list[dict[str, str]] = []
 
-        # This prompt will enforce LLM to output in the required format
-        # This prompt also gives initial information about translation like languages and proper names
+        # This prompt gives initial information about translation like languages and proper names
         enforce_prompt = f"""
         You are a {source_language}-to-{target_language} translator.
         Important Rule: The following are proper names and must NOT be translated.
@@ -70,9 +69,11 @@ class GemmaTranslator(BaseTranslator):
 
         clean_text = text.strip()
         if reason:
-            reason_prompt = f"""Based on the analysis conducted, translate the following text {"from" + source_language if source_language else ""} to {target_language}.
+            reason_prompt = f"""
+            Based on the analysis conducted, translate the following text {"from" + source_language if source_language else ""} to {target_language}.
             The text to be translated is: "{clean_text}"
-            The analysis conducted: {reason}"""
+            The analysis conducted: {reason}
+            """
             messages.append({"role": "user", "content": reason_prompt})
         else:
             regular_prompt = f"""Translate the following text from {source_language or "original"} to {target_language}: 
@@ -83,18 +84,20 @@ class GemmaTranslator(BaseTranslator):
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
 
-        return messages
+        restructured = self.chat_formatter.format(messages=messages)
 
-    def _reason(
-        self, text: str, target_language: str, source_language: Optional[str] = None
-    ) -> str:
+        return restructured
+
+    def _reason(self, text: str, target_language: str) -> str:
         """
         Internal reasoning step to help the model with translation.
         """
 
-        reason_step_prompt = f"""Analyze the following text and identify important linguistic considerations for translation.
+        reason_step_prompt = f"""
+        Analyze the following text and identify important linguistic considerations for translation.
         Do not translate the text. Point out any idioms, cultural references, or complex structures that need special attention.
-        Also, list all proper nouns that should not be translated. Write your analysis in the {target_language}."""
+        Also, list all proper nouns that should not be translated. Write your analysis in the {target_language}.
+        """
         messages = [
             {"role": "user", "content": reason_step_prompt},
             {"role": "user", "content": text},
@@ -109,6 +112,50 @@ class GemmaTranslator(BaseTranslator):
         )
 
         return completion.choices[0].message.content.strip()
+
+    def preprocess(self, text: str) -> list:
+        """
+        Preprocessor that finds proper names of Islamic figures. The extractions will be given to the
+        LLm in order to know that it shouldn't translate them, but transliterate them.
+        """
+
+        messages: list[dict[str, str]] = []
+
+        main_prompt = """
+        You must detect proper names of people.
+        Your task is to extract a JSON list of entities from the given input. For each entity, include:
+        text: The exact matched string from the original.
+        type: Only include "Proper Name" for actual names of real people. 
+        If there is no proper name in the following text, return empty json.
+        """
+        messages.append({"role": "user", "content": main_prompt})
+
+        text_prompt = f"""The text to be extracted is:{text}"""
+        messages.append({"role": "user", "content": text_prompt})
+
+        restructured = self.chat_formatter.format(messages=messages)
+        completion = self.client.chat.completions.create(
+            model=self.model,
+            messages=restructured,
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "NER",
+                    "schema": PreprocessorOutput.model_json_schema(),
+                },
+            },
+            temperature=self.temperature,
+            **self.client_kwargs,
+        )
+        response = completion.choices[0].message.content
+
+        # Remove Markdown-style triple backticks and any optional language tag like "json"
+        if response.startswith("```"):
+            response = re.sub(r"^```(?:json)?\s*|```$", "", response.strip())
+
+        entities = json.loads(response)
+
+        return entities
 
     def translate(
         self, text: str, target_language: str, source_language: Optional[str] = None
@@ -133,7 +180,7 @@ class GemmaTranslator(BaseTranslator):
             f"Translating to {target_language} from {source_language or 'original'}..."
         )
         print(
-            f"Reasoning: {reason_summary}" if reason_summary else "No reasoning used."
+            f"Reasoning: {reason_summary}" if reason_summary else "Reasoning not used."
         )
 
         completion = self.client.chat.completions.create(
@@ -153,43 +200,3 @@ class GemmaTranslator(BaseTranslator):
             }
         )
         return response
-
-    def preprocess(self, text: str) -> list:
-        """Preprocessor that finds proper names of Islamic figures. The extractions will be given to the
-        LLm in order to know that it shouldn't translate them, but transliterate them."""
-
-        messages: list[dict[str, str]] = []
-
-        main_prompt = """You must detect proper names of people.
-        Your task is to extract a JSON list of entities from the given input. For each entity, include:
-        text: The exact matched string from the original.
-        type: Only include "Proper Name" for actual names of real people. 
-        If there is no proper name in the following text, return empty json."""
-
-        messages.append({"role": "user", "content": main_prompt})
-
-        text_prompt = f"""The text to be extracted is:{text}"""
-        messages.append({"role": "user", "content": text_prompt})
-
-        completion = self.client.chat.completions.create(
-            model=self.model,
-            messages=messages,
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "NER",
-                    "schema": PreprocessorOutput.model_json_schema(),
-                },
-            },
-            temperature=self.temperature,
-            **self.client_kwargs,
-        )
-        response = completion.choices[0].message.content
-
-        # Remove Markdown-style triple backticks and any optional language tag like "json"
-        if response.startswith("```"):
-            response = re.sub(r"^```(?:json)?\s*|```$", "", response.strip())
-
-        entities = json.loads(response)
-
-        return entities
