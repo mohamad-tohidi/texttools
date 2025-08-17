@@ -1,3 +1,24 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "hamta-texttools"
+version = "0.1.42"
+description = "A set of high-level NLP tools"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  { name = "Tohidi" },
+  { name = "Montazer" },
+  { name = "Givechi" },
+  { name = "mousavinezhad" }
+]
+dependencies = [
+  "openai==1.97.1",
+  "numpy==1.26.4",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["texttools*"]
