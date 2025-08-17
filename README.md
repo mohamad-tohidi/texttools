@@ -15,7 +15,7 @@
 Install the package using:
 
 ```bash
-pip install -U git+https://git.t.etratnet.ir/AI/texttools
+pip install -U hamta-texttools
 ```
 
 
