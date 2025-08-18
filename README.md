@@ -10,7 +10,7 @@
 </p>
 
 
-### How to Install
+## How to Install
 
 Install the package using:
 
