@@ -1,5 +1,3 @@
-from typing import Literal
-
 from texttools.formatter.base import ChatFormatter
 
 
@@ -10,14 +8,13 @@ class Gemma3Formatter(ChatFormatter):
     """
 
     ROLE = "role"
+    CONTENT = "content"
     USER_ROLE = "user"
     ASSISTANT_ROLE = "assistant"
-    CONTENT = "content"
     VALID_ROLES = {USER_ROLE, ASSISTANT_ROLE}
+    VALID_KEYS = {ROLE, CONTENT}
 
-    def format(
-        self, messages: list[dict[Literal["role", "content"], str]]
-    ) -> list[dict[str, str]]:
+    def format(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
         """
         :param messages: list of {"role": ..., "content": ...}, where role is "user", "assistant", or "system"
         :return: a new list where consecutive "user" messages are merged into single entries
@@ -25,14 +22,20 @@ class Gemma3Formatter(ChatFormatter):
 
         merged: list[dict[str, str]] = []
 
-        for msg in messages:
-            role, content = msg[self.ROLE], msg[self.CONTENT].strip()
+        for message in messages:
+            # Validate keys strictly
+            if set(message.keys()) != self.VALID_KEYS:
+                raise ValueError(
+                    f"Message dict keys must be exactly {self.VALID_KEYS}, got {set(message.keys())}"
+                )
+
+            role, content = message[self.ROLE], message[self.CONTENT].strip()
 
             # Replace "system" role with "user" role
             if role == "system":
                 role = self.USER_ROLE
 
-            # Raise value error if msg["role"] wan't a valid role
+            # Raise value error if message["role"] wan't a valid role
             if role not in self.VALID_ROLES:
                 raise ValueError(f"Unexpected role: {role}")
 
