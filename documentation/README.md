@@ -1,4 +1,6 @@
-# Example Python Notebooks
+# 📘 TextTools Tutorials
 
-A collection of **ready-to-run notebooks** that act as step-by-step tutorials.  
-Easy to run, simple to follow, and ready to adapt for your own projects.
+This folder contains **Jupyter Notebook tutorials** demonstrating how to use the tools available in the TextTools package.  
+Each notebook provides examples and explanations to help you integrate and apply the tools effectively.
+
+👉 Use these tutorials as a guide to explore features like Question Detection, Categorization, NER, Translation, and more.
