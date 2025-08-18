@@ -6,45 +6,91 @@
 
 
 <p align="center">
-  <img src="docs/logo.png" alt="Preview" width="300" height="300">
+  <img src="files/logo.png" alt="Preview" width="300" height="300">
 </p>
 
+---
 
-## How to Install
+## 📌 Overview
 
-Install the package using:
+**TextTools** is a high-level **NLP toolkit** built on top of modern **LLMs**.  
+It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER, and more** — designed to help you integrate AI-powered text processing into your applications with minimal effort.
+
+Forget boilerplate and low-level utilities — TextTools makes advanced LLM workflows feel like calling a simple Python function.
+
+---
+
+## ✨ Features
+
+TextTools provides a rich collection of high-level NLP utilities built on top of LLMs.  
+Each tool is designed to work out-of-the-box with structured outputs (JSON / Pydantic).
+
+- **Categorizer** → Zero-finetuning text categorization for fast, scalable classification.  
+- **Keyword Extractor** → Identify the most important keywords in a text.  
+- **Merger** → Merge the provided questions, preserving all the main points 
+- **NER (Named Entity Recognition)** → Extract people, places, organizations, and other entities.  
+- **Question Detector** → Determine whether a text is a question or not.  
+- **Question Generator** → Generate high-quality, context-relevant questions.
+- **Rewriter** → Rewrite text while preserving meaning or without it.
+- **Summarizer** → Condense long passages into clear, structured summaries. 
+- **Translator** → Translate text across multiple languages, with support for custom rules.
+
+
+---
+
+## 🚀 Installation
+
+Install the latest release via PyPI:
 
 ```bash
 pip install -U hamta-texttools
 ```
 
+---
+
+## ⚡ Quick Start
+
+```python
+from texttools.tools import QuestionDetector, Translator
+
+# Example: Question Detection
+qd = QuestionDetector()
+print(qd.detect("Is this project open source?"))
+# Output: True
+
+# Example: Translation
+translator = Translator(target_language="English")
+print(translator.translate("سلام، حالت چطوره؟"))
+# Output: "Hi! How are you?"
+```
 
 ---
 
-## What This Library Is *Not*
+## 📚 Use Cases
 
-This is **not** a collection of low-level utilities.
+Use **TextTools** when you need to:
 
-To clarify: this library **does not** include things like:
-- An standard `regex`
-- Word normalization utilities
-
----
-
-## What This Library *Provides*
-
-This is a set of **high-level natural language processing (NLP)** tools.
-
-Some of the features include:
-- `question_detector`: Detecting if an incoming text is a question or not
-- `categorizer`: No finetuning need, categorizer
-- ... (Tell me what you want!)
+- 🔍 **Classify** large datasets quickly without model training  
+- 🌍 **Translate** and process multilingual corpora with ease  
+- 🧩 **Integrate** LLMs into production pipelines (structured outputs)  
+- 📊 **Analyze** large text collections using embeddings and categorization  
+- ⚙️ **Automate** common text-processing tasks without reinventing the wheel  
 
 ---
 
-## When to Use This Library
+## 🤝 Contributing
 
-Use `texttools` when:
-- You need to **process large volumes of data using OpenAI’s GPT models** via the BATCH API.
-- You want to treat an **LLM as a function** in Python that outputs structured JSON or Pydantic models.
-- You need to **categorize large datasets** using vector embeddings, efficiently and at scale.
+Contributions are welcome!  
+Feel free to **open issues, suggest new features, or submit pull requests**.  
+
+---
+
+## 📌 Roadmap
+
+- [ ] Add other AI utilities   
+- [ ] Improve performance  
+- [ ] And more!
+
+---
+
+<p align="center">🚀 Empower your text with <b>TextTools</b> 🚀</p>
