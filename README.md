@@ -6,7 +6,7 @@
 
 
 <p align="center">
-  <img src="docs/logo.png" alt="Preview" width="300" height="300">
+  <img src="files/logo.png" alt="Preview" width="300" height="300">
 </p>
 
 
