@@ -7,6 +7,8 @@ import yaml
 from openai import OpenAI
 from pydantic import BaseModel
 
+from texttools.formatter.gemma3_fromatter import Gemma3Formatter
+
 T = TypeVar("T", bound=BaseModel)
 
 
@@ -19,8 +21,8 @@ class BaseTool:
     """
 
     # These will be set by subclass
-    PROMPT_FILE: str = ""
-    OUTPUT_MODEL: Type[T]
+    prompt_file: str = ""
+    output_model: Type[T]
 
     def __init__(
         self,
@@ -28,7 +30,7 @@ class BaseTool:
         *,
         model: str,
         prompts_dir: str = "prompts",
-        chat_formatter: Optional[Any] = None,
+        chat_formatter=Gemma3Formatter(),
         use_reason: bool = False,
         temperature: float = 0.0,
         handlers: Optional[list[Any]] = None,
@@ -84,8 +86,8 @@ class BaseTool:
         self, input_text: str, reason: Optional[str]
     ) -> List[Dict[str, str]]:
         prompt = self.main_template.format(input=input_text, reason=(reason or ""))
-        msgs = [{"role": "user", "content": prompt}]
-        return self._apply_formatter(msgs)
+        messages = [{"role": "user", "content": prompt}]
+        return self._apply_formatter(messages)
 
     def run(self, input_text: str) -> T:
         clean = input_text.strip()

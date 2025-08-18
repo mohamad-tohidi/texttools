@@ -1,11 +1,9 @@
-# texttools/tools/gemma_categorizer.py
 from typing import Literal
 
 from openai import OpenAI
 from pydantic import BaseModel
 
-from base_tool import BaseTool
-from texttools.formatter.gemma3_fromatter import Gemma3Formatter
+from ...base_tool import BaseTool
 
 
 class Output(BaseModel):
@@ -33,11 +31,11 @@ class Categorizer(BaseTool):
             client,
             model=model,
             use_reason=use_reason,
-            chat_formatter=Gemma3Formatter(),
             **kwargs,
         )
 
     def categorize(self, text: str) -> dict:
         parsed: Output = self.run(text)
-        self._dispatch(results={"main_tag": parsed.main_tag})
-        return parsed.dict()
+        results = {"main_tag": parsed.main_tag}
+        self._dispatch(results)
+        return results

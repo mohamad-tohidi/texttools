@@ -7,5 +7,5 @@ client = OpenAI(
 )
 
 tool = Categorizer(client=client, model="gemma-3", use_reason=False)
-res = tool.categorize("یک متن نمونه برای بررسی")
-print(res)
+c = tool.categorize("یک متن نمونه برای بررسی")
+print(c)

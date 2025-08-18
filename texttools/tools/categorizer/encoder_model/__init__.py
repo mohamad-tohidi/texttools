@@ -1,1 +1,0 @@
-from .encoder_vectorizer import EmbeddingCategorizer
