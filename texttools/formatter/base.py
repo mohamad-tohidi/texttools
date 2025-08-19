@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional
 
 
-class ChatFormatter(ABC):
+class BaseFormatter(ABC):
     """
     Given (raw_text, reason, maybe other hints), produce whatever payload
     A) single string prompt (for providers that don t support multiple messages), or

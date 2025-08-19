@@ -1,1 +1,1 @@
-from .gemma3_formatter import Gemma3Formatter
+from .formatter import Formatter

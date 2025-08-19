@@ -1,7 +1,7 @@
-from texttools.formatter.base import ChatFormatter
+from texttools.formatter.base import BaseFormatter
 
 
-class Gemma3Formatter(ChatFormatter):
+class Formatter(BaseFormatter):
     """
     Formatter that merges consecutive user messages (strings) with '\n'
     and leaves assistant messages alone. No image‐handling, no extra tokens.
