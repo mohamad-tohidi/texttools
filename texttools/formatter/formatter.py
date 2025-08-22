@@ -1,10 +1,10 @@
-from texttools.formatter.base import BaseFormatter
+from texttools.formatter.base_formatter import BaseFormatter
 
 
 class Formatter(BaseFormatter):
     """
-    Formatter that merges consecutive user messages (strings) with '\n'
-    and leaves assistant messages alone. No image‐handling, no extra tokens.
+    Formatter that merges consecutive user messages (strings) with blank line.
+    It leaves assistant messages alone.
     """
 
     ROLE = "role"
@@ -15,11 +15,6 @@ class Formatter(BaseFormatter):
     VALID_KEYS = {ROLE, CONTENT}
 
     def format(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
-        """
-        :param messages: list of {"role": ..., "content": ...}, where role is "user", "assistant", or "system"
-        :return: a new list where consecutive "user" messages are merged into single entries
-        """
-
         merged: list[dict[str, str]] = []
 
         for message in messages:
