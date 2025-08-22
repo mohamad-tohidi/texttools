@@ -5,17 +5,17 @@ from texttools.base_tool import BaseTool
 
 
 class Output(BaseModel):
-    is_question: bool
+    summary: str
 
 
-class QuestionDetector(BaseTool):
+class Summarizer(BaseTool):
     """
-    Simplified binary question detector.
-    Outputs JSON with a single boolean field: {"is_question": true|false}.
+    Summarizer.
+    Outputs JSON with a single string field: {"summary": "..."}.
     Optionally includes reasoning when `use_reason=True`.
     """
 
-    prompt_file = "question_detector.yaml"
+    prompt_file = "categorizer.yaml"
     output_model = Output
 
     def __init__(
@@ -28,8 +28,8 @@ class QuestionDetector(BaseTool):
             **kwargs,
         )
 
-    def detect(self, text: str) -> dict:
+    def summarize(self, text: str) -> dict:
         parsed: Output = self.run(text)
-        result = {"is_question": parsed.is_question}
-        self._dispatch({"question": text, "result": result})
+        result = {"summary": parsed.summary}
+        self._dispatch(result)
         return result
