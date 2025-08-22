@@ -1,0 +1,17 @@
+main_template: |
+  Identify and extract all named entities (e.g., PER, ORG, LOC, DAT, etc.) from the following text. For each entity, provide its text and a clear type. Respond as a JSON array of objects.
+  {input}
+  Respond only in JSON format:
+  {{
+    "entities": [
+      {{
+        "text": "string",
+        "type": "string",
+      }}
+    ]
+  }}
+
+reason_template: |
+  Read the following text and identify any proper nouns, key concepts, or specific mentions that might represent named entities.
+  Provide a brief, summarized analysis that could help in categorizing these entities.
+  {input}
