@@ -8,3 +8,4 @@ reason_template: |
   Read the following text and identify its main points, key arguments, and overall purpose.
   Provide a brief, summarized analysis that will help in generating an accurate and concise summary.
   {input}
+  

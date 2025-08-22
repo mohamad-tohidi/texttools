@@ -5,17 +5,17 @@ from texttools.base_tool import BaseTool
 
 
 class Output(BaseModel):
-    summary: str
+    generated_question: str
 
 
-class Summarizer(BaseTool):
+class QuestionGenerator(BaseTool):
     """
-    Summarizer.
-    Outputs JSON with a single string field: {"summary": "..."}.
+    Question Generator for Gemma-style models with optional reasoning step.
+    Outputs JSON with a single string field: {"generated_question": "..."}.
     Optionally includes reasoning when `use_reason=True`.
     """
 
-    prompt_file = "summarizer.yaml"
+    prompt_file = "question_generator.yaml"
     output_model = Output
 
     def __init__(
@@ -28,8 +28,8 @@ class Summarizer(BaseTool):
             **kwargs,
         )
 
-    def summarize(self, text: str) -> dict:
+    def generate_question(self, text: str) -> str:
         parsed: Output = self.run(text)
-        result = {"summary": parsed.summary}
+        result = {"generated_question": parsed.generated_question}
         self._dispatch(result)
         return result
