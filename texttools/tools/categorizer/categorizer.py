@@ -21,6 +21,14 @@ class Output(BaseModel):
 
 
 class Categorizer(BaseTool):
+    """
+    Text categorizer for Islamic studies domain.
+    Uses an LLM prompt (`categorizer.yaml`) to assign a single `main_tag`
+    from a fixed set of categories (e.g., "باورهای دینی", "اخلاق اسلامی", ...).
+    Outputs JSON with one field: {"main_tag": "<category>"}.
+    Optionally includes reasoning when `use_reason=True`.
+    """
+
     prompt_file = "categorizer.yaml"
     output_model = Output
 
@@ -36,6 +44,6 @@ class Categorizer(BaseTool):
 
     def categorize(self, text: str) -> dict:
         parsed: Output = self.run(text)
-        results = {"main_tag": parsed.main_tag}
-        self._dispatch(results)
-        return results
+        result = {"main_tag": parsed.main_tag}
+        self._dispatch(result)
+        return result
