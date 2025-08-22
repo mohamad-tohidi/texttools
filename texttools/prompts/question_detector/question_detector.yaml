@@ -1,34 +1,11 @@
 main_template: |
-  تو یک متخصص علوم دینی هستی.
-  من به عنوان کاربر یک متن به تو می‌دهم و از تو می‌خواهم که
-  آن متن را در یکی از دسته‌بندی‌های زیر طبقه‌بندی کنی:
-
-  "باورهای دینی",
-  "اخلاق اسلامی",
-  "احکام و فقه",
-  "تاریخ اسلام و شخصیت ها",
-  "منابع دینی",
-  "دین و جامعه/سیاست",
-  "عرفان و معنویت",
-  "هیچکدام",
-
-  اگر بخش Reason داده شده بود، تحلیل خیلی کوتاه را در نظر بگیر:
-  {reason}
-
-  در خروجی JSON فقط این فیلدها را برگردان:
-  {{
-    "reason": "<خلاصه دلیل انتخاب>",
-    "main_tag": "<یکی از دسته‌ها دقیقا طبق لیست بالا>"
-  }}
-
-  متنی که باید طبقه‌بندی کنی:
+  Determine that if the following text contains any question or request of some kind or not.
+  Respond only in JSON format:
+  {{"is_question": "true|false"}}
   {input}
 
 reason_template: |
-  هدف ما طبقه بندی متن است.
-  متن را بخوان و ایده اصلی و یک آنالیز خیلی کوتاه ارائه بده.
-  نهایتاً ۲۰ کلمه.
-
-  متن:
+  We want to analyze this text snippet to see if it contains any question or request of some kind or not.
+  Read the text, and reason about it being a request or not.
+  Summerized, Short answer
   {input}
-  

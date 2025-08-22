@@ -28,7 +28,7 @@ class QuestionGenerator(BaseTool):
             **kwargs,
         )
 
-    def generate_question(self, text: str) -> str:
+    def generate_question(self, text: str) -> dict[str, str]:
         parsed: Output = self.run(text)
         result = {"generated_question": parsed.generated_question}
         self._dispatch(result)

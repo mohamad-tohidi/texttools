@@ -7,5 +7,5 @@ client = OpenAI(
 )
 
 tool = QuestionDetector(client=client, model="gemma-3", use_reason=False)
-c = tool.detect("یک متن نمونه برای بررسی")
+c = tool.detect("پایتخت فرانسه چیست؟")
 print(c)

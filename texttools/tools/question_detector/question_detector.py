@@ -28,7 +28,7 @@ class QuestionDetector(BaseTool):
             **kwargs,
         )
 
-    def detect(self, text: str) -> dict:
+    def detect(self, text: str) -> dict[str, str]:
         parsed: Output = self.run(text)
         result = {"is_question": parsed.is_question}
         self._dispatch({"question": text, "result": result})

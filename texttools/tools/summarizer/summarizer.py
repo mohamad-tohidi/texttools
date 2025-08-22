@@ -28,7 +28,7 @@ class Summarizer(BaseTool):
             **kwargs,
         )
 
-    def summarize(self, text: str) -> dict:
+    def summarize(self, text: str) -> dict[str, str]:
         parsed: Output = self.run(text)
         result = {"summary": parsed.summary}
         self._dispatch(result)

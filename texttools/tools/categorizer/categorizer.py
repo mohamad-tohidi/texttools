@@ -42,7 +42,7 @@ class Categorizer(BaseTool):
             **kwargs,
         )
 
-    def categorize(self, text: str) -> dict:
+    def categorize(self, text: str) -> dict[str, str]:
         parsed: Output = self.run(text)
         result = {"main_tag": parsed.main_tag}
         self._dispatch(result)
