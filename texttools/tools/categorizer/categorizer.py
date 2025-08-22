@@ -3,7 +3,7 @@ from typing import Literal
 from openai import OpenAI
 from pydantic import BaseModel
 
-from ...base_tool import BaseTool
+from texttools.base_tool import BaseTool
 
 
 class Output(BaseModel):

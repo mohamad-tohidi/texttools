@@ -38,7 +38,9 @@ class BaseTool:
     ):
         self.client: OpenAI = client
         self.model = model
-        self.prompts_dir = Path(prompts_dir)
+        self.prompts_dir = (
+            Path(__file__).parent / prompts_dir / self.prompt_file.removesuffix(".yaml")
+        )
         self.chat_formatter = chat_formatter
         self.use_reason = use_reason
         self.temperature = temperature
