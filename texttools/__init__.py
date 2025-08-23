@@ -1,4 +1,4 @@
-from texttools.batch_manager import BatchJobRunner, SimpleBatchManager
+from texttools.utils.batch_manager import BatchJobRunner, SimpleBatchManager
 from texttools.handlers import (
     NoOpResultHandler,
     PrintResultHandler,
