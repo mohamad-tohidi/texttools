@@ -5,8 +5,8 @@ from typing import Optional
 from pydantic import BaseModel, ValidationError
 import httpx
 
-http_client = httpx()
-sdg = OpenAI(http_client=http_client)
+# http_client = httpx()
+# test_client = OpenAI(http_client=http_client)
 
 async def flex_processing(
         LLM_client: OpenAI,
