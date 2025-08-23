@@ -7,12 +7,8 @@ class Formatter(BaseFormatter):
     It leaves assistant messages alone.
     """
 
-    ROLE = "role"
-    CONTENT = "content"
-    USER_ROLE = "user"
-    ASSISTANT_ROLE = "assistant"
-    VALID_ROLES = {USER_ROLE, ASSISTANT_ROLE}
-    VALID_KEYS = {ROLE, CONTENT}
+    VALID_ROLES = {"user", "assistant"}
+    VALID_KEYS = {"role", "content"}
 
     def format(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
         merged: list[dict[str, str]] = []
@@ -24,26 +20,22 @@ class Formatter(BaseFormatter):
                     f"Message dict keys must be exactly {self.VALID_KEYS}, got {set(message.keys())}"
                 )
 
-            role, content = message[self.ROLE], message[self.CONTENT].strip()
+            role, content = message["role"], message["content"].strip()
 
             # Replace "system" role with "user" role
             if role == "system":
-                role = self.USER_ROLE
+                role = "user"
 
             # Raise value error if message["role"] wan't a valid role
             if role not in self.VALID_ROLES:
                 raise ValueError(f"Unexpected role: {role}")
 
             # Merge with previous user turn
-            if (
-                merged
-                and role == self.USER_ROLE
-                and merged[-1][self.ROLE] == self.USER_ROLE
-            ):
-                merged[-1][self.CONTENT] += "\n" + content
+            if merged and role == "user" and merged[-1]["role"] == "user":
+                merged[-1]["content"] += "\n" + content
 
             # Otherwise, start a new turn
             else:
-                merged.append({self.ROLE: role, self.CONTENT: content})
+                merged.append({"role": role, "content": content})
 
         return merged
