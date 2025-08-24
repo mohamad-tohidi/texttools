@@ -62,12 +62,19 @@ class BaseTool:
         return [{"role": "user", "content": prompt}]
 
     def _build_messages(
-        self, input_text: str, reason: Optional[str]
+        self, input_text: str, reason: Optional[str], **extra_kwargs: Any
     ) -> list[dict[str, str]]:
-        main_prompt = self.main_template.format(input=input_text, reason=(reason or ""))
+        # Base formatting args
+        format_args = {
+            "input": input_text,
+            "reason": reason or "",
+        }
+        # Merge extras
+        format_args.update(extra_kwargs)
+
+        main_prompt = self.main_template.format(**format_args)
         messages = self._prompt_to_dict(main_prompt)
         formatted_messages = self._apply_formatter(messages)
-
         return formatted_messages
 
     def _reason(self, input_text: str) -> str:
@@ -92,7 +99,7 @@ class BaseTool:
             except Exception:
                 pass
 
-    def run(self, input_text: str) -> T:
+    def run(self, input_text: str, **kwargs) -> T:
         """
         Run the tool:
         - Optionally runs reasoning (if enabled).
@@ -106,7 +113,7 @@ class BaseTool:
         else:
             reason_text = None
 
-        messages = self._build_messages(cleaned_text, reason_text)
+        messages = self._build_messages(cleaned_text, reason_text, **kwargs)
 
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
