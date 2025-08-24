@@ -77,8 +77,15 @@ class BaseTool:
         formatted_messages = self._apply_formatter(messages)
         return formatted_messages
 
-    def _reason(self, input_text: str) -> str:
-        reason_prompt = self.reason_template.format(input=input_text)
+    def _reason(self, input_text: str, **extra_kwargs: Any) -> str:
+        # Base formatting args
+        format_args = {
+            "input": input_text,
+        }
+        # Merge extras
+        format_args.update(extra_kwargs)
+
+        reason_prompt = self.reason_template.format(**format_args)
         messages = self._prompt_to_dict(reason_prompt)
         formatted_messages = self._apply_formatter(messages)
 
@@ -109,7 +116,7 @@ class BaseTool:
         cleaned_text = input_text.strip()
 
         if self.use_reason and self.reason_template:
-            reason_text = self._reason(cleaned_text)
+            reason_text = self._reason(cleaned_text, **kwargs)
         else:
             reason_text = None
 
