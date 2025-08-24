@@ -1,0 +1,10 @@
+main_template: |
+  Extract the most relevant keywords from the following text. Provide them as a list of strings.
+  {input}
+  Respond only in JSON format:
+  {{"keywords": ["keyword1", "keyword2", ...]}}.
+
+reason_template: |
+  Analyze the following text to identify its main topics, concepts, and important terms.
+  Provide a concise summary of your findings that will help in extracting relevant keywords.
+  {input}
