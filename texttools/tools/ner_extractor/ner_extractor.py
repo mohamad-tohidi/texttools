@@ -1,7 +1,7 @@
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.base_tool import BaseTool
+from texttools.tools.base_tool import BaseTool
 
 
 class Output(BaseModel):
