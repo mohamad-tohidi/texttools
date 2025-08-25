@@ -1,7 +1,7 @@
 from texttools.formatter.base_formatter import BaseFormatter
 
 
-class Formatter(BaseFormatter):
+class UserMergeFormatter(BaseFormatter):
     """
     Formatter that merges consecutive user messages (strings) with blank line.
     It replaces system role with user role and doesn't change assistant messages.
