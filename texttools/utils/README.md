@@ -16,58 +16,55 @@ This tool is especially useful if you need to process thousands of inputs (NER, 
 
 ## Usage
 
-### 1. Define Your Output Model
+### 1. Import libraries
 
 ```python
-from pydantic import BaseModel
+from openai import OpenAI
 
+from texttools import SimpleBatchManager
+```
+
+### 2. Define output model
+
+```python
 class MyOutput(BaseModel):
-    label: str
-    score: float
+    is_question: bool
 ```
 
 ### 2. Initialize the Manager
 
 ```python
-from openai import OpenAI
-from simple_batch_manager import SimpleBatchManager
-
 client = OpenAI()
 
-prompt_template = "Classify the following text into sentiment categories."
+prompt_template = "You are a binary classifier. Answer only with `true` or `false"
+
+model = "gpt-4o-mini"
 
 manager = SimpleBatchManager(
     client=client,
-    model="gpt-4.1-mini",
-    output_model=MyOutput,
+    model=model,
     prompt_template=prompt_template,
+    output_model=MyOutput
 )
 ```
 
 ### 3. Start a Batch Job
 
 ```python
-payload = [
-    "I love this product!",
-    "This was the worst experience ever.",
-    "It’s okay, nothing special."
+inputs = [
+    "Is this a question?",
+    "Tell me a story.",
+    "What time is it?",
+    "Run the code."
 ]
 
-manager.start(payload, job_name="sentiment_job")
+manager.start(inputs, job_name="detect_questions")
 ```
 
-### 4. Check Job Status
+### 4. Fetch Results
 
 ```python
-status = manager.check_status("sentiment_job")
-print("Job status:", status)
-```
-
-### 5. Fetch Results
-
-```python
-results, log = manager.fetch_results("sentiment_job")
-
-print("Results:", results)
-print("Errors:", log)
+if processor.check_status("detect_questions") == "completed":
+    result = processor.fetch_results("detect_questions")
+    print(result["results"])
 ```
