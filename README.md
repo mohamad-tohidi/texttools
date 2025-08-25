@@ -57,6 +57,8 @@ from texttools.tools import QuestionDetector, Translator
 
 # Create your OpenAI client
 client = OpenAI(base_url = "your_url", API_KEY = "your_api_key")
+
+# Specify the model
 model = "gpt-4o-mini"
 
 # Example: Question Detection
@@ -65,7 +67,7 @@ print(qd.detect("Is this project open source?"))
 # Output: True
 
 # Example: Translation
-translator = Translator(target_language="English")
+translator = Translator(client = client, model = model)
 print(translator.translate("سلام، حالت چطوره؟"))
 # Output: "Hi! How are you?"
 ```
