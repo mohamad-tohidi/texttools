@@ -1,3 +1,5 @@
+from typing import Literal
+
 from openai import OpenAI
 from pydantic import BaseModel
 
@@ -26,7 +28,7 @@ class QuestionMerger(BaseTool):
         *,
         model: str,
         use_reason: bool = False,
-        mode: str,
+        mode: Literal["default_mode", "reason_mode"],
         **kwargs,
     ):
         super().__init__(
