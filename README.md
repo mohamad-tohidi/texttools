@@ -51,10 +51,16 @@ pip install -U hamta-texttools
 ## ⚡ Quick Start
 
 ```python
+from openai import OpenAI
+
 from texttools.tools import QuestionDetector, Translator
 
+# Create your OpenAI client
+client = OpenAI(base_url = "your_url", API_KEY = "your_api_key")
+model = "gpt-4o-mini"
+
 # Example: Question Detection
-qd = QuestionDetector()
+qd = QuestionDetector(client = client, model = model, use_reason = True)
 print(qd.detect("Is this project open source?"))
 # Output: True
 
