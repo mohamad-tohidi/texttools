@@ -23,12 +23,14 @@ class BaseTool:
     prompt_file: str = ""
 
     output_model: Type[T]
+    use_modes: bool = False
 
     def __init__(
         self,
         client: OpenAI,
         *,
         model: str,
+        mode: str = "",
         prompts_dir: str = "prompts",
         chat_formatter=Formatter(),
         use_reason: bool = False,
@@ -38,6 +40,7 @@ class BaseTool:
     ):
         self.client: OpenAI = client
         self.model = model
+        self.mode = mode
         self.prompts_dir = (
             Path(__file__).parent / prompts_dir / self.prompt_file.removesuffix(".yaml")
         )
@@ -49,10 +52,14 @@ class BaseTool:
         data = yaml.safe_load(
             (self.prompts_dir / self.prompt_file).read_text(encoding="utf-8")
         )
-        self.main_template = data["main_template"]
-        if not self.main_template:
-            raise ValueError(f"Missing `main_template` in {self.prompt_file}")
-        self.reason_template = data.get("reason_template")
+
+        if self.use_modes:
+            key = self.mode
+            self.main_template = data["main_template"][key]
+            self.reason_template = data.get("reason_template")[key]
+        else:
+            self.main_template = data["main_template"]
+            self.reason_template = data.get("reason_template")
 
     def _apply_formatter(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
         formatted = self.chat_formatter.format(messages=messages)
