@@ -9,3 +9,4 @@ reason_template: |
   Read the text, and reason about it being a request or not.
   Summerized, Short answer
   {input}
+  

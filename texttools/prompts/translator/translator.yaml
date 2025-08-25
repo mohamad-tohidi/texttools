@@ -9,3 +9,4 @@ reason_template: |
   Do not translate the text. Point out any idioms, cultural references, or complex structures that need special attention.
   Also, list all proper nouns that should not be translated. Write your analysis in the {target_language}.
   {input}
+  
