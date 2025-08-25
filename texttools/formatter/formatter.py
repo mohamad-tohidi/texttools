@@ -30,10 +30,6 @@ class UserMergeFormatter(BaseFormatter):
         for message in messages:
             role, content = message["role"], message["content"].strip()
 
-            # Replace "system" role with "user" role
-            if role == "system":
-                role = "user"
-
             # Merge with previous user turn
             if merged and role == "user" and merged[-1]["role"] == "user":
                 merged[-1]["content"] += "\n" + content

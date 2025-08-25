@@ -7,7 +7,7 @@ import yaml
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.formatter import Formatter
+from texttools.formatter import UserMergeFormatter
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -32,7 +32,7 @@ class BaseTool:
         model: str,
         mode: str = "",
         prompts_dir: str = "prompts",
-        chat_formatter=Formatter(),
+        chat_formatter=UserMergeFormatter(),
         use_reason: bool = False,
         temperature: float = 0.0,
         handlers: Optional[list[Any]] = None,
