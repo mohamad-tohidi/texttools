@@ -7,18 +7,19 @@ from texttools.base_tool import BaseTool
 
 
 class Output(BaseModel):
-    merged_question: str
+    rewritten_question: str
 
 
-class QuestionMerger(BaseTool):
+class QuestionRewriter(BaseTool):
     """
-    Questions merger with one mode for now:
-    1. merge the provided questions, preserving all the main points.
-    Outputs JSON with a single string field: {"merged_question": "..."}.
+    Question Rewriter with two modes:
+    1. Rewrite with same meaning, different wording.
+    2. Rewrite with different meaning, similar wording.
+    Outputs JSON with a single string field: {"rewritten_question": "..."}.
     Allows optional extra instructions via `prompt_template`.
     """
 
-    prompt_file = "question_merger.yaml"
+    prompt_file = "question_rewriter.yaml"
     output_model = Output
     use_modes = True
 
@@ -28,7 +29,10 @@ class QuestionMerger(BaseTool):
         *,
         model: str,
         use_reason: bool = False,
-        mode: Literal["default_mode", "reason_mode"],
+        mode: Literal[
+            "same_meaning_different_wording_mode",
+            "different_meaning_similar_wording_mode",
+        ],
         **kwargs,
     ):
         super().__init__(
@@ -39,12 +43,11 @@ class QuestionMerger(BaseTool):
             **kwargs,
         )
 
-    def merge_questions(
+    def rewrite_question(
         self,
-        questions: list[str],
+        question: str,
     ) -> dict[str, str]:
-        input_text = ", ".join(questions)
-        parsed: Output = self.run(input_text)
-        result = {"merged_question": parsed.merged_question}
+        parsed: Output = self.run(question)
+        result = {"rewritten_question": parsed.rewritten_question}
         self._dispatch(result)
         return result

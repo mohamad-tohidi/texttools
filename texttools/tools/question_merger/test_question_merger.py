@@ -9,7 +9,7 @@ client = OpenAI(
 tool = QuestionMerger(
     client=client, model="gemma-3", use_reason=False, mode="reason_mode"
 )
-c = tool.merge(
+c = tool.merge_questions(
     [
         "Is having a lot of friends good?",
         "Should I choose a lot amount of freinds?",

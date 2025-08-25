@@ -1,3 +1,42 @@
-main_template: |
+main_template:
 
-reason_template: |
+  same_meaning_different_wording_mode: |
+    Rewrite the following question using completely different wording and phrasing, 
+    ensuring its original meaning is perfectly preserved. The rewritten question 
+    should be distinct from the original but convey the exact same inquiry.
+    **respond in the language of the question**
+    Here is the question:
+    {input}
+    Respond only with the new generated question, without any additional information.
+    **the generated question will be in the language of the users input**
+
+  different_meaning_similar_wording_mode: |
+    Rewrite the following question using *very similar wording and phrasing* 
+    to the original, but ensure the rewritten question has a *completely different meaning*. 
+    Focus on subtle changes that drastically alter the intent or subject of the question.
+    **respond in the language of the question**
+    Here is the question:
+    {input}
+    Respond only with the new generated question, without any additional information.
+    **the generated question will be in the language of the users input**
+
+reason_template:
+
+  same_meaning_different_wording_mode: | 
+    Analyze the following question to identify its core intent, key concepts, 
+    and the specific information it is seeking.
+    Provide a brief, summarized understanding of the question's meaning that
+    will help in rephrasing it accurately without changing its intent.       
+    **respond in the language of the question**
+    Here is the question:
+    {input}
+
+  different_meaning_similar_wording_mode: |
+    Analyze the following question to identify its exact wording, phrasing,
+    and the literal meaning it conveys.
+    Provide a brief, summarized analysis of its linguistic structure and current meaning,
+    which will then be used to create a new question with similar words but a different meaning.      
+    **respond in the language of the question**
+    Here is the question:
+    {input}
+    
