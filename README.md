@@ -53,7 +53,7 @@ pip install -U hamta-texttools
 ```python
 from openai import OpenAI
 
-from texttools.tools import QuestionDetector, Translator
+from texttools import QuestionDetector, Translator
 
 # Create your OpenAI client
 client = OpenAI(base_url = "your_url", API_KEY = "your_api_key")
