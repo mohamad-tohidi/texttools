@@ -1,4 +1,4 @@
-# Prompt Folder README
+# Prompt Folder
 
 ## Overview
 This folder contains YAML files for all prompts used in the project. Each file represents a separate prompt template, which can be loaded by tools or scripts that require structured prompts for AI models.
