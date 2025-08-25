@@ -1,2 +1,6 @@
-from .batch_manager.batch_manager import SimpleBatchManager
-from .batch_manager.batch_runner import BatchJobRunner
+from .batch_manager import SimpleBatchManager, BatchJobRunner
+
+__all__ = [
+    "SimpleBatchManager",
+    "BatchJobRunner",
+]
