@@ -12,10 +12,10 @@ class Output(BaseModel):
 
 class QuestionMerger(BaseTool):
     """
-    Questions merger with one mode for now:
-    1. merge the provided questions, preserving all the main points.
-    Outputs JSON with a single string field: {"merged_question": "..."}.
-    Allows optional extra instructions via `prompt_template`.
+    Questions merger with optional reasoning step and two modes:
+    1. Default mode
+    2. Reason mode
+    Outputs JSON with one field: {"merged_question": "..."}.
     """
 
     prompt_file = "question_merger.yaml"

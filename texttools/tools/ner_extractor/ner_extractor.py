@@ -10,9 +10,8 @@ class Output(BaseModel):
 
 class NERExtractor(BaseTool):
     """
-    Named Entity Recognition (NER) system.
-    Outputs JSON with a single array field: {"entities": [{"text": "...", "type": "..."}, ...]}.
-    Optionally includes reasoning when `use_reason=True`
+    Named Entity Recognition (NER) system with optional reasoning step.
+    Outputs JSON with one field: {"entities": [{"text": "...", "type": "..."}, ...]}.
     """
 
     prompt_file = "ner_extractor.yaml"

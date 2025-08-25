@@ -10,9 +10,8 @@ class Output(BaseModel):
 
 class QuestionGenerator(BaseTool):
     """
-    Question Generator for Gemma-style models with optional reasoning step.
-    Outputs JSON with a single string field: {"generated_question": "..."}.
-    Optionally includes reasoning when `use_reason=True`.
+    Question Generator with optional reasoning step.
+    Outputs JSON with one field: {"generated_question": "..."}.
     """
 
     prompt_file = "question_generator.yaml"

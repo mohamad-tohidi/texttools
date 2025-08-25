@@ -10,9 +10,8 @@ class Output(BaseModel):
 
 class KeywordExtractor(BaseTool):
     """
-    Keyword extractor for Gemma-style models with optional reasoning step.
-    Outputs JSON with a single array field: {"keywords": ["keyword1", "keyword2", ...]}.
-    Allows optional extra instructions via `prompt_template`.
+    Keyword extractor for with optional reasoning step.
+    Outputs JSON with one field: {"keywords": ["keyword1", "keyword2", ...]}.
     """
 
     prompt_file = "keyword_extractor.yaml"

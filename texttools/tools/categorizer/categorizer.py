@@ -22,11 +22,10 @@ class Output(BaseModel):
 
 class Categorizer(BaseTool):
     """
-    Text categorizer for Islamic studies domain.
+    Text categorizer for Islamic studies domain with optional reasoning step.
     Uses an LLM prompt (`categorizer.yaml`) to assign a single `main_tag`
     from a fixed set of categories (e.g., "باورهای دینی", "اخلاق اسلامی", ...).
-    Outputs JSON with one field: {"main_tag": "<category>"}.
-    Optionally includes reasoning when `use_reason=True`.
+    Outputs JSON with one field: {"main_tag": "..."}.
     """
 
     prompt_file = "categorizer.yaml"

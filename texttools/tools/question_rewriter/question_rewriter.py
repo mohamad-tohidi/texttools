@@ -12,11 +12,10 @@ class Output(BaseModel):
 
 class QuestionRewriter(BaseTool):
     """
-    Question Rewriter with two modes:
+    Question Rewriter with optional reasoning step and two modes:
     1. Rewrite with same meaning, different wording.
     2. Rewrite with different meaning, similar wording.
-    Outputs JSON with a single string field: {"rewritten_question": "..."}.
-    Allows optional extra instructions via `prompt_template`.
+    Outputs JSON with one field: {"rewritten_question": "..."}.
     """
 
     prompt_file = "question_rewriter.yaml"

@@ -11,7 +11,7 @@ class Output(BaseModel):
 class Translator(BaseTool):
     """
     Translator with optional reasoning step.
-    Outputs only the translated text, without any additional structure.
+    Outputs JSON with one field: {"translation": "..."}.
     """
 
     prompt_file = "translator.yaml"

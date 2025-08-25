@@ -10,9 +10,8 @@ class Output(BaseModel):
 
 class QuestionDetector(BaseTool):
     """
-    Simplified binary question detector.
-    Outputs JSON with a single boolean field: {"is_question": true|false}.
-    Optionally includes reasoning when `use_reason=True`.
+    Binary question detector with optional reasoning step..
+    Outputs JSON with one field: {"is_question": true|false}.
     """
 
     prompt_file = "question_detector.yaml"

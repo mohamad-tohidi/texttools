@@ -12,7 +12,7 @@ class Output(BaseModel):
 class SubjectQuestionGenerator(BaseTool):
     """
     Question Generator with optional reasoning step.
-    Allows optional extra instructions via `prompt_template`.
+    Outputs JSON with one field: {"generated_questions": "..."}.
     """
 
     prompt_file = "subject_question_generator.yaml"

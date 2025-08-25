@@ -4,7 +4,7 @@ from texttools.formatter.base_formatter import BaseFormatter
 class Formatter(BaseFormatter):
     """
     Formatter that merges consecutive user messages (strings) with blank line.
-    It leaves assistant messages alone.
+    It replaces system role with user role and doesn't change assistant messages.
     """
 
     VALID_ROLES = {"user", "assistant"}

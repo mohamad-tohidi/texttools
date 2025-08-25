@@ -4,10 +4,10 @@ from typing import Any, Optional
 
 class BaseFormatter(ABC):
     """
-    Given (raw_text, reason, maybe other hints), produce whatever payload
-    A) single string prompt (for providers that don t support multiple messages), or
-    B) list of {role, content} dicts, or
-    C) whatever shape the provider needs.
+    Given (raw_text, reason, maybe other hints), produce whatever payload.
+    A) Single string prompt (for providers that don t support multiple messages) or
+    B) List of {role, content} dicts, or
+    C) Whatever shape the provider needs.
     """
 
     @abstractmethod

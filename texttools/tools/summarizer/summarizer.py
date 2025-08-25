@@ -10,9 +10,8 @@ class Output(BaseModel):
 
 class Summarizer(BaseTool):
     """
-    Summarizer.
-    Outputs JSON with a single string field: {"summary": "..."}.
-    Optionally includes reasoning when `use_reason=True`.
+    Summarizer with optional reasoning step.
+    Outputs JSON with one field: {"summary": "..."}.
     """
 
     prompt_file = "summarizer.yaml"
