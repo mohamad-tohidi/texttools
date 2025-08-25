@@ -5,9 +5,9 @@ from typing import Any, Optional
 class BaseFormatter(ABC):
     """
     Given (raw_text, reason, maybe other hints), produce whatever payload.
-    A) Single string prompt (for providers that don't support multiple messages) or
-    B) List of {role, content} dicts, or
-    C) Whatever shape the provider needs.
+    1. Single string prompt (for providers that don't support multiple messages)
+    2. List of {role, content} dicts
+    3. Whatever shape the provider needs
     """
 
     @abstractmethod
