@@ -1,5 +1,6 @@
-# SimpleBatchManager
+# Utils folder
 
+## Overview
 `SimpleBatchManager` is a lightweight Python utility that simplifies working with the [OpenAI Batch API](https://platform.openai.com/docs/guides/batch). It allows you to:
 
 - Efficiently submit **large volumes of prompts** for processing.  
@@ -13,7 +14,7 @@ This tool is especially useful if you need to process thousands of inputs (NER, 
 ---
 
 
-## 🚀 Usage
+## Usage
 
 ### 1. Define Your Output Model
 
