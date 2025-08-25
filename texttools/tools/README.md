@@ -1,4 +1,4 @@
-# Tools Folder
+# Tools
 
 ## Overview
 This folder contains all the **tools** provided by TextTools. Each tool is implemented as a Python class, designed to work with **LLMs** and structured outputs (e.g., Pydantic models, JSON).

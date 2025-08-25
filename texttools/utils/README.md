@@ -1,4 +1,4 @@
-# Utils folder
+# Utils
 
 ## Overview
 `SimpleBatchManager` is a lightweight Python utility that simplifies working with the [OpenAI Batch API](https://platform.openai.com/docs/guides/batch). It allows you to:
