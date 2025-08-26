@@ -48,6 +48,8 @@ class BaseTool:
         self.temperature = temperature
         self.handlers = handlers or []
         self.client_kwargs = client_kwargs
+
+        # Load prompts
         data = yaml.safe_load(
             (self.prompts_dir / self.prompt_file).read_text(encoding="utf-8")
         )
@@ -64,43 +66,21 @@ class BaseTool:
         formatted = self.formatter.format(messages=messages)
         return formatted
 
-    def _prompt_to_dict(self, prompt: str):
-        return [{"role": "user", "content": prompt}]
+    def _prompt_to_dict(self, prompt: str) -> dict[str, str]:
+        return {"role": "user", "content": prompt}
 
     def _result_to_dict(self, input_text: str, result: Any) -> dict[str, Any]:
         return {"input_text": input_text, "result": result}
 
-    def _build_messages(
-        self, input_text: str, **extra_kwargs: Any
-    ) -> list[dict[str, str]]:
+    def _build_format_args(self, input_text: str, **extra_kwargs) -> dict[str, str]:
         # Base formatting args
-        format_args = {
-            "input": input_text,
-        }
+        format_args = {"input": input_text}
         # Merge extras
         format_args.update(extra_kwargs)
-
-        main_prompt = self.main_template.format(**format_args)
-        messages = self._prompt_to_dict(main_prompt)
-
-        if self.use_reason and self.reason_template:
-            reason = self._reason(input_text, **extra_kwargs)
-            messages.append(
-                {"role": "user", "content": f"Based on this analysis: {reason}"}
-            )
-
-        formatted_messages = self._apply_formatter(messages)
-
-        return formatted_messages
+        return format_args
 
     def _reason(self, input_text: str, **extra_kwargs: Any) -> str:
-        # Base formatting args
-        format_args = {
-            "input": input_text,
-        }
-        # Merge extras
-        format_args.update(extra_kwargs)
-
+        format_args = self._build_format_args(input_text, **extra_kwargs)
         reason_prompt = self.reason_template.format(**format_args)
         messages = self._prompt_to_dict(reason_prompt)
         formatted_messages = self._apply_formatter(messages)
@@ -115,6 +95,24 @@ class BaseTool:
 
         return reason
 
+    def _build_messages(
+        self, input_text: str, **extra_kwargs: Any
+    ) -> list[dict[str, str]]:
+        format_args = self._build_format_args(input_text, **extra_kwargs)
+
+        messages: list[dict[str, str]] = []
+
+        if self.use_reason and self.reason_template:
+            reason = self._reason(input_text, **extra_kwargs)
+            messages.append(self._prompt_to_dict(f"Based on this analysis: {reason}"))
+
+        main_prompt = self.main_template.format(**format_args)
+        messages.append(self._prompt_to_dict(main_prompt))
+
+        formatted_messages = self._apply_formatter(messages)
+
+        return formatted_messages
+
     def _dispatch(self, results: dict[str, Any]) -> None:
         for handler in self.handlers:
             try:
@@ -122,7 +120,7 @@ class BaseTool:
             except Exception:
                 pass
 
-    def run(self, input_text: str, **kwargs) -> T:
+    def run(self, input_text: str, **extra_kwargs) -> T:
         """
         Run the tool:
         - Optionally runs reasoning (if enabled).
@@ -131,7 +129,7 @@ class BaseTool:
         """
         cleaned_text = input_text.strip()
 
-        messages = self._build_messages(cleaned_text, **kwargs)
+        messages = self._build_messages(cleaned_text, **extra_kwargs)
 
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
