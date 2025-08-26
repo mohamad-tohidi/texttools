@@ -3,6 +3,7 @@ main_template: |
   {input}
   Respond only in JSON format:
   {{"keywords": ["keyword1", "keyword2", ...]}}.
+  Respond in the language of the input text.
 
 reason_template: |
   Analyze the following text to identify its main topics, concepts, and important terms.
