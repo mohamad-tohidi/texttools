@@ -33,7 +33,7 @@ class PromptLoader:
             / prompt_file_name
         )
 
-        data = yaml.safe_load(prompt_file.read_text())
+        data = yaml.safe_load(prompt_file.read_text(encoding="utf-8"))
 
         return {
             "main_template": data["main_template"][mode]
