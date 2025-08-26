@@ -27,8 +27,8 @@ class KeywordExtractor(BaseTool):
             **kwargs,
         )
 
-    def extract_keywords(self, text: str) -> dict[str, list[str]]:
-        parsed: Output = self.run(text)
-        result = self._result_to_dict(parsed.keywords)
+    def extract_keywords(self, input_text: str) -> dict[str, list[str]]:
+        parsed: Output = self.run(input_text)
+        result = self._result_to_dict(input_text, parsed.keywords)
         self._dispatch(result)
         return result

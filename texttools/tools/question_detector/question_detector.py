@@ -11,7 +11,7 @@ class Output(BaseModel):
 class QuestionDetector(BaseTool):
     """
     Binary question detector with optional reasoning step..
-    Outputs JSON with one field: {"is_question": true|false}.
+    Outputs JSON with one field: {"is_question": true/false}.
     """
 
     prompt_file = "question_detector.yaml"
@@ -27,8 +27,8 @@ class QuestionDetector(BaseTool):
             **kwargs,
         )
 
-    def detect(self, text: str) -> dict[str, str]:
-        parsed: Output = self.run(text)
-        result = self._result_to_dict(parsed.is_question)
-        self._dispatch({"question": text, "result": result})
+    def detect(self, input_text: str) -> dict[str, str]:
+        parsed: Output = self.run(input_text)
+        result = self._result_to_dict(input_text, parsed.is_question)
+        self._dispatch(result)
         return result

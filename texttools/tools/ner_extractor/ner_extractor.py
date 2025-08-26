@@ -27,8 +27,8 @@ class NERExtractor(BaseTool):
             **kwargs,
         )
 
-    def extract_entities(self, text: str) -> dict[str, list[dict[str, str]]]:
-        parsed: Output = self.run(text)
-        result = self._result_to_dict(parsed.entities)
+    def extract_entities(self, input_text: str) -> dict[str, list[dict[str, str]]]:
+        parsed: Output = self.run(input_text)
+        result = self._result_to_dict(input_text, parsed.entities)
         self._dispatch(result)
         return result

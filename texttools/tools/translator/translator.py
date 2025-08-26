@@ -28,13 +28,13 @@ class Translator(BaseTool):
         )
 
     def translate(
-        self, text: str, target_language: str, source_language: str
+        self, input_text: str, target_language: str, source_language: str
     ) -> dict[str, str]:
         parsed: Output = self.run(
-            text,
+            input_text,
             target_language=target_language,
             source_language=source_language,
         )
-        result = self._result_to_dict(parsed.translation)
+        result = self._result_to_dict(input_text, parsed.translation)
         self._dispatch(result)
         return result
