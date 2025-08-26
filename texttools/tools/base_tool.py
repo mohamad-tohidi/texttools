@@ -113,12 +113,9 @@ class BaseTool:
     def _result_to_dict(self, input_text: str, result: Any) -> dict[str, Any]:
         return {"input_text": input_text, "result": result}
 
-    def _reason(self, prompt_configs: dict[str, str]) -> str:
-        reason_prompt = prompt_configs["reason_template"]
-
-        messages: list[dict[str, str]] = []
-        messages.append(self._prompt_to_dict(reason_prompt))
-
+    def _reason(self) -> str:
+        reason_prompt = self.prompt_configs["reason_template"]
+        messages = [self._prompt_to_dict(reason_prompt)]
         formatted_messages = self._apply_formatter(messages)
 
         completion = self.client.chat.completions.create(
@@ -131,17 +128,15 @@ class BaseTool:
 
         return reason
 
-    def _build_messages(self, prompt_configs: dict[str, str]) -> list[dict[str, str]]:
+    def _build_messages(self) -> list[dict[str, str]]:
         messages: list[dict[str, str]] = []
 
-        if self.use_reason and prompt_configs["reason_template"]:
-            reason = self._reason(prompt_configs)
+        if self.use_reason and self.prompt_configs["reason_template"]:
+            reason = self._reason(self.prompt_configs)
             messages.append(self._prompt_to_dict(f"Based on this analysis: {reason}"))
 
-        main_prompt = prompt_configs["main_template"]
-
+        main_prompt = self.prompt_configs["main_template"]
         messages.append(self._prompt_to_dict(main_prompt))
-
         formatted_messages = self._apply_formatter(messages)
 
         return formatted_messages
@@ -162,11 +157,11 @@ class BaseTool:
         """
         cleaned_text = input_text.strip()
 
-        prompt_configs = self.prompt_loader.load_prompts(
+        self.prompt_configs = self.prompt_loader.load_prompts(
             self.prompt_file, self.use_modes, self.mode, cleaned_text, **extra_kwargs
         )
 
-        messages = self._build_messages(prompt_configs)
+        messages = self._build_messages()
 
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
