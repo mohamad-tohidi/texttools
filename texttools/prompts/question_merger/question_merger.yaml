@@ -8,10 +8,10 @@ main_template:
     - Sounds natural, fluent, and concise.
     - Avoids redundancy or unnecessary repetition.
     - Does not omit any unique idea from the originals.
-    **Output only the merged question.**
+    Output only the merged question.
     Here is the questions: {input}
     Respond only with the new generated question, without any additional information.
-    **the generated question will be in the language of the users input**
+    The generated question must be in the language of the users input.
 
   reason_mode: |
     You are an AI assistant helping to unify semantically similar questions.
@@ -21,7 +21,7 @@ main_template:
     Step 2: Write the final merged question.
     Here is the questions: {input}
     Respond only with the new generated question, without any additional information.
-    **the generated question will be in the language of the users input**
+    The generated question must be in the language of the users input.
 
 reason_template:
 
@@ -30,7 +30,7 @@ reason_template:
     and the specific information they are seeking.
     Provide a brief, summarized understanding of the questions' meaning that
     will help in merging and rephrasing it accurately without changing its intent.        
-    **respond in the language of the question**
+    Respond in the language of the question.
     Here is the question: {input}
 
   reason_mode: |
@@ -38,6 +38,6 @@ reason_template:
     and the literal meaning it conveys.
     Provide a brief, summarized analysis of their linguistic structure and current meaning,
     which will then be used to create a new question containing all of their contents.
-    **respond in the language of the question**
+    Respond in the language of the question.
     Here is the question: {input}
     

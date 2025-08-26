@@ -2,25 +2,24 @@ main_template: |
   Given the following subject, generate {number_of_questions} appropriate questions that this subject would directly respond to.
   The generated subject should be independently meaningful,
   and not mentioning any verbs like, this, that, he or she ... on the question.
-  **the generated question will be in this language {language}**
+  The generated question must be in {language} language.
   Here is the text:
   {input}
   Respond only with the new generated question, without any additional information.
-  **The generated question will be in this language {language}**
+  The generated question must be in {language} language.
   Generate {number_of_questions} number of questions in the questions list.
   You must return ONLY a single JSON object that matches the schema.
-  there is a `reasoning_summary` key, fill that up with a really summerized version
+  There is a `reasoning_summary` key, fill that up with a really summerized version
   of your thoughts.
   The `reasoning_summary` must be less than 20 words.
 
 reason_template: |
-  Our goal is to generate questions, from the given subject that the user has provided
-  the questions must be meaningfull, some of them should be specific and some should be general
-  but first, in this step we want to analyze the inputted subject that the user asked us to generate questions for it
-  What is the subject
-  We need summerized analysis of the input subject
-  What point of views can we see it and generate questoins from it
-  Questions that real users might have
+  Our goal is to generate questions, from the given subject that I've provided.
+  The questions must be meaningfull, some of them should be specific and some should be general.
+  But first, in this step we want to analyze the subject that I asked to generate questions for it.
+  We need a summerized analysis of the subject.
+  What is the subject about?
+  What point of views can we see and generate questoins from it? (Questions that real users might have.)
   Here is the subject:
   {input}
-  Respond only with this language {language}
+  Respond only in {language} language.

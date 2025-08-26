@@ -7,6 +7,6 @@ main_template: |
 reason_template: |
   We want to analyze this text snippet to see if it contains any question or request of some kind or not.
   Read the text, and reason about it being a request or not.
-  Summerized, Short answer
+  Summerized, short answer.
   {input}
   

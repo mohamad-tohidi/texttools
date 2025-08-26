@@ -1,5 +1,6 @@
 main_template: |
-  Identify and extract all named entities (e.g., PER, ORG, LOC, DAT, etc.) from the following text. For each entity, provide its text and a clear type. Respond as a JSON array of objects.
+  Identify and extract all named entities (e.g., PER, ORG, LOC, DAT, etc.) from the following text. For each entity, provide its text and a clear type.
+  Respond as a JSON array of objects.
   {input}
   Respond only in JSON format:
   {{
