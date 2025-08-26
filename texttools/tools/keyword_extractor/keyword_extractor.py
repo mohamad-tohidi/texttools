@@ -29,6 +29,6 @@ class KeywordExtractor(BaseTool):
 
     def extract_keywords(self, text: str) -> dict[str, list[str]]:
         parsed: Output = self.run(text)
-        result = {"keywords": parsed.keywords}
+        result = self._result_to_dict(parsed.keywords)
         self._dispatch(result)
         return result

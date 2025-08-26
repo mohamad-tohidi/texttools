@@ -43,6 +43,6 @@ class Categorizer(BaseTool):
 
     def categorize(self, text: str) -> dict[str, str]:
         parsed: Output = self.run(text)
-        result = {"main_tag": parsed.main_tag}
+        result = self._result_to_dict(parsed.main_tag)
         self._dispatch(result)
         return result

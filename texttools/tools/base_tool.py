@@ -7,7 +7,7 @@ import yaml
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.formatter import UserMergeFormatter
+from texttools.formatters.user_merge_formatter import UserMergeFormatter
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -67,6 +67,9 @@ class BaseTool:
 
     def _prompt_to_dict(self, prompt: str):
         return [{"role": "user", "content": prompt}]
+
+    def _result_to_dict(self, result: Any) -> dict[str, Any]:
+        return {"result": result}
 
     def _build_messages(
         self, input_text: str, **extra_kwargs: Any

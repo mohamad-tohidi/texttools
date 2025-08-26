@@ -35,6 +35,6 @@ class Translator(BaseTool):
             target_language=target_language,
             source_language=source_language,
         )
-        result = {"translation": parsed.translation}
+        result = self._result_to_dict(parsed.translation)
         self._dispatch(result)
         return result
