@@ -32,7 +32,7 @@ class BaseTool:
         model: str,
         mode: str = "",
         prompts_dir: str = "prompts",
-        chat_formatter=UserMergeFormatter(),
+        formatter=UserMergeFormatter(),
         use_reason: bool = False,
         temperature: float = 0.0,
         handlers: Optional[list[Any]] = None,
@@ -41,10 +41,9 @@ class BaseTool:
         self.client: OpenAI = client
         self.model = model
         self.mode = mode
-        self.prompts_dir = (
-            Path(__file__).parent / prompts_dir / self.prompt_file.removesuffix(".yaml")
-        )
-        self.chat_formatter = chat_formatter
+        tool_prompt_dir = self.prompt_file.removesuffix(".yaml")
+        self.prompts_dir = Path(__file__).parent / prompts_dir / tool_prompt_dir
+        self.formatter = formatter
         self.use_reason = use_reason
         self.temperature = temperature
         self.handlers = handlers or []
@@ -62,7 +61,7 @@ class BaseTool:
             self.reason_template = data.get("reason_template")
 
     def _apply_formatter(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
-        formatted = self.chat_formatter.format(messages=messages)
+        formatted = self.formatter.format(messages=messages)
         return formatted
 
     def _prompt_to_dict(self, prompt: str):
