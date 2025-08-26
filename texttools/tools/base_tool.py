@@ -113,7 +113,7 @@ class BaseTool:
 
         return reason
 
-    def _dispatch(self, results: dict) -> None:
+    def _dispatch(self, results: dict[str, Any]) -> None:
         for handler in self.handlers:
             try:
                 handler.handle(results)

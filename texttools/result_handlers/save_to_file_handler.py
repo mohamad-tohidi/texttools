@@ -1,47 +1,11 @@
 import json
-from abc import ABC, abstractmethod
 from typing import Any
 
 from pydantic import BaseModel
 
-
-class BaseResultHandler(ABC):
-    """
-    Base class for all result handlers.
-    Implement the handle() method to define custom handling logic.
-    """
-
-    @abstractmethod
-    def handle(self, results: dict[str, Any]) -> None:
-        """
-        Process the results.
-        Args:
-            results (dict[str, Any]): A dictionary mapping text to other objects (list, str, int, etc.).
-        """
-        pass
+from texttools.result_handlers import BaseResultHandler
 
 
-class NoOpResultHandler(BaseResultHandler):
-    """
-    A result handler that does nothing!
-    Useful as a default when no handler is provided.
-    """
-
-    def handle(self, results: dict[str, Any]) -> None:
-        pass
-
-
-class PrintResultHandler(BaseResultHandler):
-    """
-    A result handler that prints the results to the console.
-    Useful for debugging or local tests.
-    """
-
-    def handle(self, results: dict[str, Any]) -> None:
-        print(results["result"])
-
-
-#############
 class SaveToFileResultHandler(BaseResultHandler):
     """
     A result handler that saves each result to a CSV-like file,
@@ -76,11 +40,3 @@ class SaveToFileResultHandler(BaseResultHandler):
 
         with open(self.file_path, "a", encoding="utf-8") as f:
             f.write(line)
-
-
-# You can add more handlers here as needed:
-# - ElasticSearchResultHandler
-# - DatabaseResultHandler
-# - KafkaResultHandler
-# - NATSResultHandler
-# etc.
