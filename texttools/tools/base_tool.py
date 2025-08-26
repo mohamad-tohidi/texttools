@@ -7,9 +7,36 @@ import yaml
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.formatters.user_merge_formatter import UserMergeFormatter
+from texttools.formatters.user_merge_formatter.user_merge_formatter import (
+    UserMergeFormatter,
+)
 
 T = TypeVar("T", bound=BaseModel)
+
+
+class PromptLoader:
+    PROMPT_DIR_NAME: str = "prompts"
+
+    def load_prompts(
+        self, prompt_file_name: str, use_modes: bool, mode: str
+    ) -> dict[str, str]:
+        tool_name = prompt_file_name.removesuffix(".yaml")
+        prompt_file = (
+            Path(__file__).parent.parent
+            / self.PROMPT_DIR_NAME
+            / tool_name
+            / prompt_file_name
+        )
+
+        data = yaml.safe_load(prompt_file.read_text())
+        return {
+            "main_template": data["main_template"][mode]
+            if use_modes
+            else data["main_template"],
+            "reason_template": data.get("reason_template")[mode]
+            if use_modes
+            else data.get("reason_template"),
+        }
 
 
 class BaseTool:
@@ -31,7 +58,7 @@ class BaseTool:
         *,
         model: str,
         mode: str = "",
-        prompts_dir: str = "prompts",
+        prompt_loader=PromptLoader(),
         formatter=UserMergeFormatter(),
         use_reason: bool = False,
         temperature: float = 0.0,
@@ -41,8 +68,6 @@ class BaseTool:
         self.client: OpenAI = client
         self.model = model
         self.mode = mode
-        tool_prompt_dir = self.prompt_file.removesuffix(".yaml")
-        self.prompts_dir = Path(__file__).parent / prompts_dir / tool_prompt_dir
         self.formatter = formatter
         self.use_reason = use_reason
         self.temperature = temperature
@@ -50,17 +75,9 @@ class BaseTool:
         self.client_kwargs = client_kwargs
 
         # Load prompts
-        data = yaml.safe_load(
-            (self.prompts_dir / self.prompt_file).read_text(encoding="utf-8")
+        self.prompt_configs = prompt_loader.load_prompts(
+            self.prompt_file, self.use_modes, self.mode
         )
-
-        if self.use_modes:
-            key = self.mode
-            self.main_template = data["main_template"][key]
-            self.reason_template = data.get("reason_template")[key]
-        else:
-            self.main_template = data["main_template"]
-            self.reason_template = data.get("reason_template")
 
     def _apply_formatter(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
         formatted = self.formatter.format(messages=messages)
@@ -80,9 +97,11 @@ class BaseTool:
         return format_args
 
     def _reason(self, input_text: str, **extra_kwargs: Any) -> str:
+        reason_template = self.prompt_configs["reason_template"]
         format_args = self._build_format_args(input_text, **extra_kwargs)
-        reason_prompt = self.reason_template.format(**format_args)
-        messages = self._prompt_to_dict(reason_prompt)
+        reason_prompt = reason_template.format(**format_args)
+        messages: list[dict[str, str]] = []
+        messages.append(self._prompt_to_dict(reason_prompt))
         formatted_messages = self._apply_formatter(messages)
 
         completion = self.client.chat.completions.create(
@@ -102,11 +121,12 @@ class BaseTool:
 
         messages: list[dict[str, str]] = []
 
-        if self.use_reason and self.reason_template:
+        if self.use_reason and self.prompt_configs["reason_template"]:
             reason = self._reason(input_text, **extra_kwargs)
             messages.append(self._prompt_to_dict(f"Based on this analysis: {reason}"))
 
-        main_prompt = self.main_template.format(**format_args)
+        main_template = self.prompt_configs["main_template"]
+        main_prompt = main_template.format(**format_args)
         messages.append(self._prompt_to_dict(main_prompt))
 
         formatted_messages = self._apply_formatter(messages)

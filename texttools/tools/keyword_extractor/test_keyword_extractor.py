@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-from texttools import KeywordExtractor
+from texttools.tools.keyword_extractor.keyword_extractor import KeywordExtractor
 
 client = OpenAI(
     base_url="http://185.208.182.157:9310/v1", api_key="hamta_T0k3n879875412"
