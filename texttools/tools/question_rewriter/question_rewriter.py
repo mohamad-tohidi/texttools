@@ -31,7 +31,7 @@ class QuestionRewriter(BaseTool):
         mode: Literal[
             "same_meaning_different_wording_mode",
             "different_meaning_similar_wording_mode",
-        ],
+        ] = "same_meaning_different_wording_mode",
         **kwargs,
     ):
         super().__init__(

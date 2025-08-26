@@ -28,7 +28,7 @@ class QuestionMerger(BaseTool):
         *,
         model: str,
         use_reason: bool = False,
-        mode: Literal["default_mode", "reason_mode"],
+        mode: Literal["default_mode", "reason_mode"] = "default_mode",
         **kwargs,
     ):
         super().__init__(
