@@ -9,7 +9,7 @@ client = OpenAI(
 tool = QuestionRewriter(
     client=client,
     model="gemma-3",
-    use_reason=False,
+    use_reason=True,
     mode="same_meaning_different_wording_mode",
 )
 c = tool.rewrite_question(

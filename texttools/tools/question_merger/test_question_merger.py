@@ -7,7 +7,7 @@ client = OpenAI(
 )
 
 tool = QuestionMerger(
-    client=client, model="gemma-3", use_reason=False, mode="reason_mode"
+    client=client, model="gemma-3", use_reason=True, mode="reason_mode"
 )
 c = tool.merge_questions(
     [
