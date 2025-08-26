@@ -21,9 +21,10 @@ class PromptLoader:
 
     prompt_dir_name: str = "prompts"
 
-    def load_prompts(
+    def _load_templates(
         self, prompt_file_name: str, use_modes: bool, mode: str
     ) -> dict[str, str]:
+        # prompt_file_name has the .yaml suffix, so to access the tool folder name, .yaml suffix should be removed
         tool_name = prompt_file_name.removesuffix(".yaml")
         prompt_file = (
             Path(__file__).parent.parent
@@ -33,6 +34,7 @@ class PromptLoader:
         )
 
         data = yaml.safe_load(prompt_file.read_text())
+
         return {
             "main_template": data["main_template"][mode]
             if use_modes
@@ -41,6 +43,29 @@ class PromptLoader:
             if use_modes
             else data.get("reason_template"),
         }
+
+    def _build_format_args(self, input_text: str, **extra_kwargs) -> dict[str, str]:
+        # Base formatting args
+        format_args = {"input": input_text}
+        # Merge extras
+        format_args.update(extra_kwargs)
+        return format_args
+
+    def load_prompts(
+        self,
+        prompt_file_name: str,
+        use_modes: bool,
+        mode: str,
+        input_text: str,
+        **extra_kwargs,
+    ) -> dict[str, str]:
+        template_configs = self._load_templates(prompt_file_name, use_modes, mode)
+        format_args = self._build_format_args(input_text, **extra_kwargs)
+
+        for key in template_configs.keys():
+            template_configs[key] = template_configs[key].format(**format_args)
+
+        return template_configs
 
 
 class BaseTool:
@@ -71,16 +96,12 @@ class BaseTool:
         self.client: OpenAI = client
         self.model = model
         self.mode = mode
+        self.prompt_loader = prompt_loader
         self.formatter = formatter
         self.use_reason = use_reason
         self.temperature = temperature
         self.handlers = handlers or []
         self.client_kwargs = client_kwargs
-
-        # Load prompts
-        self.prompt_configs = prompt_loader.load_prompts(
-            self.prompt_file, self.use_modes, self.mode
-        )
 
     def _apply_formatter(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
         formatted = self.formatter.format(messages=messages)
@@ -92,17 +113,8 @@ class BaseTool:
     def _result_to_dict(self, input_text: str, result: Any) -> dict[str, Any]:
         return {"input_text": input_text, "result": result}
 
-    def _build_format_args(self, input_text: str, **extra_kwargs) -> dict[str, str]:
-        # Base formatting args
-        format_args = {"input": input_text}
-        # Merge extras
-        format_args.update(extra_kwargs)
-        return format_args
-
-    def _reason(self, input_text: str, **extra_kwargs: Any) -> str:
-        reason_template = self.prompt_configs["reason_template"]
-        format_args = self._build_format_args(input_text, **extra_kwargs)
-        reason_prompt = reason_template.format(**format_args)
+    def _reason(self, prompt_configs: dict[str, str]) -> str:
+        reason_prompt = prompt_configs["reason_template"]
 
         messages: list[dict[str, str]] = []
         messages.append(self._prompt_to_dict(reason_prompt))
@@ -119,18 +131,14 @@ class BaseTool:
 
         return reason
 
-    def _build_messages(
-        self, input_text: str, **extra_kwargs: Any
-    ) -> list[dict[str, str]]:
+    def _build_messages(self, prompt_configs: dict[str, str]) -> list[dict[str, str]]:
         messages: list[dict[str, str]] = []
 
-        if self.use_reason and self.prompt_configs["reason_template"]:
-            reason = self._reason(input_text, **extra_kwargs)
+        if self.use_reason and prompt_configs["reason_template"]:
+            reason = self._reason(prompt_configs)
             messages.append(self._prompt_to_dict(f"Based on this analysis: {reason}"))
 
-        main_template = self.prompt_configs["main_template"]
-        format_args = self._build_format_args(input_text, **extra_kwargs)
-        main_prompt = main_template.format(**format_args)
+        main_prompt = prompt_configs["main_template"]
 
         messages.append(self._prompt_to_dict(main_prompt))
 
@@ -154,7 +162,11 @@ class BaseTool:
         """
         cleaned_text = input_text.strip()
 
-        messages = self._build_messages(cleaned_text, **extra_kwargs)
+        prompt_configs = self.prompt_loader.load_prompts(
+            self.prompt_file, self.use_modes, self.mode, cleaned_text, **extra_kwargs
+        )
+
+        messages = self._build_messages(prompt_configs)
 
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
