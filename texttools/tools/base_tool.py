@@ -132,7 +132,7 @@ class BaseTool:
         messages: list[dict[str, str]] = []
 
         if self.use_reason and self.prompt_configs["reason_template"]:
-            reason = self._reason(self.prompt_configs)
+            reason = self._reason()
             messages.append(self._prompt_to_dict(f"Based on this analysis: {reason}"))
 
         main_prompt = self.prompt_configs["main_template"]
