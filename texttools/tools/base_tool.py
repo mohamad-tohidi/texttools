@@ -15,7 +15,11 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class PromptLoader:
-    PROMPT_DIR_NAME: str = "prompts"
+    """
+    Loads YAML with both `main_template` and `reason_template`
+    """
+
+    prompt_dir_name: str = "prompts"
 
     def load_prompts(
         self, prompt_file_name: str, use_modes: bool, mode: str
@@ -23,7 +27,7 @@ class PromptLoader:
         tool_name = prompt_file_name.removesuffix(".yaml")
         prompt_file = (
             Path(__file__).parent.parent
-            / self.PROMPT_DIR_NAME
+            / self.prompt_dir_name
             / tool_name
             / prompt_file_name
         )
@@ -41,7 +45,6 @@ class PromptLoader:
 
 class BaseTool:
     """
-    - Loads YAML with both `main_template` and `reason_template`
     - Runs optional reasoning step before main task
     - Returns parsed Pydantic model
     """
@@ -100,8 +103,10 @@ class BaseTool:
         reason_template = self.prompt_configs["reason_template"]
         format_args = self._build_format_args(input_text, **extra_kwargs)
         reason_prompt = reason_template.format(**format_args)
+
         messages: list[dict[str, str]] = []
         messages.append(self._prompt_to_dict(reason_prompt))
+
         formatted_messages = self._apply_formatter(messages)
 
         completion = self.client.chat.completions.create(
@@ -117,8 +122,6 @@ class BaseTool:
     def _build_messages(
         self, input_text: str, **extra_kwargs: Any
     ) -> list[dict[str, str]]:
-        format_args = self._build_format_args(input_text, **extra_kwargs)
-
         messages: list[dict[str, str]] = []
 
         if self.use_reason and self.prompt_configs["reason_template"]:
@@ -126,7 +129,9 @@ class BaseTool:
             messages.append(self._prompt_to_dict(f"Based on this analysis: {reason}"))
 
         main_template = self.prompt_configs["main_template"]
+        format_args = self._build_format_args(input_text, **extra_kwargs)
         main_prompt = main_template.format(**format_args)
+
         messages.append(self._prompt_to_dict(main_prompt))
 
         formatted_messages = self._apply_formatter(messages)
