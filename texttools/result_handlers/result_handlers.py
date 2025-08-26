@@ -1,52 +1,50 @@
 import json
 from abc import ABC, abstractmethod
-from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel
 
 
-class ResultHandler(ABC):
+class BaseResultHandler(ABC):
     """
-    Abstract base class for all result handlers.
+    Base class for all result handlers.
     Implement the handle() method to define custom handling logic.
     """
 
     @abstractmethod
-    def handle(self, results: dict[str, Enum]) -> None:
+    def handle(self, results: dict[str, Any]) -> None:
         """
-        Process the categorization results.
-
+        Process the results.
         Args:
-            results (dict[str, Enum]): A dictionary mapping text (or IDs) to categories.
+            results (dict[str, Any]): A dictionary mapping text to other objects (list, str, int, etc.).
         """
         pass
 
 
-class NoOpResultHandler(ResultHandler):
+class NoOpResultHandler(BaseResultHandler):
     """
-    A result handler that does nothing.
-    Useful as a default when no other handler is provided.
+    A result handler that does nothing!
+    Useful as a default when no handler is provided.
     """
 
-    def handle(self, results: dict[str, Enum]) -> None:
+    def handle(self, results: dict[str, Any]) -> None:
         pass
 
 
-class PrintResultHandler(ResultHandler):
+class PrintResultHandler(BaseResultHandler):
     """
-    A simple handler that prints results to the console.
+    A result handler that prints the results to the console.
     Useful for debugging or local tests.
     """
 
-    def handle(self, results: dict[str, Enum]) -> None:
-        for key, value in results.items():
-            print(f"Text ID: {key}, Category: {value.name}")
+    def handle(self, results: dict[str, Any]) -> None:
+        print(results["result"])
 
 
-class SaveToFileResultHandler(ResultHandler):
+#############
+class SaveToFileResultHandler(BaseResultHandler):
     """
-    A handler that saves each question + result pair to a CSV-like file,
+    A result handler that saves each result to a CSV-like file,
     serializing whatever the result object is.
     """
 
