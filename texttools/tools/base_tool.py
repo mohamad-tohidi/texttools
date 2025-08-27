@@ -24,13 +24,8 @@ class PromptLoader:
     def _load_templates(
         self, prompt_file_name: str, use_modes: bool, mode: str
     ) -> dict[str, str]:
-        # prompt_file_name has the .yaml suffix, so to access the tool folder name, .yaml suffix should be removed
-        tool_name = prompt_file_name.removesuffix(".yaml")
         prompt_file = (
-            Path(__file__).parent.parent
-            / self.prompt_dir_name
-            / tool_name
-            / prompt_file_name
+            Path(__file__).parent.parent / self.prompt_dir_name / prompt_file_name
         )
 
         data = yaml.safe_load(prompt_file.read_text(encoding="utf-8"))
