@@ -19,14 +19,12 @@ class PromptLoader:
     Loads YAML with both `main_template` and `reason_template`
     """
 
-    prompt_dir_name: str = "prompts"
+    prompt_dir: str = "prompts"
 
     def _load_templates(
-        self, prompt_file_name: str, use_modes: bool, mode: str
+        self, prompt_file: str, use_modes: bool, mode: str
     ) -> dict[str, str]:
-        prompt_file = (
-            Path(__file__).parent.parent / self.prompt_dir_name / prompt_file_name
-        )
+        prompt_file = Path(__file__).parent.parent / self.prompt_dir / prompt_file
 
         data = yaml.safe_load(prompt_file.read_text(encoding="utf-8"))
 
@@ -48,13 +46,13 @@ class PromptLoader:
 
     def load_prompts(
         self,
-        prompt_file_name: str,
+        prompt_file: str,
         use_modes: bool,
         mode: str,
         input_text: str,
         **extra_kwargs,
     ) -> dict[str, str]:
-        template_configs = self._load_templates(prompt_file_name, use_modes, mode)
+        template_configs = self._load_templates(prompt_file, use_modes, mode)
         format_args = self._build_format_args(input_text, **extra_kwargs)
 
         for key in template_configs.keys():
