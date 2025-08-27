@@ -6,7 +6,6 @@ from typing import Any, Optional, Type
 from pydantic import BaseModel
 from openai import OpenAI
 from openai.lib._pydantic import to_strict_json_schema
-# from openai.lib._parsing._completions import type_to_response_format_param
 
 
 class SimpleBatchManager:
@@ -70,18 +69,12 @@ class SimpleBatchManager:
         Builds a single task dictionary for the batch job, including the prompt, model, and response format configuration.
         """
         response_format_config: dict[str, Any]
+
         if self.custom_json_schema_obj_str:
-            # try:
-            # parsed_custom_schema = json.loads(self.custom_json_schema_obj_str)
             response_format_config = {
                 "type": "json_schema",
                 "json_schema": self.custom_json_schema_obj_str,
             }
-        # except json.JSONDecodeError as e:
-        #     raise ValueError(
-        #         "Failed to parse custom_json_schema_obj_str. "
-        #         "Please ensure it's a valid JSON string."
-        #     ) from e
         else:
             raw_schema = to_strict_json_schema(self.output_model)
             response_format_config = {
@@ -167,7 +160,7 @@ class SimpleBatchManager:
         Returns a list of dictionaries with 'id' and 'output' keys.
         """
         modified_result = []
-        # errors = []
+
         for key, d in result.items():
             if "desired_output" in d:
                 new_dict = {"id": key, "output": d["desired_output"]}
@@ -176,7 +169,6 @@ class SimpleBatchManager:
                 new_dict = {"id": key, "output": d["error"]}
                 modified_result.append(new_dict)
         return modified_result
-        # return modified_result , errors
 
     def fetch_results(
         self, job_name: str, remove_cache: bool = True
@@ -236,6 +228,5 @@ class SimpleBatchManager:
             handler.handle(results)
         if remove_cache:
             self._clear_state(job_name)
-        # results = {"results": results, "log": log}
-        # return results
+
         return results, log

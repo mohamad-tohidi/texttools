@@ -5,18 +5,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-# from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.batch_manager import SimpleBatchManager
+from texttools.utils.batch_manager import SimpleBatchManager
 
 
-class OutputModel(BaseModel):
-    desired_output: str
+class Output(BaseModel):
+    output: str
 
 
-def exporting_data(data):
+def export_data(data):
     """
     Produces a structure of the following form from an initial data structure:
     [
@@ -26,7 +25,7 @@ def exporting_data(data):
     return data
 
 
-def importing_data(data):
+def import_data(data):
     """
     Takes the output and adds and aggregates it to the original structure.
     """
@@ -49,8 +48,8 @@ class BatchConfig:
     CHARS_PER_TOKEN: float = 2.7
     PROMPT_TOKEN_MULTIPLIER: int = 1000
     BASE_OUTPUT_DIR: str = "Data/batch_entity_result"
-    import_function: Callable = importing_data
-    export_function: Callable = exporting_data
+    import_function: Callable = import_data
+    export_function: Callable = export_data
 
 
 class BatchJobRunner:
@@ -59,7 +58,7 @@ class BatchJobRunner:
     """
 
     def __init__(
-        self, config: BatchConfig = BatchConfig(), output_model: type = OutputModel
+        self, config: BatchConfig = BatchConfig(), output_model: type = Output
     ):
         self.config = config
         self.system_prompt = config.system_prompt
@@ -75,7 +74,6 @@ class BatchJobRunner:
         Path(self.config.BASE_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
 
     def _init_manager(self) -> SimpleBatchManager:
-        # load_dotenv()
         api_key = os.getenv("OPENAI_API_KEY")
         client = OpenAI(api_key=api_key)
         return SimpleBatchManager(
@@ -90,7 +88,7 @@ class BatchJobRunner:
             data = json.load(f)
         data = self.config.export_function(data)
 
-        # Validation: ensure data is a list of dicts with 'id' and 'content' as strings
+        # Ensure data is a list of dicts with 'id' and 'content' as strings
         if not isinstance(data, list):
             raise ValueError(
                 'Exported data must be a list in this form:  [ {"id": str, "content": str},...]'
@@ -159,10 +157,13 @@ class BatchJobRunner:
                 elif status == "failed":
                     print("Job failed. Clearing state, waiting, and retrying...")
                     self.manager._clear_state(part_job_name)
-                    time.sleep(10)  # Wait before retrying
-                    break  # Break inner loop to restart the job
+                    # Wait before retrying
+                    time.sleep(10)
+                    # Break inner loop to restart the job
+                    break
                 else:
-                    time.sleep(5)  # Wait before checking again
+                    # Wait before checking again
+                    time.sleep(5)
 
     def _save_results(
         self, output_data: list[dict[str, Any]], log: list[Any], part_idx: int
