@@ -1,7 +1,6 @@
 main_template: |
-  تو یک متخصص علوم دینی هستی.
-  من به عنوان کاربر یک متن به تو می‌دهم و از تو می‌خواهم که
-  آن متن را در یکی از دسته‌بندی‌های زیر طبقه‌بندی کنی:
+  You are a religious scholar.
+  As a user, I give you a text and ask you to classify that text into one of the following categories:
   "باورهای دینی",
   "اخلاق اسلامی",
   "احکام و فقه",
@@ -10,17 +9,18 @@ main_template: |
   "دین و جامعه/سیاست",
   "عرفان و معنویت",
   "هیچکدام",
-  در خروجی JSON فقط این فیلدها را برگردان:
+  Respond only in this JSON format:
   {{
-    "reason": "<خلاصه دلیل انتخاب>",
-    "main_tag": "<یکی از دسته‌ها دقیقا طبق لیست بالا>"
+    "reason": "<Summary of why did you choose this?>",
+    "main_tag": "<One of the above tags>"
   }}
-  متنی که باید طبقه‌بندی کنی:
+  Here is the text:
   {input}
 
 reason_template: |
-  هدف ما طبقه بندی متن است.
-  متن را بخوان و ایده اصلی و یک آنالیز خیلی کوتاه ارائه بده.
-  نهایتاً ۲۰ کلمه.
+  Our goal is to categorize the text.
+  Read the text and respond the main idea and a short analysis of that.
+  Maximum words: 20
+  Here is the text:
   متن:
   {input}
