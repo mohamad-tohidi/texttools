@@ -13,7 +13,7 @@ class BaseFormatter(ABC):
     @abstractmethod
     def format(
         self,
-        text: str,
+        messages: Any,
     ) -> Any:
         """
         - For an OpenAI style API, this might return list[{"role": "user"/"assistant", "content": "…"}].
