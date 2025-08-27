@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 
 class BaseFormatter(ABC):
@@ -14,9 +14,6 @@ class BaseFormatter(ABC):
     def format(
         self,
         text: str,
-        reason: Optional[str],
-        schema_instr: str,
-        prompt_template: Optional[str],
     ) -> Any:
         """
         - For an OpenAI style API, this might return list[{"role": "user"/"assistant", "content": "…"}].
