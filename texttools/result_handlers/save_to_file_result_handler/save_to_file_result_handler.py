@@ -15,7 +15,7 @@ class SaveToFileResultHandler(BaseResultHandler):
     def __init__(self, file_path: str):
         self.file_path = file_path
 
-    # Helper to turn anything into a JSON/string
+    # Helper to turn the value into a JSON/string
     def _serialize(value: Any) -> str:
         if isinstance(value, BaseModel):
             return value.model_dump_json()

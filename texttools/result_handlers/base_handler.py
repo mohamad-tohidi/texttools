@@ -12,7 +12,6 @@ class BaseResultHandler(ABC):
     def handle(self, results: dict[str, Any]) -> None:
         """
         Process the results.
-        Args:
-            results (dict[str, Any]): A dictionary mapping text to other objects (list, str, int, etc.).
+        Arguments: results: A dictionary mapping text to other objects (list, str, int, etc.).
         """
         pass
