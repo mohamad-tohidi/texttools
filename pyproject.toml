@@ -12,7 +12,7 @@ authors = [
   { name = "Tohidi" },
   { name = "Montazer" },
   { name = "Givechi" },
-  { name = "Mousavinezhad" }
+  { name = "Moosavinejad" }
 ]
 dependencies = [
   "openai==1.97.1",
