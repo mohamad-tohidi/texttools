@@ -8,7 +8,7 @@ main_template: |
   {input}
   Respond only with the new generated question, without any additional information.          
 
-reason_template: |
+analyze_template: |
   Analyze the following answer to identify its key facts,
   main subject, and what kind of information it provides.
   Provide a brief, summarized understanding of the answer's content that will 

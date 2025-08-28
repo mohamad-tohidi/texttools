@@ -13,7 +13,7 @@ main_template: |
   of your thoughts.
   The `reasoning_summary` must be less than 20 words.
 
-reason_template: |
+analyze_template: |
   Our goal is to generate questions, from the given subject that I've provided.
   The questions must be meaningfull, some of them should be specific and some should be general.
   But first, in this step we want to analyze the subject that I asked to generate questions for it.

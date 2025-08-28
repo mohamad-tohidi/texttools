@@ -18,12 +18,12 @@ class Translator(BaseTool):
     output_model = Output
 
     def __init__(
-        self, client: OpenAI, *, model: str, use_reason: bool = False, **kwargs
+        self, client: OpenAI, *, model: str, with_analysis: bool = False, **kwargs
     ):
         super().__init__(
             client,
             model=model,
-            use_reason=use_reason,
+            with_analysis=with_analysis,
             **kwargs,
         )
 

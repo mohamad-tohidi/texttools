@@ -4,7 +4,7 @@ main_template: |
   Translate the following text from {source_language} to {target_language}:
   {input}
 
-reason_template: |
+analyze_template: |
   Analyze the following text and identify important linguistic considerations for translation.
   Do not translate the text. Point out any idioms, cultural references, or complex structures that need special attention.
   Also, list all proper nouns that should not be translated. Write your analysis in the {target_language}.

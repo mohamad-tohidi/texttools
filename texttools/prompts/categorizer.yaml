@@ -17,7 +17,7 @@ main_template: |
   Here is the text:
   {input}
 
-reason_template: |
+analyze_template: |
   Our goal is to categorize the text.
   Read the text and respond the main idea and a short analysis of that.
   Maximum words: 20

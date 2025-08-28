@@ -18,7 +18,7 @@ main_template:
     Respond only with the new generated question, without any additional information.
     The generated question must be in the language of the users input.
 
-reason_template:
+analyze_template:
 
   same_meaning_different_wording_mode: | 
     Analyze the following question to identify its core intent, key concepts, 

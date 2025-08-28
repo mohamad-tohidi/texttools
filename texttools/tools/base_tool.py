@@ -13,10 +13,13 @@ from texttools.formatters.user_merge_formatter.user_merge_formatter import (
 
 T = TypeVar("T", bound=BaseModel)
 
+MAIN_TEMPLATE = "main_template"
+ANALYZE_TEMPLATE = "analyze_template"
+
 
 class PromptLoader:
     """
-    Loads YAML with both `main_template` and `reason_template`
+    Loads YAML with both `main_template` and `analyze_template`
     """
 
     prompt_dir: str = "prompts"
@@ -29,12 +32,12 @@ class PromptLoader:
         data = yaml.safe_load(prompt_file.read_text(encoding="utf-8"))
 
         return {
-            "main_template": data["main_template"][mode]
+            MAIN_TEMPLATE: data[MAIN_TEMPLATE][mode]
             if use_modes
-            else data["main_template"],
-            "reason_template": data.get("reason_template")[mode]
+            else data[MAIN_TEMPLATE],
+            ANALYZE_TEMPLATE: data.get(ANALYZE_TEMPLATE)[mode]
             if use_modes
-            else data.get("reason_template"),
+            else data.get(ANALYZE_TEMPLATE),
         }
 
     def _build_format_args(self, input_text: str, **extra_kwargs) -> dict[str, str]:
@@ -63,7 +66,7 @@ class PromptLoader:
 
 class BaseTool:
     """
-    - Runs optional reasoning step before main task
+    - Runs optional analyzing step before main task
     - Returns parsed Pydantic model
     """
 
@@ -81,7 +84,7 @@ class BaseTool:
         mode: str = "",
         prompt_loader=PromptLoader(),
         formatter=UserMergeFormatter(),
-        use_reason: bool = False,
+        with_analysis: bool = False,
         temperature: float = 0.0,
         handlers: Optional[list[Any]] = None,
         **client_kwargs: Any,
@@ -91,7 +94,7 @@ class BaseTool:
         self.mode = mode
         self.prompt_loader = prompt_loader
         self.formatter = formatter
-        self.use_reason = use_reason
+        self.with_analysis = with_analysis
         self.temperature = temperature
         self.handlers = handlers or []
         self.client_kwargs = client_kwargs
@@ -106,9 +109,9 @@ class BaseTool:
     def _result_to_dict(self, input_text: str, result: Any) -> dict[str, Any]:
         return {"input_text": input_text, "result": result}
 
-    def _reason(self) -> str:
-        reason_prompt = self.prompt_configs["reason_template"]
-        messages = [self._prompt_to_dict(reason_prompt)]
+    def _analyze(self) -> str:
+        analyze_prompt = self.prompt_configs[ANALYZE_TEMPLATE]
+        messages = [self._prompt_to_dict(analyze_prompt)]
         formatted_messages = self._apply_formatter(messages)
 
         completion = self.client.chat.completions.create(
@@ -117,18 +120,18 @@ class BaseTool:
             temperature=self.temperature,
             **self.client_kwargs,
         )
-        reason = completion.choices[0].message.content.strip()
+        analyze = completion.choices[0].message.content.strip()
 
-        return reason
+        return analyze
 
     def _build_messages(self) -> list[dict[str, str]]:
         messages: list[dict[str, str]] = []
 
-        if self.use_reason and self.prompt_configs["reason_template"]:
-            reason = self._reason()
-            messages.append(self._prompt_to_dict(f"Based on this analysis: {reason}"))
+        if self.with_analysis and self.prompt_configs[ANALYZE_TEMPLATE]:
+            analysis = self._analyze()
+            messages.append(self._prompt_to_dict(f"Based on this analysis: {analysis}"))
 
-        main_prompt = self.prompt_configs["main_template"]
+        main_prompt = self.prompt_configs[MAIN_TEMPLATE]
         messages.append(self._prompt_to_dict(main_prompt))
         formatted_messages = self._apply_formatter(messages)
 
@@ -144,8 +147,8 @@ class BaseTool:
     def run(self, input_text: str, **extra_kwargs) -> T:
         """
         Run the tool:
-        - Optionally runs reasoning (if enabled).
-        - Fills main template with input and reasoning.
+        - Optionally runs analyzeing (if enabled).
+        - Fills main template with input and analyzeing.
         - Calls model and parses output into `self.output_model`.
         """
         cleaned_text = input_text.strip()

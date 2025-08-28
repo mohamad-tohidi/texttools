@@ -5,7 +5,7 @@ main_template: |
   {{"keywords": ["keyword1", "keyword2", ...]}}.
   Respond in the language of the input text.
 
-reason_template: |
+analyze_template: |
   Analyze the following text to identify its main topics, concepts, and important terms.
   Provide a concise summary of your findings that will help in extracting relevant keywords.
   {input}

@@ -27,7 +27,7 @@ class QuestionRewriter(BaseTool):
         client: OpenAI,
         *,
         model: str,
-        use_reason: bool = False,
+        with_analysis: bool = False,
         mode: Literal[
             "same_meaning_different_wording_mode",
             "different_meaning_similar_wording_mode",
@@ -37,7 +37,7 @@ class QuestionRewriter(BaseTool):
         super().__init__(
             client,
             model=model,
-            use_reason=use_reason,
+            with_analysis=with_analysis,
             mode=mode,
             **kwargs,
         )

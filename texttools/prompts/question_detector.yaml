@@ -4,7 +4,7 @@ main_template: |
   {{"is_question": "true/false"}}
   {input}
 
-reason_template: |
+analyze_template: |
   We want to analyze this text snippet to see if it contains any question or request of some kind or not.
   Read the text, and reason about it being a request or not.
   Summerized, short answer.

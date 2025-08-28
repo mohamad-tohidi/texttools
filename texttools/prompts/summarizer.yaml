@@ -5,7 +5,7 @@ main_template: |
   {{"summary": "string"}}
   Respond in the language of the question.
 
-reason_template: |
+analyze_template: |
   Read the following text and identify its main points, key arguments, and overall purpose.
   Provide a brief, summarized analysis that will help in generating an accurate and concise summary.
   {input}

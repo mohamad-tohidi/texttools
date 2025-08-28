@@ -27,14 +27,14 @@ class QuestionMerger(BaseTool):
         client: OpenAI,
         *,
         model: str,
-        use_reason: bool = False,
+        with_analysis: bool = False,
         mode: Literal["default_mode", "reason_mode"] = "default_mode",
         **kwargs,
     ):
         super().__init__(
             client,
             model=model,
-            use_reason=use_reason,
+            with_analysis=with_analysis,
             mode=mode,
             **kwargs,
         )

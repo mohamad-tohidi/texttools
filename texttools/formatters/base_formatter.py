@@ -4,7 +4,7 @@ from typing import Any
 
 class BaseFormatter(ABC):
     """
-    Given (raw_text, reason, maybe other hints), produce whatever payload.
+    Given (raw_text, analysis, maybe other hints), produce whatever payload.
     1. Single string prompt (for providers that don't support multiple messages)
     2. List of {role, content} dicts
     3. Whatever shape the provider needs

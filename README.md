@@ -62,7 +62,7 @@ client = OpenAI(base_url = "your_url", API_KEY = "your_api_key")
 model = "gpt-4o-mini"
 
 # Example: Question Detection
-qd = QuestionDetector(client = client, model = model, use_reason = True)
+qd = QuestionDetector(client = client, model = model, with_analysis = True)
 print(qd.detect("Is this project open source?"))
 # Output: True
 
