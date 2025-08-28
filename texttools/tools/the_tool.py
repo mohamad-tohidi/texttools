@@ -45,7 +45,7 @@ class TheTool:
 
     def extract_keywords(
         self, text: str, with_analysis: bool = False
-    ) -> dict[str, str]:
+    ) -> dict[str, list[str]]:
         """
         Extract salient keywords from text.
 
@@ -66,7 +66,7 @@ class TheTool:
 
     def extract_entities(
         self, text: str, with_analysis: bool = False
-    ) -> dict[str, str]:
+    ) -> dict[str, list[dict[str, str]]]:
         """
         Perform Named Entity Recognition (NER) over the input text.
 
@@ -195,7 +195,7 @@ class TheTool:
         number_of_questions: int,
         language: str,
         with_analysis: bool = False,
-    ) -> dict[str, str]:
+    ) -> dict[str, list[str]]:
         """
         Generate a list of questions about a subject.
 
