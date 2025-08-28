@@ -1,112 +1,26 @@
-from __future__ import annotations
-
-from typing import Any, TypeVar, Type, Literal
+from typing import Literal, Any
 
 from openai import OpenAI
-from pydantic import BaseModel
 
-from texttools.formatters.user_merge_formatter.user_merge_formatter import (
-    UserMergeFormatter,
-)
-from texttools.tools.prompt_loader import PromptLoader
+from texttools.tools.operator import Operator
 import texttools.tools.output_models as OutputModels
-
-T = TypeVar("T", bound=BaseModel)
 
 
 class TheTool:
-    PROMPT_FILE: str
-    OUTPUT_MODEL: Type[T]
-    WITH_ANALYSIS: bool = False
-    USE_MODES: bool
-    MODE: str = ""
-
     def __init__(
         self,
         client: OpenAI,
         *,
         model: str,
-        prompt_loader=PromptLoader(),
-        formatter=UserMergeFormatter(),
         temperature: float = 0.0,
         **client_kwargs: Any,
     ):
-        self.client: OpenAI = client
-        self.model = model
-        self.prompt_loader = prompt_loader
-        self.formatter = formatter
-        self.temperature = temperature
-        self.client_kwargs = client_kwargs
-
-    def _build_user_message(self, prompt: str) -> dict[str, str]:
-        return {"role": "user", "content": prompt}
-
-    def _build_results_dict(self, result: Any) -> dict[str, Any]:
-        return {"result": result}
-
-    def _apply_formatter(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
-        return self.formatter.format(messages)
-
-    def _analysis_completion(self, analyze_message: list[dict[str, str]]) -> str:
-        completion = self.client.chat.completions.create(
-            model=self.model,
-            messages=analyze_message,
-            temperature=self.temperature,
-            **self.client_kwargs,
+        self.operator = Operator(
+            client=client,
+            model=model,
+            temperature=temperature,
+            **client_kwargs,
         )
-        analysis = completion.choices[0].message.content.strip()
-
-        return analysis
-
-    def _analyze(self) -> str:
-        analyze_prompt = self.prompt_configs["analyze_template"]
-        analyze_message = [self._build_user_message(analyze_prompt)]
-        analysis = self._analysis_completion(analyze_message)
-
-        return analysis
-
-    def _build_main_message(self) -> list[dict[str, str]]:
-        main_prompt = self.prompt_configs["main_template"]
-        main_message = self._build_user_message(main_prompt)
-
-        return main_message
-
-    def _parse(self, message: list[dict[str, str]]) -> T:
-        completion = self.client.beta.chat.completions.parse(
-            model=self.model,
-            messages=message,
-            response_format=self.OUTPUT_MODEL,
-            temperature=self.temperature,
-            **self.client_kwargs,
-        )
-        parsed = completion.choices[0].message.parsed
-
-        return parsed
-
-    def _run(self, input_text: str, **extra_kwargs) -> dict[str, Any]:
-        cleaned_text = input_text.strip()
-
-        self.prompt_configs = self.prompt_loader.load_prompts(
-            self.PROMPT_FILE, self.USE_MODES, self.MODE, cleaned_text, **extra_kwargs
-        )
-
-        messages: list[dict[str, str]] = []
-
-        if self.WITH_ANALYSIS:
-            analysis = self._analyze()
-            messages.append(
-                self._build_user_message(f"Based on this analysis: {analysis}")
-            )
-
-        messages.append(self._build_main_message())
-        messages = self.formatter.format(messages)
-        parsed = self._parse(messages)
-        results = {"result": parsed.result}
-
-        if self.WITH_ANALYSIS:
-            results["analysis"] = analysis
-
-        return results
 
     def categorize(self, text: str, with_analysis: bool = False) -> dict[str, str]:
         """
@@ -115,12 +29,12 @@ class TheTool:
         from a fixed set of categories (e.g., "باورهای دینی", "اخلاق اسلامی", ...).
         Outputs JSON with one field: {"result": "..."}.
         """
-        self.PROMPT_FILE = "categorizer.yaml"
-        self.OUTPUT_MODEL = OutputModels.CategorizerOutput
-        self.WITH_ANALYSIS = with_analysis
-        self.USE_MODES = False
+        self.operator.PROMPT_FILE = "categorizer.yaml"
+        self.operator.OUTPUT_MODEL = OutputModels.CategorizerOutput
+        self.operator.WITH_ANALYSIS = with_analysis
+        self.operator.USE_MODES = False
 
-        results = self._run(text)
+        results = self.operator.run(text)
         return results
 
     def extract_keywords(
@@ -130,12 +44,12 @@ class TheTool:
         Keyword extractor for with optional analyzing step.
         Outputs JSON with one field: {"result": ["keyword1", "keyword2", ...]}.
         """
-        self.PROMPT_FILE = "keyword_extractor.yaml"
-        self.OUTPUT_MODEL = OutputModels.ListStrOutput
-        self.WITH_ANALYSIS = with_analysis
-        self.USE_MODES = False
+        self.operator.PROMPT_FILE = "keyword_extractor.yaml"
+        self.operator.OUTPUT_MODEL = OutputModels.ListStrOutput
+        self.operator.WITH_ANALYSIS = with_analysis
+        self.operator.USE_MODES = False
 
-        results = self._run(text)
+        results = self.operator.run(text)
         return results
 
     def extract_entities(
@@ -145,12 +59,12 @@ class TheTool:
         Named Entity Recognition (NER) system with optional analyzing step.
         Outputs JSON with one field: {"result": [{"text": "...", "type": "..."}, ...]}.
         """
-        self.PROMPT_FILE = "ner_extractor.yaml"
-        self.OUTPUT_MODEL = OutputModels.ListDictStrStrOutput
-        self.WITH_ANALYSIS = with_analysis
-        self.USE_MODES = False
+        self.operator.PROMPT_FILE = "ner_extractor.yaml"
+        self.operator.OUTPUT_MODEL = OutputModels.ListDictStrStrOutput
+        self.operator.WITH_ANALYSIS = with_analysis
+        self.operator.USE_MODES = False
 
-        results = self._run(text)
+        results = self.operator.run(text)
         return results
 
     def detect_question(
@@ -160,12 +74,12 @@ class TheTool:
         Binary question detector with optional analyzing step..
         Outputs JSON with one field: {"result": true/false}.
         """
-        self.PROMPT_FILE = "question_detector.yaml"
-        self.OUTPUT_MODEL = OutputModels.StrOutput
-        self.WITH_ANALYSIS = with_analysis
-        self.USE_MODES = False
+        self.operator.PROMPT_FILE = "question_detector.yaml"
+        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
+        self.operator.WITH_ANALYSIS = with_analysis
+        self.operator.USE_MODES = False
 
-        results = self._run(question)
+        results = self.operator.run(question)
         return results
 
     def generate_question(
@@ -175,12 +89,12 @@ class TheTool:
         Question Generator with optional analyzing step.
         Outputs JSON with one field: {"result": "..."}.
         """
-        self.PROMPT_FILE = "question_generator.yaml"
-        self.OUTPUT_MODEL = OutputModels.StrOutput
-        self.WITH_ANALYSIS = with_analysis
-        self.USE_MODES = False
+        self.operator.PROMPT_FILE = "question_generator.yaml"
+        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
+        self.operator.WITH_ANALYSIS = with_analysis
+        self.operator.USE_MODES = False
 
-        results = self._run(text)
+        results = self.operator.run(text)
         return results
 
     def merge_questions(
@@ -197,13 +111,13 @@ class TheTool:
         """
         question_str = ", ".join(questions)
 
-        self.PROMPT_FILE = "question_merger.yaml"
-        self.OUTPUT_MODEL = OutputModels.StrOutput
-        self.WITH_ANALYSIS = with_analysis
-        self.USE_MODES = True
-        self.MODE = mode
+        self.operator.PROMPT_FILE = "question_merger.yaml"
+        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
+        self.operator.WITH_ANALYSIS = with_analysis
+        self.operator.USE_MODES = True
+        self.operator.MODE = mode
 
-        results = self._run(question_str)
+        results = self.operator.run(question_str)
         return results
 
     def rewrite_question(
@@ -222,13 +136,13 @@ class TheTool:
         Outputs JSON with one field: {"result": "..."}.
         """
 
-        self.PROMPT_FILE = "question_rewriter.yaml"
-        self.OUTPUT_MODEL = OutputModels.StrOutput
-        self.WITH_ANALYSIS = with_analysis
-        self.USE_MODES = True
-        self.MODE = mode
+        self.operator.PROMPT_FILE = "question_rewriter.yaml"
+        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
+        self.operator.WITH_ANALYSIS = with_analysis
+        self.operator.USE_MODES = True
+        self.operator.MODE = mode
 
-        results = self._run(question)
+        results = self.operator.run(question)
         return results
 
     def generate_subject_question(
@@ -242,12 +156,12 @@ class TheTool:
         Subject question generator with optional analyzing step.
         Outputs JSON with one field: {"result": "..."}.
         """
-        self.PROMPT_FILE = "subject_question_generator.yaml"
-        self.OUTPUT_MODEL = OutputModels.ReasonListStrOutput
-        self.WITH_ANALYSIS = with_analysis
-        self.USE_MODES = False
+        self.operator.PROMPT_FILE = "subject_question_generator.yaml"
+        self.operator.OUTPUT_MODEL = OutputModels.ReasonListStrOutput
+        self.operator.WITH_ANALYSIS = with_analysis
+        self.operator.USE_MODES = False
 
-        results = self._run(
+        results = self.operator.run(
             subject,
             number_of_questions=number_of_questions,
             language=language,
@@ -259,12 +173,12 @@ class TheTool:
         Summarizer with optional analyzing step.
         Outputs JSON with one field: {"result": "..."}.
         """
-        self.PROMPT_FILE = "summarizer.yaml"
-        self.OUTPUT_MODEL = OutputModels.StrOutput
-        self.WITH_ANALYSIS = with_analysis
-        self.USE_MODES = False
+        self.operator.PROMPT_FILE = "summarizer.yaml"
+        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
+        self.operator.WITH_ANALYSIS = with_analysis
+        self.operator.USE_MODES = False
 
-        results = self._run(subject)
+        results = self.operator.run(subject)
         return results
 
     def translate(
@@ -278,12 +192,12 @@ class TheTool:
         Translator with optional analyzing step.
         Outputs JSON with one field: {"result": "..."}.
         """
-        self.PROMPT_FILE = "translator.yaml"
-        self.OUTPUT_MODEL = OutputModels.StrOutput
-        self.WITH_ANALYSIS = with_analysis
-        self.USE_MODES = False
+        self.operator.PROMPT_FILE = "translator.yaml"
+        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
+        self.operator.WITH_ANALYSIS = with_analysis
+        self.operator.USE_MODES = False
 
-        results = self.run(
+        results = self.operator.run(
             text,
             target_language=target_language,
             source_language=source_language,
