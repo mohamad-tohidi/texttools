@@ -46,5 +46,4 @@ class QuestionMerger(BaseTool):
         input_text = ", ".join(questions)
         parsed: Output = self.run(input_text)
         result = self._result_to_dict(input_text, parsed.merged_question)
-        self._dispatch(result)
         return result

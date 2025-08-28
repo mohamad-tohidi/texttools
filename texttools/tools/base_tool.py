@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Optional, Type, TypeVar
+from typing import Any, Type, TypeVar
 
 import yaml
 from openai import OpenAI
@@ -86,7 +86,6 @@ class BaseTool:
         formatter=UserMergeFormatter(),
         with_analysis: bool = False,
         temperature: float = 0.0,
-        handlers: Optional[list[Any]] = None,
         **client_kwargs: Any,
     ):
         self.client: OpenAI = client
@@ -96,7 +95,6 @@ class BaseTool:
         self.formatter = formatter
         self.with_analysis = with_analysis
         self.temperature = temperature
-        self.handlers = handlers or []
         self.client_kwargs = client_kwargs
 
     def _apply_formatter(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
@@ -136,13 +134,6 @@ class BaseTool:
         formatted_messages = self._apply_formatter(messages)
 
         return formatted_messages
-
-    def _dispatch(self, results: dict[str, Any]) -> None:
-        for handler in self.handlers:
-            try:
-                handler.handle(results)
-            except Exception:
-                pass
 
     def _parse(self, messages: list[dict[str, str]]):
         completion = self.client.beta.chat.completions.parse(
