@@ -107,18 +107,23 @@ class BaseTool:
     def _result_to_dict(self, input_text: str, result: Any) -> dict[str, Any]:
         return {"input_text": input_text, "result": result}
 
+    def _analysis_completion(self, messages: list[dict[str, str]]) -> str:
+        completion = self.client.chat.completions.create(
+            model=self.model,
+            messages=messages,
+            temperature=self.temperature,
+            **self.client_kwargs,
+        )
+        analyze = completion.choices[0].message.content.strip()
+
+        return analyze
+
     def _analyze(self) -> str:
         analyze_prompt = self.prompt_configs[ANALYZE_TEMPLATE]
         messages = [self._prompt_to_dict(analyze_prompt)]
         formatted_messages = self._apply_formatter(messages)
 
-        completion = self.client.chat.completions.create(
-            model=self.model,
-            messages=formatted_messages,
-            temperature=self.temperature,
-            **self.client_kwargs,
-        )
-        analyze = completion.choices[0].message.content.strip()
+        analyze = self._analysis_completion(formatted_messages)
 
         return analyze
 
@@ -135,7 +140,7 @@ class BaseTool:
 
         return formatted_messages
 
-    def _parse(self, messages: list[dict[str, str]]):
+    def _parse(self, messages: list[dict[str, str]]) -> T:
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=messages,
