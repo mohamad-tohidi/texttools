@@ -7,6 +7,30 @@ import texttools.tools.output_models as OutputModels
 
 
 class TheTool:
+    """
+    High-level interface exposing specialized text tools for.
+
+    Each method configures the operator with a specific YAML prompt,
+    output schema, and flags, then delegates execution to `operator.run()`.
+
+    Supported capabilities:
+    - categorize: assign a text to one of several Islamic categories.
+    - extract_keywords: produce a keyword list from text.
+    - extract_entities: simple NER (name/type pairs).
+    - detect_question: binary check whether input is a question.
+    - generate_question_from_text: produce a new question from a text.
+    - merge_questions: combine multiple questions (default/reason modes).
+    - rewrite_question: rephrase questions (same meaning/different wording, or vice versa).
+    - generate_questions_from_subject: generate multiple questions given a subject.
+    - summarize: produce a concise summary of a subject.
+    - translate: translate text between languages.
+
+    Usage pattern:
+        client = OpenAI(...)
+        tool = TheTool(client, model="gemma-3")
+        result = tool.categorize("متن ورودی ...", with_analysis=True)
+    """
+
     def __init__(
         self,
         client: OpenAI,
@@ -106,7 +130,7 @@ class TheTool:
         results = self.operator.run(question)
         return results
 
-    def generate_question(
+    def generate_question_from_text(
         self, text: str, with_analysis: bool = False
     ) -> dict[str, str]:
         """
@@ -189,7 +213,7 @@ class TheTool:
         results = self.operator.run(question)
         return results
 
-    def generate_subject_question(
+    def generate_questions_from_subject(
         self,
         subject: str,
         number_of_questions: int,

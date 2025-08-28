@@ -14,6 +14,31 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class Operator:
+    """
+    Core engine for running text-processing operations with an LLM.
+
+    It wires together:
+    - `PromptLoader` → loads YAML prompt templates.
+    - `UserMergeFormatter` → applies formatting to messages (e.g., merging).
+    - OpenAI client → executes completions/parsed completions.
+
+    Workflow inside `run()`:
+    1. Load prompt templates (`main_template` [+ `analyze_template` if enabled]).
+    2. Optionally generate an "analysis" step via `_analyze()`.
+    3. Build messages for the LLM.
+    4. Call `.beta.chat.completions.parse()` to parse the result into the
+       configured `OUTPUT_MODEL` (a Pydantic schema).
+    5. Return results as a dict (always `{"result": ...}`, plus `analysis`
+       if analysis was enabled).
+
+    Attributes configured dynamically by `TheTool`:
+    - PROMPT_FILE: str → YAML filename
+    - OUTPUT_MODEL: Pydantic model class
+    - WITH_ANALYSIS: bool → whether to run an analysis phase first
+    - USE_MODES: bool → whether to select prompts by mode
+    - MODE: str → which mode to use if modes are enabled
+    """
+
     PROMPT_FILE: str
     OUTPUT_MODEL: Type[T]
     WITH_ANALYSIS: bool = False

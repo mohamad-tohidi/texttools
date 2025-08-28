@@ -4,7 +4,21 @@ import yaml
 
 class PromptLoader:
     """
-    Loads YAML with both `main_template` and `analyze_template`
+    Utility for loading and formatting YAML prompt templates.
+
+    Each YAML file under `prompts/` must define at least a `main_template`,
+    and optionally an `analyze_template`. These can either be a single string
+    or a dictionary keyed by mode names (if `use_modes=True`).
+
+    Responsibilities:
+    - Load and parse YAML prompt definitions.
+    - Select the right template (by mode, if applicable).
+    - Inject variables (`{input}`, plus any extra kwargs) into the templates.
+    - Return a dict with:
+        {
+            "main_template": "...",
+            "analyze_template": "..." | None
+        }
     """
 
     MAIN_TEMPLATE: str = "main_template"

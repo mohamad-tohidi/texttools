@@ -14,10 +14,10 @@ The `TheTool` class provides the following NLP operations:
 - **`extract_keywords()`** - Extracts keywords from text
 - **`extract_entities()`** - Named Entity Recognition (NER) system
 - **`summarize()`** - Text summarization
-- **`generate_question()`** - Generates questions from text
+- **`generate_question_from_text()`** - Generates questions from text
 - **`merge_questions()`** - Merges multiple questions with different modes
 - **`rewrite_question()`** - Rewrites questions with different wording/meaning
-- **`generate_subject_question()`** - Generates questions about a specific subject
+- **`generate_questions_from_subject()`** - Generates questions about a specific subject
 - **`translate()`** - Text translation between languages
 
 ## Architecture
