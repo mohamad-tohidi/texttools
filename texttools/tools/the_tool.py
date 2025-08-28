@@ -123,6 +123,66 @@ class TheTool:
         results = self._run(text)
         return results
 
+    def extract_keywords(
+        self, text: str, with_analysis: bool = False
+    ) -> dict[str, str]:
+        """
+        Keyword extractor for with optional reasoning step.
+        Outputs JSON with one field: {"keywords": ["keyword1", "keyword2", ...]}.
+        """
+        self.PROMPT_FILE = "keyword_extractor.yaml"
+        self.OUTPUT_MODEL = OutputModels.ListStrOutput
+        self.WITH_ANALYSIS = with_analysis
+        self.USE_MODES = False
+
+        results = self._run(text)
+        return results
+
+    def extract_entities(
+        self, text: str, with_analysis: bool = False
+    ) -> dict[str, str]:
+        """
+        Named Entity Recognition (NER) system with optional reasoning step.
+        Outputs JSON with one field: {"entities": [{"text": "...", "type": "..."}, ...]}.
+        """
+        self.PROMPT_FILE = "ner_extractor.yaml"
+        self.OUTPUT_MODEL = OutputModels.ListDictStrStrOutput
+        self.WITH_ANALYSIS = with_analysis
+        self.USE_MODES = False
+
+        results = self._run(text)
+        return results
+
+    def detect_question(
+        self, question: str, with_analysis: bool = False
+    ) -> dict[str, str]:
+        """
+        Binary question detector with optional reasoning step..
+        Outputs JSON with one field: {"is_question": true/false}.
+        """
+        self.PROMPT_FILE = "question_detector.yaml"
+        self.OUTPUT_MODEL = OutputModels.StrOutput
+        self.WITH_ANALYSIS = with_analysis
+        self.USE_MODES = False
+
+        results = self._run(question)
+        return results
+
+    def generate_question(
+        self, text: str, with_analysis: bool = False
+    ) -> dict[str, str]:
+        """
+        Question Generator with optional reasoning step.
+        Outputs JSON with one field: {"generated_question": "..."}.
+        """
+        self.PROMPT_FILE = "question_generator.yaml"
+        self.OUTPUT_MODEL = OutputModels.StrOutput
+        self.WITH_ANALYSIS = with_analysis
+        self.USE_MODES = False
+
+        results = self._run(text)
+        return results
+
     def merge_questions(
         self,
         questions: list[str],
@@ -144,4 +204,88 @@ class TheTool:
         self.MODE = mode
 
         results = self._run(question_str)
+        return results
+
+    def rewrite_question(
+        self,
+        question: str,
+        mode: Literal[
+            "same_meaning_different_wording_mode",
+            "different_meaning_similar_wording_mode",
+        ] = "same_meaning_different_wording_mode",
+        with_analysis: bool = False,
+    ) -> dict[str, str]:
+        """
+        Question Rewriter with optional reasoning step and two modes:
+        1. Rewrite with same meaning, different wording.
+        2. Rewrite with different meaning, similar wording.
+        Outputs JSON with one field: {"rewritten_question": "..."}.
+        """
+
+        self.PROMPT_FILE = "question_rewriter.yaml"
+        self.OUTPUT_MODEL = OutputModels.StrOutput
+        self.WITH_ANALYSIS = with_analysis
+        self.USE_MODES = True
+        self.MODE = mode
+
+        results = self._run(question)
+        return results
+
+    def generate_subject_question(
+        self,
+        subject: str,
+        number_of_questions: int,
+        language: str,
+        with_analysis: bool = False,
+    ) -> dict[str, str]:
+        """
+        Subject question generator with optional reasoning step.
+        Outputs JSON with one field: {"generated_questions": "..."}.
+        """
+        self.PROMPT_FILE = "subject_question_generator.yaml"
+        self.OUTPUT_MODEL = OutputModels.ReasonListStrOutput
+        self.WITH_ANALYSIS = with_analysis
+        self.USE_MODES = False
+
+        results = self._run(
+            subject,
+            number_of_questions=number_of_questions,
+            language=language,
+        )
+        return results
+
+    def summarize(self, subject: str, with_analysis: bool = False) -> dict[str, str]:
+        """
+        Summarizer with optional reasoning step.
+        Outputs JSON with one field: {"summary": "..."}.
+        """
+        self.PROMPT_FILE = "summarizer.yaml"
+        self.OUTPUT_MODEL = OutputModels.StrOutput
+        self.WITH_ANALYSIS = with_analysis
+        self.USE_MODES = False
+
+        results = self._run(subject)
+        return results
+
+    def translate(
+        self,
+        text: str,
+        target_language: str,
+        source_language: str,
+        with_analysis: bool = False,
+    ) -> dict[str, str]:
+        """
+        Translator with optional reasoning step.
+        Outputs JSON with one field: {"translation": "..."}.
+        """
+        self.PROMPT_FILE = "translator.yaml"
+        self.OUTPUT_MODEL = OutputModels.StrOutput
+        self.WITH_ANALYSIS = with_analysis
+        self.USE_MODES = False
+
+        results = self.run(
+            text,
+            target_language=target_language,
+            source_language=source_language,
+        )
         return results
