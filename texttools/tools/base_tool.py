@@ -144,6 +144,18 @@ class BaseTool:
             except Exception:
                 pass
 
+    def _parse(self, messages: list[dict[str, str]]):
+        completion = self.client.beta.chat.completions.parse(
+            model=self.model,
+            messages=messages,
+            response_format=self.output_model,
+            temperature=self.temperature,
+            **self.client_kwargs,
+        )
+        parsed = completion.choices[0].message.parsed
+
+        return parsed
+
     def run(self, input_text: str, **extra_kwargs) -> T:
         """
         Run the tool:
@@ -158,14 +170,6 @@ class BaseTool:
         )
 
         messages = self._build_messages()
-
-        completion = self.client.beta.chat.completions.parse(
-            model=self.model,
-            messages=messages,
-            response_format=self.output_model,
-            temperature=self.temperature,
-            **self.client_kwargs,
-        )
-        parsed = completion.choices[0].message.parsed
+        parsed = self._parse(messages)
 
         return parsed
