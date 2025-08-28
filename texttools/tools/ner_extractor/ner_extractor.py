@@ -29,5 +29,5 @@ class NERExtractor(BaseTool):
 
     def extract_entities(self, input_text: str) -> dict[str, list[dict[str, str]]]:
         parsed: Output = self.run(input_text)
-        result = self._result_to_dict(parsed.entities)
+        result = self._build_results_dict(parsed.entities)
         return result

@@ -36,5 +36,5 @@ class SubjectQuestionGenerator(BaseTool):
             number_of_questions=number_of_questions,
             language=language,
         )
-        result = self._result_to_dict(parsed.generated_questions)
+        result = self._build_results_dict(parsed.generated_questions)
         return result

@@ -47,5 +47,5 @@ class QuestionRewriter(BaseTool):
         input_text: str,
     ) -> dict[str, str]:
         parsed: Output = self.run(input_text)
-        result = self._result_to_dict(parsed.rewritten_question)
+        result = self._build_results_dict(parsed.rewritten_question)
         return result

@@ -97,53 +97,43 @@ class BaseTool:
         self.temperature = temperature
         self.client_kwargs = client_kwargs
 
-    def _apply_formatter(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
-        formatted = self.formatter.format(messages=messages)
-        return formatted
-
-    def _prompt_to_dict(self, prompt: str) -> dict[str, str]:
+    def _build_user_message(self, prompt: str) -> dict[str, str]:
         return {"role": "user", "content": prompt}
 
-    def _result_to_dict(self, result: Any) -> dict[str, Any]:
+    def _build_results_dict(self, result: Any) -> dict[str, Any]:
         return {"result": result}
 
-    def _analysis_completion(self, messages: list[dict[str, str]]) -> str:
+    def _apply_formatter(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
+        return self.formatter.format(messages)
+
+    def _analysis_completion(self, analyze_message: list[dict[str, str]]) -> str:
         completion = self.client.chat.completions.create(
             model=self.model,
-            messages=messages,
+            messages=analyze_message,
             temperature=self.temperature,
             **self.client_kwargs,
         )
-        analyze = completion.choices[0].message.content.strip()
+        analysis = completion.choices[0].message.content.strip()
 
-        return analyze
+        return analysis
 
     def _analyze(self) -> str:
         analyze_prompt = self.prompt_configs[ANALYZE_TEMPLATE]
-        messages = [self._prompt_to_dict(analyze_prompt)]
-        formatted_messages = self._apply_formatter(messages)
+        analyze_message = [self._build_user_message(analyze_prompt)]
+        analysis = self._analysis_completion(analyze_message)
 
-        analyze = self._analysis_completion(formatted_messages)
+        return analysis
 
-        return analyze
-
-    def _build_messages(self) -> list[dict[str, str]]:
-        messages: list[dict[str, str]] = []
-
-        if self.with_analysis and self.prompt_configs[ANALYZE_TEMPLATE]:
-            analysis = self._analyze()
-            messages.append(self._prompt_to_dict(f"Based on this analysis: {analysis}"))
-
+    def _build_main_message(self) -> list[dict[str, str]]:
         main_prompt = self.prompt_configs[MAIN_TEMPLATE]
-        messages.append(self._prompt_to_dict(main_prompt))
-        formatted_messages = self._apply_formatter(messages)
+        main_message = self._build_user_message(main_prompt)
 
-        return formatted_messages
+        return main_message
 
-    def _parse(self, messages: list[dict[str, str]]) -> T:
+    def _parse(self, message: list[dict[str, str]]) -> T:
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
-            messages=messages,
+            messages=message,
             response_format=self.output_model,
             temperature=self.temperature,
             **self.client_kwargs,
@@ -165,7 +155,16 @@ class BaseTool:
             self.prompt_file, self.use_modes, self.mode, cleaned_text, **extra_kwargs
         )
 
-        messages = self._build_messages()
+        messages: list[dict[str, str]] = []
+
+        if self.with_analysis:
+            analysis = self._analyze()
+            messages.append(
+                self._build_user_message(f"Based on this analysis: {analysis}")
+            )
+
+        messages.append(self._build_main_message())
+        messages = self.formatter.format(messages)
         parsed = self._parse(messages)
 
         return parsed
