@@ -6,7 +6,7 @@ from texttools.tools.base_tool import BaseTool
 
 class Output(BaseModel):
     reasoning_summary: str
-    generated_questions: list[str]
+    result: list[str]
 
 
 class SubjectQuestionGenerator(BaseTool):
@@ -31,10 +31,8 @@ class SubjectQuestionGenerator(BaseTool):
     def generate_question(
         self, input_text: str, number_of_questions: int, language: str
     ) -> dict[str, list[str]]:
-        parsed: Output = self.run(
+        return self.run(
             input_text,
             number_of_questions=number_of_questions,
             language=language,
         )
-        result = self._build_results_dict(parsed.generated_questions)
-        return result

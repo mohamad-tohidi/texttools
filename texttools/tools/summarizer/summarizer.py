@@ -5,7 +5,7 @@ from texttools.tools.base_tool import BaseTool
 
 
 class Output(BaseModel):
-    summary: str
+    result: str
 
 
 class Summarizer(BaseTool):
@@ -28,6 +28,4 @@ class Summarizer(BaseTool):
         )
 
     def summarize(self, input_text: str) -> dict[str, str]:
-        parsed: Output = self.run(input_text)
-        result = self._build_results_dict(parsed.summary)
-        return result
+        return self.run(input_text)

@@ -5,7 +5,7 @@ from texttools.tools.base_tool import BaseTool
 
 
 class Output(BaseModel):
-    entities: list[dict[str, str]]
+    result: list[dict[str, str]]
 
 
 class NERExtractor(BaseTool):
@@ -28,6 +28,4 @@ class NERExtractor(BaseTool):
         )
 
     def extract_entities(self, input_text: str) -> dict[str, list[dict[str, str]]]:
-        parsed: Output = self.run(input_text)
-        result = self._build_results_dict(parsed.entities)
-        return result
+        return self.run(input_text)

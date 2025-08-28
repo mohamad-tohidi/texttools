@@ -5,7 +5,7 @@ from texttools.tools.base_tool import BaseTool
 
 
 class Output(BaseModel):
-    translation: str
+    result: str
 
 
 class Translator(BaseTool):
@@ -30,10 +30,8 @@ class Translator(BaseTool):
     def translate(
         self, input_text: str, target_language: str, source_language: str
     ) -> dict[str, str]:
-        parsed: Output = self.run(
+        return self.run(
             input_text,
             target_language=target_language,
             source_language=source_language,
         )
-        result = self._build_results_dict(parsed.translation)
-        return result

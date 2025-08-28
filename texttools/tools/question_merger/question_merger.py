@@ -7,7 +7,7 @@ from texttools.tools.base_tool import BaseTool
 
 
 class Output(BaseModel):
-    merged_question: str
+    result: str
 
 
 class QuestionMerger(BaseTool):
@@ -44,6 +44,4 @@ class QuestionMerger(BaseTool):
         questions: list[str],
     ) -> dict[str, str]:
         input_text = ", ".join(questions)
-        parsed: Output = self.run(input_text)
-        result = self._build_results_dict(parsed.merged_question)
-        return result
+        return self.run(input_text)

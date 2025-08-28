@@ -5,7 +5,7 @@ from texttools.tools.base_tool import BaseTool
 
 
 class Output(BaseModel):
-    keywords: list[str]
+    result: list[str]
 
 
 class KeywordExtractor(BaseTool):
@@ -28,6 +28,4 @@ class KeywordExtractor(BaseTool):
         )
 
     def extract_keywords(self, input_text: str) -> dict[str, list[str]]:
-        parsed: Output = self.run(input_text)
-        result = self._build_results_dict(parsed.keywords)
-        return result
+        return self.run(input_text)

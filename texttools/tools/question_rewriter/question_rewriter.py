@@ -7,7 +7,7 @@ from texttools.tools.base_tool import BaseTool
 
 
 class Output(BaseModel):
-    rewritten_question: str
+    result: str
 
 
 class QuestionRewriter(BaseTool):
@@ -46,6 +46,4 @@ class QuestionRewriter(BaseTool):
         self,
         input_text: str,
     ) -> dict[str, str]:
-        parsed: Output = self.run(input_text)
-        result = self._build_results_dict(parsed.rewritten_question)
-        return result
+        return self.run(input_text)

@@ -166,5 +166,9 @@ class BaseTool:
         messages.append(self._build_main_message())
         messages = self.formatter.format(messages)
         parsed = self._parse(messages)
+        results = {"result": parsed.result}
 
-        return parsed
+        if self.with_analysis:
+            results["analysis"] = analysis
+
+        return results
