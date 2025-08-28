@@ -1,99 +1,40 @@
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any, Type, TypeVar
+from typing import Any, TypeVar, Type, Literal
 
-import yaml
 from openai import OpenAI
 from pydantic import BaseModel
 
 from texttools.formatters.user_merge_formatter.user_merge_formatter import (
     UserMergeFormatter,
 )
+from texttools.tools.prompt_loader import PromptLoader
+import texttools.tools.output_models as OutputModels
 
 T = TypeVar("T", bound=BaseModel)
 
-MAIN_TEMPLATE = "main_template"
-ANALYZE_TEMPLATE = "analyze_template"
 
-
-class PromptLoader:
-    """
-    Loads YAML with both `main_template` and `analyze_template`
-    """
-
-    prompt_dir: str = "prompts"
-
-    def _load_templates(
-        self, prompt_file: str, use_modes: bool, mode: str
-    ) -> dict[str, str]:
-        prompt_file = Path(__file__).parent.parent / self.prompt_dir / prompt_file
-
-        data = yaml.safe_load(prompt_file.read_text(encoding="utf-8"))
-
-        return {
-            MAIN_TEMPLATE: data[MAIN_TEMPLATE][mode]
-            if use_modes
-            else data[MAIN_TEMPLATE],
-            ANALYZE_TEMPLATE: data.get(ANALYZE_TEMPLATE)[mode]
-            if use_modes
-            else data.get(ANALYZE_TEMPLATE),
-        }
-
-    def _build_format_args(self, input_text: str, **extra_kwargs) -> dict[str, str]:
-        # Base formatting args
-        format_args = {"input": input_text}
-        # Merge extras
-        format_args.update(extra_kwargs)
-        return format_args
-
-    def load_prompts(
-        self,
-        prompt_file: str,
-        use_modes: bool,
-        mode: str,
-        input_text: str,
-        **extra_kwargs,
-    ) -> dict[str, str]:
-        template_configs = self._load_templates(prompt_file, use_modes, mode)
-        format_args = self._build_format_args(input_text, **extra_kwargs)
-
-        for key in template_configs.keys():
-            template_configs[key] = template_configs[key].format(**format_args)
-
-        return template_configs
-
-
-class BaseTool:
-    """
-    - Runs optional analyzing step before main task
-    - Returns parsed Pydantic model
-    """
-
-    # This is the name of tool + .yaml as we need to load the prompt file.
-    prompt_file: str = ""
-
-    output_model: Type[T]
-    use_modes: bool = False
+class TheTool:
+    PROMPT_FILE: str
+    OUTPUT_MODEL: Type[T]
+    WITH_ANALYSIS: bool = False
+    USE_MODES: bool
+    MODE: str = ""
 
     def __init__(
         self,
         client: OpenAI,
         *,
         model: str,
-        mode: str = "",
         prompt_loader=PromptLoader(),
         formatter=UserMergeFormatter(),
-        with_analysis: bool = False,
         temperature: float = 0.0,
         **client_kwargs: Any,
     ):
         self.client: OpenAI = client
         self.model = model
-        self.mode = mode
         self.prompt_loader = prompt_loader
         self.formatter = formatter
-        self.with_analysis = with_analysis
         self.temperature = temperature
         self.client_kwargs = client_kwargs
 
@@ -118,14 +59,14 @@ class BaseTool:
         return analysis
 
     def _analyze(self) -> str:
-        analyze_prompt = self.prompt_configs[ANALYZE_TEMPLATE]
+        analyze_prompt = self.prompt_configs["analyze_template"]
         analyze_message = [self._build_user_message(analyze_prompt)]
         analysis = self._analysis_completion(analyze_message)
 
         return analysis
 
     def _build_main_message(self) -> list[dict[str, str]]:
-        main_prompt = self.prompt_configs[MAIN_TEMPLATE]
+        main_prompt = self.prompt_configs["main_template"]
         main_message = self._build_user_message(main_prompt)
 
         return main_message
@@ -134,7 +75,7 @@ class BaseTool:
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=message,
-            response_format=self.output_model,
+            response_format=self.OUTPUT_MODEL,
             temperature=self.temperature,
             **self.client_kwargs,
         )
@@ -142,22 +83,16 @@ class BaseTool:
 
         return parsed
 
-    def run(self, input_text: str, **extra_kwargs) -> T:
-        """
-        Run the tool:
-        - Optionally runs analyzeing (if enabled).
-        - Fills main template with input and analyzeing.
-        - Calls model and parses output into `self.output_model`.
-        """
+    def _run(self, input_text: str, **extra_kwargs) -> dict[str, Any]:
         cleaned_text = input_text.strip()
 
         self.prompt_configs = self.prompt_loader.load_prompts(
-            self.prompt_file, self.use_modes, self.mode, cleaned_text, **extra_kwargs
+            self.PROMPT_FILE, self.USE_MODES, self.MODE, cleaned_text, **extra_kwargs
         )
 
         messages: list[dict[str, str]] = []
 
-        if self.with_analysis:
+        if self.WITH_ANALYSIS:
             analysis = self._analyze()
             messages.append(
                 self._build_user_message(f"Based on this analysis: {analysis}")
@@ -168,7 +103,45 @@ class BaseTool:
         parsed = self._parse(messages)
         results = {"result": parsed.result}
 
-        if self.with_analysis:
+        if self.WITH_ANALYSIS:
             results["analysis"] = analysis
 
+        return results
+
+    def categorize(self, text: str, with_analysis: bool = False) -> dict[str, str]:
+        """
+        Text categorizer for Islamic studies domain with optional reasoning step.
+        Uses an LLM prompt (`categorizer.yaml`) to assign a single `main_tag`
+        from a fixed set of categories (e.g., "باورهای دینی", "اخلاق اسلامی", ...).
+        Outputs JSON with one field: {"main_tag": "..."}.
+        """
+        self.PROMPT_FILE = "categorizer.yaml"
+        self.OUTPUT_MODEL = OutputModels.CategorizerOutput
+        self.WITH_ANALYSIS = with_analysis
+        self.USE_MODES = False
+
+        results = self._run(text)
+        return results
+
+    def merge_questions(
+        self,
+        questions: list[str],
+        mode: Literal["default_mode", "reason_mode"] = "default_mode",
+        with_analysis: bool = False,
+    ) -> dict[str, str]:
+        """
+        Questions merger with optional reasoning step and two modes:
+        1. Default mode
+        2. Reason mode
+        Outputs JSON with one field: {"merged_question": "..."}.
+        """
+        question_str = ", ".join(questions)
+
+        self.PROMPT_FILE = "question_merger.yaml"
+        self.OUTPUT_MODEL = OutputModels.StrOutput
+        self.WITH_ANALYSIS = with_analysis
+        self.USE_MODES = True
+        self.MODE = mode
+
+        results = self._run(question_str)
         return results
