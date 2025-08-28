@@ -104,8 +104,8 @@ class BaseTool:
     def _prompt_to_dict(self, prompt: str) -> dict[str, str]:
         return {"role": "user", "content": prompt}
 
-    def _result_to_dict(self, input_text: str, result: Any) -> dict[str, Any]:
-        return {"input_text": input_text, "result": result}
+    def _result_to_dict(self, result: Any) -> dict[str, Any]:
+        return {"result": result}
 
     def _analysis_completion(self, messages: list[dict[str, str]]) -> str:
         completion = self.client.chat.completions.create(

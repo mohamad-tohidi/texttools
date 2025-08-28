@@ -29,5 +29,5 @@ class QuestionDetector(BaseTool):
 
     def detect(self, input_text: str) -> dict[str, str]:
         parsed: Output = self.run(input_text)
-        result = self._result_to_dict(input_text, parsed.is_question)
+        result = self._result_to_dict(parsed.is_question)
         return result
