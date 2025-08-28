@@ -110,10 +110,10 @@ class TheTool:
 
     def categorize(self, text: str, with_analysis: bool = False) -> dict[str, str]:
         """
-        Text categorizer for Islamic studies domain with optional reasoning step.
+        Text categorizer for Islamic studies domain with optional analyzing step.
         Uses an LLM prompt (`categorizer.yaml`) to assign a single `main_tag`
         from a fixed set of categories (e.g., "باورهای دینی", "اخلاق اسلامی", ...).
-        Outputs JSON with one field: {"main_tag": "..."}.
+        Outputs JSON with one field: {"result": "..."}.
         """
         self.PROMPT_FILE = "categorizer.yaml"
         self.OUTPUT_MODEL = OutputModels.CategorizerOutput
@@ -127,8 +127,8 @@ class TheTool:
         self, text: str, with_analysis: bool = False
     ) -> dict[str, str]:
         """
-        Keyword extractor for with optional reasoning step.
-        Outputs JSON with one field: {"keywords": ["keyword1", "keyword2", ...]}.
+        Keyword extractor for with optional analyzing step.
+        Outputs JSON with one field: {"result": ["keyword1", "keyword2", ...]}.
         """
         self.PROMPT_FILE = "keyword_extractor.yaml"
         self.OUTPUT_MODEL = OutputModels.ListStrOutput
@@ -142,8 +142,8 @@ class TheTool:
         self, text: str, with_analysis: bool = False
     ) -> dict[str, str]:
         """
-        Named Entity Recognition (NER) system with optional reasoning step.
-        Outputs JSON with one field: {"entities": [{"text": "...", "type": "..."}, ...]}.
+        Named Entity Recognition (NER) system with optional analyzing step.
+        Outputs JSON with one field: {"result": [{"text": "...", "type": "..."}, ...]}.
         """
         self.PROMPT_FILE = "ner_extractor.yaml"
         self.OUTPUT_MODEL = OutputModels.ListDictStrStrOutput
@@ -157,8 +157,8 @@ class TheTool:
         self, question: str, with_analysis: bool = False
     ) -> dict[str, str]:
         """
-        Binary question detector with optional reasoning step..
-        Outputs JSON with one field: {"is_question": true/false}.
+        Binary question detector with optional analyzing step..
+        Outputs JSON with one field: {"result": true/false}.
         """
         self.PROMPT_FILE = "question_detector.yaml"
         self.OUTPUT_MODEL = OutputModels.StrOutput
@@ -172,8 +172,8 @@ class TheTool:
         self, text: str, with_analysis: bool = False
     ) -> dict[str, str]:
         """
-        Question Generator with optional reasoning step.
-        Outputs JSON with one field: {"generated_question": "..."}.
+        Question Generator with optional analyzing step.
+        Outputs JSON with one field: {"result": "..."}.
         """
         self.PROMPT_FILE = "question_generator.yaml"
         self.OUTPUT_MODEL = OutputModels.StrOutput
@@ -190,10 +190,10 @@ class TheTool:
         with_analysis: bool = False,
     ) -> dict[str, str]:
         """
-        Questions merger with optional reasoning step and two modes:
+        Questions merger with optional analyzing step and two modes:
         1. Default mode
         2. Reason mode
-        Outputs JSON with one field: {"merged_question": "..."}.
+        Outputs JSON with one field: {"result": "..."}.
         """
         question_str = ", ".join(questions)
 
@@ -216,10 +216,10 @@ class TheTool:
         with_analysis: bool = False,
     ) -> dict[str, str]:
         """
-        Question Rewriter with optional reasoning step and two modes:
+        Question Rewriter with optional analyzing step and two modes:
         1. Rewrite with same meaning, different wording.
         2. Rewrite with different meaning, similar wording.
-        Outputs JSON with one field: {"rewritten_question": "..."}.
+        Outputs JSON with one field: {"result": "..."}.
         """
 
         self.PROMPT_FILE = "question_rewriter.yaml"
@@ -239,8 +239,8 @@ class TheTool:
         with_analysis: bool = False,
     ) -> dict[str, str]:
         """
-        Subject question generator with optional reasoning step.
-        Outputs JSON with one field: {"generated_questions": "..."}.
+        Subject question generator with optional analyzing step.
+        Outputs JSON with one field: {"result": "..."}.
         """
         self.PROMPT_FILE = "subject_question_generator.yaml"
         self.OUTPUT_MODEL = OutputModels.ReasonListStrOutput
@@ -256,8 +256,8 @@ class TheTool:
 
     def summarize(self, subject: str, with_analysis: bool = False) -> dict[str, str]:
         """
-        Summarizer with optional reasoning step.
-        Outputs JSON with one field: {"summary": "..."}.
+        Summarizer with optional analyzing step.
+        Outputs JSON with one field: {"result": "..."}.
         """
         self.PROMPT_FILE = "summarizer.yaml"
         self.OUTPUT_MODEL = OutputModels.StrOutput
@@ -275,8 +275,8 @@ class TheTool:
         with_analysis: bool = False,
     ) -> dict[str, str]:
         """
-        Translator with optional reasoning step.
-        Outputs JSON with one field: {"translation": "..."}.
+        Translator with optional analyzing step.
+        Outputs JSON with one field: {"result": "..."}.
         """
         self.PROMPT_FILE = "translator.yaml"
         self.OUTPUT_MODEL = OutputModels.StrOutput
