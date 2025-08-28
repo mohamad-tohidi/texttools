@@ -24,10 +24,16 @@ class TheTool:
 
     def categorize(self, text: str, with_analysis: bool = False) -> dict[str, str]:
         """
-        Text categorizer for Islamic studies domain with optional analyzing step.
-        Uses an LLM prompt (`categorizer.yaml`) to assign a single `main_tag`
-        from a fixed set of categories (e.g., "باورهای دینی", "اخلاق اسلامی", ...).
-        Outputs JSON with one field: {"result": "..."}.
+        Categorize a text into a single Islamic studies domain category.
+
+        Args:
+            text: Input string to categorize.
+            with_analysis: If True, first runs an LLM "analysis" step and
+                           conditions the main prompt on that analysis.
+
+        Returns:
+            {"result": <category string>}
+            Example: {"result": "باورهای دینی"}
         """
         self.operator.PROMPT_FILE = "categorizer.yaml"
         self.operator.OUTPUT_MODEL = OutputModels.CategorizerOutput
@@ -41,8 +47,14 @@ class TheTool:
         self, text: str, with_analysis: bool = False
     ) -> dict[str, str]:
         """
-        Keyword extractor for with optional analyzing step.
-        Outputs JSON with one field: {"result": ["keyword1", "keyword2", ...]}.
+        Extract salient keywords from text.
+
+        Args:
+            text: Input string to analyze.
+            with_analysis: Whether to run an extra LLM reasoning step.
+
+        Returns:
+            {"result": [<keyword1>, <keyword2>, ...]}
         """
         self.operator.PROMPT_FILE = "keyword_extractor.yaml"
         self.operator.OUTPUT_MODEL = OutputModels.ListStrOutput
@@ -56,8 +68,14 @@ class TheTool:
         self, text: str, with_analysis: bool = False
     ) -> dict[str, str]:
         """
-        Named Entity Recognition (NER) system with optional analyzing step.
-        Outputs JSON with one field: {"result": [{"text": "...", "type": "..."}, ...]}.
+        Perform Named Entity Recognition (NER) over the input text.
+
+        Args:
+            text: Input string.
+            with_analysis: Whether to run an extra LLM reasoning step.
+
+        Returns:
+            {"result": [{"text": <entity>, "type": <entity_type>}, ...]}
         """
         self.operator.PROMPT_FILE = "ner_extractor.yaml"
         self.operator.OUTPUT_MODEL = OutputModels.ListDictStrStrOutput
@@ -71,8 +89,14 @@ class TheTool:
         self, question: str, with_analysis: bool = False
     ) -> dict[str, str]:
         """
-        Binary question detector with optional analyzing step..
-        Outputs JSON with one field: {"result": true/false}.
+        Detect if the input is phrased as a question.
+
+        Args:
+            question: Input string to evaluate.
+            with_analysis: Whether to include an analysis step.
+
+        Returns:
+            {"result": "true"} or {"result": "false"}
         """
         self.operator.PROMPT_FILE = "question_detector.yaml"
         self.operator.OUTPUT_MODEL = OutputModels.StrOutput
@@ -86,8 +110,14 @@ class TheTool:
         self, text: str, with_analysis: bool = False
     ) -> dict[str, str]:
         """
-        Question Generator with optional analyzing step.
-        Outputs JSON with one field: {"result": "..."}.
+        Generate a single question from the given text.
+
+        Args:
+            text: Source text to derive a question from.
+            with_analysis: Whether to use analysis before generation.
+
+        Returns:
+            {"result": <generated_question>}
         """
         self.operator.PROMPT_FILE = "question_generator.yaml"
         self.operator.OUTPUT_MODEL = OutputModels.StrOutput
@@ -104,10 +134,17 @@ class TheTool:
         with_analysis: bool = False,
     ) -> dict[str, str]:
         """
-        Questions merger with optional analyzing step and two modes:
-        1. Default mode
-        2. Reason mode
-        Outputs JSON with one field: {"result": "..."}.
+        Merge multiple questions into a single unified question.
+
+        Args:
+            questions: List of question strings.
+            mode: Merge strategy:
+                - "default_mode": simple merging.
+                - "reason_mode": merging with reasoning explanation.
+            with_analysis: Whether to use an analysis step.
+
+        Returns:
+            {"result": <merged_question>}
         """
         question_str = ", ".join(questions)
 
@@ -130,10 +167,17 @@ class TheTool:
         with_analysis: bool = False,
     ) -> dict[str, str]:
         """
-        Question Rewriter with optional analyzing step and two modes:
-        1. Rewrite with same meaning, different wording.
-        2. Rewrite with different meaning, similar wording.
-        Outputs JSON with one field: {"result": "..."}.
+        Rewrite a question with different wording or meaning.
+
+        Args:
+            question: Input question to rewrite.
+            mode: Rewrite strategy:
+                - "same_meaning_different_wording_mode": keep meaning, change words.
+                - "different_meaning_similar_wording_mode": alter meaning, preserve wording style.
+            with_analysis: Whether to include an analysis step.
+
+        Returns:
+            {"result": <rewritten_question>}
         """
 
         self.operator.PROMPT_FILE = "question_rewriter.yaml"
@@ -153,8 +197,16 @@ class TheTool:
         with_analysis: bool = False,
     ) -> dict[str, str]:
         """
-        Subject question generator with optional analyzing step.
-        Outputs JSON with one field: {"result": "..."}.
+        Generate a list of questions about a subject.
+
+        Args:
+            subject: Topic of interest.
+            number_of_questions: Number of questions to produce.
+            language: Target language for generated questions.
+            with_analysis: Whether to include an analysis step.
+
+        Returns:
+            {"result": [<question1>, <question2>, ...]}
         """
         self.operator.PROMPT_FILE = "subject_question_generator.yaml"
         self.operator.OUTPUT_MODEL = OutputModels.ReasonListStrOutput
@@ -170,8 +222,14 @@ class TheTool:
 
     def summarize(self, subject: str, with_analysis: bool = False) -> dict[str, str]:
         """
-        Summarizer with optional analyzing step.
-        Outputs JSON with one field: {"result": "..."}.
+        Summarize the given subject text.
+
+        Args:
+            subject: Input text to summarize.
+            with_analysis: Whether to include an analysis step.
+
+        Returns:
+            {"result": <summary>}
         """
         self.operator.PROMPT_FILE = "summarizer.yaml"
         self.operator.OUTPUT_MODEL = OutputModels.StrOutput
@@ -189,8 +247,16 @@ class TheTool:
         with_analysis: bool = False,
     ) -> dict[str, str]:
         """
-        Translator with optional analyzing step.
-        Outputs JSON with one field: {"result": "..."}.
+        Translate text between languages.
+
+        Args:
+            text: Input string to translate.
+            target_language: Language code or name to translate into.
+            source_language: Language code or name of the source text.
+            with_analysis: Whether to include an analysis step.
+
+        Returns:
+            {"result": <translated_text>}
         """
         self.operator.PROMPT_FILE = "translator.yaml"
         self.operator.OUTPUT_MODEL = OutputModels.StrOutput
