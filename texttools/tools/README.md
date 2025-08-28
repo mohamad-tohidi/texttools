@@ -1,28 +1,68 @@
 # Tools
 
 ## Overview
-This folder contains all the **tools** provided by TextTools. Each tool is implemented as a Python class, designed to work with **LLMs** and structured outputs (e.g., Pydantic models, JSON).
+This folder contains all the **tools** provided by TextTools. Each tool is implemented in TheTool class, designed to work with **LLMs** and structured outputs (e.g., Pydantic models, JSON).
 
 Tools are modular, easy to extend, and ready to use for common NLP tasks.
 
-## Structure
-- **tool_name/**: Each subfolder contains the implementation of a specific tool.
-- **tool_name.py**: Main Python class implementing the tool.
+## Available Tools
 
-### Example Folder Layout
-```
-tools/
-├─ categorizer/
-│  └─ categorizer.py
-├─ question_merger/
-│  └─ question_merger.py
-├─ translator/
-│  └─ translator.py
-└─ ...
-```
+The `TheTool` class provides the following NLP operations:
 
-## Guidelines
-1. **Naming**: Each tool folder should be named after the tool, e.g., `question_merger`, `translator`.
-2. **Consistency**: Use a consistent interface with `__init__`, `run()` or similar methods.
-3. **Output Models**: Use Pydantic models for structured outputs.
-4. **Prompts**: Tools that rely on prompts should load them dynamically from the `prompts/` folder.
+- **`categorize()`** - Classifies text into Islamic studies categories (باورهای دینی, اخلاق اسلامی, etc.)
+- **`detect_question()`** - Binary detection of whether input is a question
+- **`extract_keywords()`** - Extracts keywords from text
+- **`extract_entities()`** - Named Entity Recognition (NER) system
+- **`summarize()`** - Text summarization
+- **`generate_question()`** - Generates questions from text
+- **`merge_questions()`** - Merges multiple questions with different modes
+- **`rewrite_question()`** - Rewrites questions with different wording/meaning
+- **`generate_subject_question()`** - Generates questions about a specific subject
+- **`translate()`** - Text translation between languages
+
+## Architecture
+
+### Core Components
+
+#### Operator Class
+The base `Operator` class provides:
+- LLM client integration (OpenAI)
+- Prompt loading and formatting
+- Structured output parsing using Pydantic models
+- Optional analysis step capability
+- Mode-based prompt selection
+
+#### Output Models
+Structured output models defined in `output_models.py`:
+- `StrOutput` - Simple string output
+- `ListStrOutput` - List of strings
+- `ListDictStrStrOutput` - List of dictionaries
+- `ReasonListStrOutput` - Output with reasoning
+- `CategorizerOutput` - Specialized categorization output
+
+#### Prompt Loader
+The `PromptLoader` class:
+- Loads YAML prompt templates from the `prompts/` folder
+- Supports mode-based template selection
+- Handles variable injection into templates
+- Manages both main and analysis templates
+
+## Usage Example
+
+```python
+from openai import OpenAI
+from texttools.tools.the_tool import TheTool
+
+# Initialize client and tool
+client = OpenAI(api_key="your-api-key")
+tool = TheTool(client=client, model="gpt-4")
+
+# Use any tool
+result = tool.categorize("نمازهای یومیه چگونه خوانده می‌شوند؟")
+print(result["result"])
+
+# With analysis
+result = tool.extract_keywords("متن نمونه برای استخراج کلمات کلیدی", with_analysis=True)
+print(result["result"])
+print(result["analysis"])  # Available when with_analysis=True
+```
