@@ -106,6 +106,16 @@ class Operator:
         return parsed
 
     def run(self, input_text: str, **extra_kwargs) -> dict[str, Any]:
+        """
+        Execute the LLM pipeline with the given input text.
+
+        Args:
+            input_text: The text to process (will be stripped of whitespace)
+            **extra_kwargs: Additional variables to inject into prompt templates
+
+        Returns:
+            Dictionary containing the parsed result and optional analysis
+        """
         cleaned_text = input_text.strip()
 
         self.prompt_configs = self.prompt_loader.load_prompts(
