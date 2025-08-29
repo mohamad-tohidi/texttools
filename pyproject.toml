@@ -5,15 +5,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hamtaa-texttools"
 version = "0.1.44"
-description = "A set of high-level NLP tools"
-readme = "README.md"
-requires-python = ">=3.8"
 authors = [
   { name = "Tohidi" },
   { name = "Montazer" },
   { name = "Givechi" },
-  { name = "Moosavinejad" }
+  { name = "Moosavinejad" email="erfanmoosavi84@gmail.com"},
 ]
+description = "A set of high-level NLP tools"
+readme = "README.md"
+requires-python = ">=3.8"
 dependencies = [
   "openai==1.97.1",
   "numpy>=1.26,<3",
