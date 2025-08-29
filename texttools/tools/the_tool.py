@@ -203,7 +203,6 @@ class TheTool:
         Returns:
             {"result": <rewritten_question>}
         """
-
         self.operator.PROMPT_FILE = "question_rewriter.yaml"
         self.operator.OUTPUT_MODEL = OutputModels.StrOutput
         self.operator.WITH_ANALYSIS = with_analysis
@@ -217,7 +216,7 @@ class TheTool:
         self,
         subject: str,
         number_of_questions: int,
-        language: str,
+        language: str = "English",
         with_analysis: bool = False,
     ) -> dict[str, list[str]]:
         """
