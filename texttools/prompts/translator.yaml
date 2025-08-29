@@ -1,7 +1,7 @@
 main_template: |
-  You are a {source_language} to {target_language} translator.
+  You are a {target_language} translator.
   Output only the translated text. No comments, no explanations, no markdown.
-  Translate the following text from {source_language} to {target_language}:
+  Translate the following text to {target_language}:
   {input}
 
 analyze_template: |

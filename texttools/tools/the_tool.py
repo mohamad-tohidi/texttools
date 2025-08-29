@@ -266,7 +266,6 @@ class TheTool:
         self,
         text: str,
         target_language: str,
-        source_language: str,
         with_analysis: bool = False,
     ) -> dict[str, str]:
         """
@@ -275,7 +274,6 @@ class TheTool:
         Args:
             text: Input string to translate.
             target_language: Language code or name to translate into.
-            source_language: Language code or name of the source text.
             with_analysis: Whether to include an analysis step.
 
         Returns:
@@ -289,6 +287,5 @@ class TheTool:
         results = self.operator.run(
             text,
             target_language=target_language,
-            source_language=source_language,
         )
         return results
