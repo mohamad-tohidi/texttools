@@ -28,9 +28,24 @@ class PromptLoader:
     def _load_templates(
         self, prompt_file: str, use_modes: bool, mode: str
     ) -> dict[str, str]:
-        prompt_file = Path(__file__).parent.parent / self.PROMPTS_DIR / prompt_file
+        prompt_path = Path(__file__).parent.parent / self.PROMPTS_DIR / prompt_file
 
-        data = yaml.safe_load(prompt_file.read_text(encoding="utf-8"))
+        # Error handlings
+        if not prompt_path.exists():
+            raise FileNotFoundError(f"Prompt file not found: {prompt_path}")
+
+        try:
+            data = yaml.safe_load(prompt_path.read_text(encoding="utf-8"))
+        except yaml.YAMLError as e:
+            raise ValueError(f"Invalid YAML in {prompt_path}: {e}")
+
+        if self.MAIN_TEMPLATE not in data:
+            raise ValueError(
+                f"Missing required '{self.MAIN_TEMPLATE}' in {prompt_file}"
+            )
+
+        # Load the data
+        data = yaml.safe_load(prompt_path.read_text(encoding="utf-8"))
 
         return {
             self.MAIN_TEMPLATE: data[self.MAIN_TEMPLATE][mode]
