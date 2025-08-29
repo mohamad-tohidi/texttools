@@ -9,7 +9,7 @@ authors = [
   { name = "Tohidi" },
   { name = "Montazer" },
   { name = "Givechi" },
-  { name = "Moosavinejad" email="erfanmoosavi84@gmail.com"},
+  { name = "Moosavinejad", email="erfanmoosavi84@gmail.com"},
 ]
 description = "A set of high-level NLP tools"
 readme = "README.md"
