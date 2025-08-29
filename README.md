@@ -3,9 +3,7 @@
 ## 📌 Overview
 
 **TextTools** is a high-level **NLP toolkit** built on top of modern **LLMs**.  
-It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER, and more** — designed to help you integrate AI-powered text processing into your applications with minimal effort.
-
-Forget boilerplate and low-level utilities — TextTools makes advanced LLM workflows feel like calling a simple Python function.
+It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER extractor, and more** — designed to help you integrate AI-powered text processing into your applications with minimal effort.
 
 ---
 
@@ -16,14 +14,22 @@ Each tool is designed to work out-of-the-box with structured outputs (JSON / Pyd
 
 - **Categorizer** → Zero-finetuning text categorization for fast, scalable classification.  
 - **Keyword Extractor** → Identify the most important keywords in a text.  
-- **Merger** → Merge the provided questions, preserving all the main points 
-- **NER (Named Entity Recognition)** → Extract people, places, organizations, and other entities.  
+- **Question Merger** → Merge the provided questions, preserving all the main points 
+- **NER (Named Entity Recognition) Extractor** → Extract people, places, organizations, and other entities.  
 - **Question Detector** → Determine whether a text is a question or not.  
-- **Question Generator** → Generate high-quality, context-relevant questions.
+- **Question Generator From Text** → Generate high-quality, context-relevant questions from provided text.
+- **Question Generator From Subject** → Generate high-quality, context-relevant questions from a subject.
 - **Rewriter** → Rewrite text while preserving meaning or without it.
 - **Summarizer** → Condense long passages into clear, structured summaries. 
 - **Translator** → Translate text across multiple languages, with support for custom rules.
 
+---
+
+## 🔍 `with_analysis` Mode
+
+The `with_analysis=True` flag enhances the tool's output by providing a detailed reasoning chain behind its result. This is valuable for debugging, improving prompts, or understanding model behavior.
+
+**Please be aware:** This feature works by making an additional LLM API call for each tool invocation, which will **effectively double your token usage** for that operation.
 
 ---
 
@@ -51,6 +57,7 @@ client = OpenAI(base_url = "your_url", API_KEY = "your_api_key")
 model = "gpt-4o-mini"
 
 # Create an instance of TheTool
+# ⚠️ Note: Enabling `with_analysis=True` provides deeper insights but incurs additional LLM calls and token usage.
 the_tool = TheTool(client = client, model = model, with_analysis = True)
 
 # Example: Question Detection
@@ -82,5 +89,3 @@ Contributions are welcome!
 Feel free to **open issues, suggest new features, or submit pull requests**.  
 
 ---
-
-<p align="center">🚀 Empower your text with <b>TextTools</b> 🚀</p>
