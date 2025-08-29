@@ -1,16 +1,5 @@
 # Text Tools
 
-<p align="center">
-  <img src="https://img.shields.io/badge/TextTools-Python%20Text%20Processing-black?style=for-the-badge&logo=python&logoColor=white">
-</p>
-
-
-<p align="center">
-  <img src="files/logo.png" alt="Preview" width="300" height="300">
-</p>
-
----
-
 ## 📌 Overview
 
 **TextTools** is a high-level **NLP toolkit** built on top of modern **LLMs**.  
@@ -91,14 +80,6 @@ Use **TextTools** when you need to:
 
 Contributions are welcome!  
 Feel free to **open issues, suggest new features, or submit pull requests**.  
-
----
-
-## 📌 Roadmap
-
-- [ ] Add other AI utilities   
-- [ ] Improve performance  
-- [ ] And more!
 
 ---
 
