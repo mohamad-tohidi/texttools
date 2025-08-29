@@ -28,10 +28,13 @@ class PromptLoader:
     def __init__(self, prompts_dir: Optional[str] = None):
         self.PROMPTS_DIR = prompts_dir or "prompts"
 
+    def _get_prompt_path(self, prompt_file: str) -> Path:
+        return Path(__file__).parent.parent / self.PROMPTS_DIR / prompt_file
+
     def _load_templates(
         self, prompt_file: str, use_modes: bool, mode: str
     ) -> dict[str, str]:
-        prompt_path = Path(__file__).parent.parent / self.PROMPTS_DIR / prompt_file
+        prompt_path = self._get_prompt_path(prompt_file)
 
         # Error handlings
         if not prompt_path.exists():
