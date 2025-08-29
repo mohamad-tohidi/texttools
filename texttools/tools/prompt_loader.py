@@ -1,3 +1,4 @@
+from typing import Optional
 from pathlib import Path
 import yaml
 
@@ -23,7 +24,9 @@ class PromptLoader:
 
     MAIN_TEMPLATE: str = "main_template"
     ANALYZE_TEMPLATE: str = "analyze_template"
-    PROMPTS_DIR: str = "prompts"
+
+    def __init__(self, prompts_dir: Optional[str] = None):
+        self.PROMPTS_DIR = prompts_dir or "prompts"
 
     def _load_templates(
         self, prompt_file: str, use_modes: bool, mode: str
