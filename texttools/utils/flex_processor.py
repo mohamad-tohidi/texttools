@@ -46,7 +46,8 @@ async def flex_processing(
             if output_model is not None:
                 try:
                     output_model.model_validate_json(content)
-                    base_content = output_model(**content)
+                    base_content = response.choices[0].message.parsed
+                    # base_content = output_model(**content)
                     return base_content
                 except ValidationError as ve:
                     # Treat invalid output as retryable
@@ -57,8 +58,6 @@ async def flex_processing(
                     )
                     await asyncio.sleep(wait_time)
                     continue 
-
-                return content  # ✅ valid response
         except (RateLimitError, APIError) as e:
             wait_time = base_delay * (2 ** attempt) + random.uniform(0, 1)
             print(
