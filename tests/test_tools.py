@@ -1,4 +1,3 @@
-# Import required library
 import os
 
 from dotenv import load_dotenv
@@ -11,14 +10,13 @@ load_dotenv()
 
 # Load API key from environment variable
 API_KEY = os.getenv("OPENAI_API_KEY")
-if API_KEY is None:
-    raise ValueError("Please set the OPENAI_API_KEY environment variable")
+model = "google/gemma-3n-e4b-it"
 
 # Create OpenAI client
 client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
 
 # Create an instance of TheTool
-t = TheTool(client=client, model="google/gemma-3n-e4b-it")
+t = TheTool(client=client, model=model)
 
 # Categorizer
 category = t.categorize("سلام حالت چطوره؟")
