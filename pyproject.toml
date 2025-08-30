@@ -6,10 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "hamtaa-texttools"
 version = "0.1.44"
 authors = [
-  { name = "Tohidi" },
+  { name = "Tohidi", email = "the.mohammad.tohidi@gmail.com" },
   { name = "Montazer" },
   { name = "Givechi" },
-  { name = "Moosavinejad", email="erfanmoosavi84@gmail.com"},
+  { name = "MoosaviNejad", email = "erfanmoosavi84@gmail.com"},
 ]
 description = "A set of high-level NLP tools"
 readme = "README.md"
