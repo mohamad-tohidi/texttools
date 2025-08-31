@@ -51,10 +51,10 @@ The `PromptLoader` class:
 
 ```python
 from openai import OpenAI
-from texttools.tools.the_tool import TheTool
+from texttools import TheTool
 
 # Initialize client and tool
-client = OpenAI(api_key="your-api-key")
+client = OpenAI(base_url="your-base-url", api_key="your-api-key")
 tool = TheTool(client=client, model="gpt-4")
 
 # Use any tool
