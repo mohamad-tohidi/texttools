@@ -7,9 +7,9 @@ name = "hamtaa-texttools"
 version = "0.1.44"
 authors = [
   { name = "Tohidi", email = "the.mohammad.tohidi@gmail.com" },
-  { name = "Montazer" },
-  { name = "Givechi" },
-  { name = "MoosaviNejad", email = "erfanmoosavi84@gmail.com"},
+  { name = "Montazer", email = "montazerh82@gmail.com" },
+  { name = "Givechi", email = "mohamad.m.givechi@gmail.com" },
+  { name = "MoosaviNejad", email = "erfanmoosavi84@gmail.com" },
 ]
 description = "A set of high-level NLP tools"
 readme = "README.md"
