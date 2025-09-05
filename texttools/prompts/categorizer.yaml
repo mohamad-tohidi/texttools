@@ -22,5 +22,4 @@ analyze_template: |
   Read the text and respond the main idea and a short analysis of that.
   Maximum words: 20
   Here is the text:
-  متن:
   {input}
