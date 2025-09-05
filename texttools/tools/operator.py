@@ -10,6 +10,7 @@ from texttools.formatters.user_merge_formatter.user_merge_formatter import (
 )
 from texttools.tools.prompt_loader import PromptLoader
 
+# Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
 
 
@@ -62,9 +63,6 @@ class Operator:
 
     def _build_user_message(self, prompt: str) -> dict[str, str]:
         return {"role": "user", "content": prompt}
-
-    def _build_results_dict(self, result: Any) -> dict[str, Any]:
-        return {"result": result}
 
     def _apply_formatter(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
         return self.formatter.format(messages)
