@@ -3,8 +3,14 @@ from texttools.formatters.base_formatter import BaseFormatter
 
 class UserMergeFormatter(BaseFormatter):
     """
-    Formatter that merges consecutive user messages (strings) with blank line.
-    It doesn't change assistant messages.
+    Merges consecutive user messages into a single message, separated by newlines.
+
+    This is useful for condensing a multi-turn user input into a single coherent
+    message for the LLM. Assistant and system messages are left unchanged and
+    act as separators between user message groups.
+
+    Raises:
+        ValueError: If the input messages have invalid structure or roles.
     """
 
     def _validate_input(self, messages: list[dict[str, str]]):

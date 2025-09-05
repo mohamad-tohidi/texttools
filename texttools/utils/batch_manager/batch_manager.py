@@ -9,6 +9,14 @@ from openai.lib._pydantic import to_strict_json_schema
 
 
 class SimpleBatchManager:
+    """
+    Manages batch processing jobs for OpenAI's chat completions with structured outputs.
+
+    Handles the full lifecycle of a batch job: creating tasks from input texts,
+    starting the job, monitoring status, and fetching results. Results are automatically
+    parsed into the specified Pydantic output model. Job state is persisted to disk.
+    """
+
     def __init__(
         self,
         client: OpenAI,

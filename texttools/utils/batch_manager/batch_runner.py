@@ -54,7 +54,11 @@ class BatchConfig:
 
 class BatchJobRunner:
     """
-    Handles running batch jobs using a batch manager and configuration.
+    Orchestrates the execution of batched LLM processing jobs.
+
+    Handles data loading, partitioning, job execution via SimpleBatchManager,
+    and result saving. Manages the complete workflow from input data to processed outputs,
+    including retries and progress tracking across multiple batch parts.
     """
 
     def __init__(

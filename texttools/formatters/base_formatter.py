@@ -4,10 +4,10 @@ from typing import Any
 
 class BaseFormatter(ABC):
     """
-    Given (raw_text, analysis, maybe other hints), produce whatever payload.
-    1. Single string prompt (for providers that don't support multiple messages)
-    2. List of {role, content} dicts
-    3. Whatever shape the provider needs
+    Adapter to convert a conversation into a specific LLM API's input format.
+
+    Concrete implementations transform standardized messages (e.g., list[dict]) into the
+    exact payload required by a provider (e.g., OpenAI's message list, a single string, etc.).
     """
 
     @abstractmethod
@@ -16,8 +16,18 @@ class BaseFormatter(ABC):
         messages: Any,
     ) -> Any:
         """
-        - For an OpenAI style API, this might return list[{"role": "user"/"assistant", "content": "…"}].
-        - For a one shot "text only" API, this might return a single string combining everything.
-        - For some niche service, it might return JSON: {"inputs": […], "parameters": {…}}.
+        Transform the input messages into a provider-specific payload.
+
+        Args:
+            messages: The input conversation. While often a list of dicts with
+                      'role' and 'content' keys, the exact type and structure may vary
+                      by implementation.
+
+        Returns:
+            A payload in the format expected by the target LLM API. This could be:
+            - A list of role-content dictionaries (e.g., for OpenAI)
+            - A single formatted string (e.g., for completion-style APIs)
+            - A complex dictionary with additional parameters
+            - Any other provider-specific data structure
         """
         pass
