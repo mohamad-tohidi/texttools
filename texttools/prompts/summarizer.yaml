@@ -1,9 +1,8 @@
 main_template: |
-  Provide a concise summary of the following text.
+  Provide a concise summary of the following text:
   {input}
   Respond only in JSON format:
   {{"summary": "string"}}
-  Respond in the language of the question.
 
 analyze_template: |
   Read the following text and identify its main points, key arguments, and overall purpose.

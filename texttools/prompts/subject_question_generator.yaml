@@ -1,7 +1,7 @@
 main_template: |
   Given the following subject, generate {number_of_questions} appropriate questions that this subject would directly respond to.
   The generated subject should be independently meaningful,
-  and not mentioning any verbs like, this, that, he or she ... on the question.
+  and it must not mention any verbs like, this, that, he or she and etc. in the question.
   The generated question must be in {language} language.
   Here is the text:
   {input}
