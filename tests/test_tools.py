@@ -61,7 +61,5 @@ summary = t.summarize("Tomorrow, we will be dead by the car crash")
 print(questions)
 
 # Translator
-translation = t.translate(
-    "سلام حالت چطوره؟", target_language="English", with_analysis=False
-)
+translation = t.translate("سلام حالت چطوره؟", target_language="English")
 print(translation)

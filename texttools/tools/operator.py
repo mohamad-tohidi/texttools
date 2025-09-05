@@ -68,15 +68,19 @@ class Operator:
         return self.formatter.format(messages)
 
     def _analysis_completion(self, analyze_message: list[dict[str, str]]) -> str:
-        completion = self.client.chat.completions.create(
-            model=self.model,
-            messages=analyze_message,
-            temperature=self.temperature,
-            **self.client_kwargs,
-        )
-        analysis = completion.choices[0].message.content.strip()
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model,
+                messages=analyze_message,
+                temperature=self.temperature,
+                **self.client_kwargs,
+            )
+            analysis = completion.choices[0].message.content.strip()
+            return analysis
 
-        return analysis
+        except Exception as e:
+            print(f"[ERROR] Analysis failed: {e}")
+            raise
 
     def _analyze(self) -> str:
         analyze_prompt = self.prompt_configs["analyze_template"]
@@ -91,17 +95,21 @@ class Operator:
 
         return main_message
 
-    def _parse(self, message: list[dict[str, str]]) -> T:
-        completion = self.client.beta.chat.completions.parse(
-            model=self.model,
-            messages=message,
-            response_format=self.OUTPUT_MODEL,
-            temperature=self.temperature,
-            **self.client_kwargs,
-        )
-        parsed = completion.choices[0].message.parsed
+    def _parse_completion(self, message: list[dict[str, str]]) -> T:
+        try:
+            completion = self.client.beta.chat.completions.parse(
+                model=self.model,
+                messages=message,
+                response_format=self.OUTPUT_MODEL,
+                temperature=self.temperature,
+                **self.client_kwargs,
+            )
+            parsed = completion.choices[0].message.parsed
+            return parsed
 
-        return parsed
+        except Exception as e:
+            print(f"[ERROR] Failed to parse completion: {e}")
+            raise
 
     def run(self, input_text: str, **extra_kwargs) -> dict[str, Any]:
         """
@@ -114,26 +122,36 @@ class Operator:
         Returns:
             Dictionary containing the parsed result and optional analysis
         """
-        cleaned_text = input_text.strip()
+        try:
+            cleaned_text = input_text.strip()
 
-        self.prompt_configs = self.prompt_loader.load_prompts(
-            self.PROMPT_FILE, self.USE_MODES, self.MODE, cleaned_text, **extra_kwargs
-        )
-
-        messages: list[dict[str, str]] = []
-
-        if self.WITH_ANALYSIS:
-            analysis = self._analyze()
-            messages.append(
-                self._build_user_message(f"Based on this analysis: {analysis}")
+            self.prompt_configs = self.prompt_loader.load_prompts(
+                self.PROMPT_FILE,
+                self.USE_MODES,
+                self.MODE,
+                cleaned_text,
+                **extra_kwargs,
             )
 
-        messages.append(self._build_main_message())
-        messages = self.formatter.format(messages)
-        parsed = self._parse(messages)
-        results = {"result": parsed.result}
+            messages: list[dict[str, str]] = []
 
-        if self.WITH_ANALYSIS:
-            results["analysis"] = analysis
+            if self.WITH_ANALYSIS:
+                analysis = self._analyze()
+                messages.append(
+                    self._build_user_message(f"Based on this analysis: {analysis}")
+                )
 
-        return results
+            messages.append(self._build_main_message())
+            messages = self.formatter.format(messages)
+            parsed = self._parse_completion(messages)
+            results = {"result": parsed.result}
+
+            if self.WITH_ANALYSIS:
+                results["analysis"] = analysis
+
+            return results
+
+        except Exception as e:
+            # Print error clearly and exit
+            print(f"[ERROR] Operation failed: {e}")
+            exit(1)
