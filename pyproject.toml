@@ -11,13 +11,14 @@ authors = [
   { name = "Givechi", email = "mohamad.m.givechi@gmail.com" },
   { name = "MoosaviNejad", email = "erfanmoosavi84@gmail.com" },
 ]
-description = "A set of high-level NLP tools"
+description = "TextTools is a high-level NLP toolkit built on top of modern LLMs."
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.8"
 dependencies = [
   "openai==1.97.1",
-  "numpy>=1.26,<3",
 ]
+keywords = ["nlp", "llm", "text-processing", "openai"]
 
 [tool.setuptools.packages.find]
 where = ["."]
