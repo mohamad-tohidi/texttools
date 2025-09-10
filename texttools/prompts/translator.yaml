@@ -3,6 +3,8 @@ main_template: |
   Output only the translated text. No comments, no explanations, no markdown.
   Translate the following text to {target_language}:
   {input}
+  Respond only in JSON format:
+  {{"result": "string"}}
 
 analyze_template: |
   Analyze the following text and identify important linguistic considerations for translation.

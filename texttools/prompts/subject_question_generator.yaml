@@ -9,9 +9,11 @@ main_template: |
   The generated question must be in {language} language.
   Generate {number_of_questions} number of questions in the questions list.
   You must return ONLY a single JSON object that matches the schema.
-  There is a `reasoning_summary` key, fill that up with a really summerized version
+  There is a `reason` key, fill that up with a really summerized version
   of your thoughts.
-  The `reasoning_summary` must be less than 20 words.
+  The `reason` must be less than 20 words.
+  Respond only in JSON format:
+  {{"result": [string, string, ...]}}
 
 analyze_template: |
   Our goal is to generate questions, from the given subject that I've provided.

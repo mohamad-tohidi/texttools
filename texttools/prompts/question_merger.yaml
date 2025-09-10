@@ -10,6 +10,8 @@ main_template:
     - Does not omit any unique idea from the originals.
     Output only the merged question.
     Here is the questions: {input}
+    Respond only in JSON format:
+    {{"result": "string"}}
     Respond only with the new generated question, without any additional information.
     The generated question must be in the language of the users input.
 
@@ -20,6 +22,8 @@ main_template:
     Step 1: Extract key ideas.
     Step 2: Write the final merged question.
     Here is the questions: {input}
+    Respond only in JSON format:
+    {{"result": "string"}}
     Respond only with the new generated question, without any additional information.
     The generated question must be in the language of the users input.
 

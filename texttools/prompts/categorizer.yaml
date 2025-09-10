@@ -12,7 +12,7 @@ main_template: |
   Respond only in this JSON format:
   {{
     "reason": "<Summary of why did you choose this category?>",
-    "main_tag": "<One of the above tags>"
+    "result": "<One of the above tags>"
   }}
   Here is the text:
   {input}

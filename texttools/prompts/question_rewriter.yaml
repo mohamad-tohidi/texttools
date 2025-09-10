@@ -6,6 +6,8 @@ main_template:
     should be distinct from the original but convey the exact same inquiry.
     Here is the question:
     {input}
+    Respond only in JSON format:
+    {{"result": "string"}}
     Respond only with the new generated question, without any additional information.
     The generated question must be in the language of the users input.
 
@@ -15,6 +17,8 @@ main_template:
     Focus on subtle changes that drastically alter the intent or subject of the question.
     Here is the question:
     {input}
+    Respond only in JSON format:
+    {{"result": "string"}}
     Respond only with the new generated question, without any additional information.
     The generated question must be in the language of the users input.
 

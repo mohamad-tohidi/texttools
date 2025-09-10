@@ -58,7 +58,7 @@ print(questions)
 
 # Summarizer
 summary = t.summarize("Tomorrow, we will be dead by the car crash")
-print(questions)
+print(summary)
 
 # Translator
 translation = t.translate("سلام حالت چطوره؟", target_language="English")

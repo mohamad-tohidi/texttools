@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, TypeVar, Type
+from typing import Any, TypeVar, Type, Literal
+import json
 
 from openai import OpenAI
 from pydantic import BaseModel
@@ -38,6 +39,7 @@ class Operator:
     - WITH_ANALYSIS: bool → whether to run an analysis phase first
     - USE_MODES: bool → whether to select prompts by mode
     - MODE: str → which mode to use if modes are enabled
+    - RESP_FORMAT: str → "vllm" or "parse"
     """
 
     PROMPT_FILE: str
@@ -45,6 +47,7 @@ class Operator:
     WITH_ANALYSIS: bool = False
     USE_MODES: bool
     MODE: str = ""
+    RESP_FORMAT: Literal["vllm", "parse"] = "vllm"
 
     def __init__(
         self,
@@ -111,6 +114,77 @@ class Operator:
             print(f"[ERROR] Failed to parse completion: {e}")
             raise
 
+    def _clean_json_response(self, response: str) -> str:
+        """
+        Clean JSON response by removing code block markers and whitespace.
+        Handles cases like:
+        - ```json{"result": "value"}```
+        - ```{"result": "value"}```
+        """
+        # Remove code block markers
+        cleaned = response.strip()
+
+        # Remove ```json and ``` markers
+        if cleaned.startswith("```json"):
+            cleaned = cleaned[7:]  # Remove ```json
+        elif cleaned.startswith("```"):
+            cleaned = cleaned[3:]  # Remove ```
+
+        # Remove trailing ``` or '''
+        if cleaned.endswith("```"):
+            cleaned = cleaned[:-3]
+
+        return cleaned.strip()
+
+    def _convert_to_output_model(self, response_string: str) -> T:
+        """
+        Convert a JSON response string to output model.
+
+        Args:
+            response_string: The JSON string (may contain code block markers)
+            output_model: Your Pydantic output model class (e.g., StrOutput, ListStrOutput)
+
+        Returns:
+            Instance of your output model
+        """
+        try:
+            # Clean the response string
+            cleaned_json = self._clean_json_response(response_string)
+
+            # Convert string to Python dictionary
+            response_dict = json.loads(cleaned_json)
+
+            # Convert dictionary to output model
+            return self.OUTPUT_MODEL(**response_dict)
+
+        except json.JSONDecodeError as e:
+            raise ValueError(
+                f"Failed to parse JSON response: {e}\nResponse: {response_string}"
+            )
+        except Exception as e:
+            raise ValueError(f"Failed to convert to output model: {e}")
+
+    def _vllm_completion(self, message: list[dict[str, str]]) -> T:
+        try:
+            json_schema = self.OUTPUT_MODEL.model_json_schema()
+            completion = self.client.chat.completions.create(
+                model=self.model,
+                messages=message,
+                extra_body={"guided_json": json_schema},
+                temperature=self.temperature,
+                **self.client_kwargs,
+            )
+            response = completion.choices[0].message.content
+
+            # Convert the string response to output model
+            parsed_response = self._convert_to_output_model(response)
+
+            return parsed_response
+
+        except Exception as e:
+            print(f"[ERROR] Failed to get vLLM structured output: {e}")
+            raise
+
     def run(self, input_text: str, **extra_kwargs) -> dict[str, Any]:
         """
         Execute the LLM pipeline with the given input text.
@@ -143,7 +217,12 @@ class Operator:
 
             messages.append(self._build_main_message())
             messages = self.formatter.format(messages)
-            parsed = self._parse_completion(messages)
+
+            if self.RESP_FORMAT == "vllm":
+                parsed = self._vllm_completion(messages)
+            elif self.RESP_FORMAT == "parse":
+                parsed = self._parse_completion(messages)
+
             results = {"result": parsed.result}
 
             if self.WITH_ANALYSIS:

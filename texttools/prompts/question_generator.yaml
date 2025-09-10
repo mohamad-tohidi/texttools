@@ -6,6 +6,8 @@ main_template: |
   The generated question must be in the language of the user's input.
   Here is the text:
   {input}
+  Respond only in JSON format:
+  {{"result": "string"}}
   Respond only with the new generated question, without any additional information.          
 
 analyze_template: |
