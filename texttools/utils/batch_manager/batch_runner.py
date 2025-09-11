@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import deprecation
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -205,6 +206,10 @@ class BatchJobRunner:
                 )
                 time.sleep(self.config.poll_interval_seconds)
 
+
+    @deprecation.deprecated(deprecated_in="0.1.44", removed_in="0.1.45",
+                            current_version="0.1.44",
+                            details="Use the bar _submit_all_jobs instead")
     def _process_part(
         self, part: list[dict[str, Any]], part_job_name: str, part_idx: int
     ):
