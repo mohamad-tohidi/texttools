@@ -1,0 +1,2 @@
+graft texttools/prompts
+global-exclude *.pyc

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hamtaa-texttools"
-version = "1.0.0"
+version = "1.0.2"
 authors = [
   { name = "Tohidi", email = "the.mohammad.tohidi@gmail.com" },
   { name = "Montazer", email = "montazerh82@gmail.com" },
@@ -24,3 +24,9 @@ keywords = ["nlp", "llm", "text-processing", "openai"]
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["texttools*"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"texttools" = ["prompts/*.yaml", "prompts/*.yml"]
