@@ -17,6 +17,7 @@ authors = [
 dependencies = [
   "openai==1.97.1",
   "numpy==1.26.4",
+  "dotenv==0.9.9"
 ]
 
 [tool.setuptools.packages.find]
