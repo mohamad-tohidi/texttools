@@ -1,7 +1,7 @@
 main_template: |
+  {user_prompt}
   Identify and extract all named entities (e.g., PER, ORG, LOC, DAT, etc.) from the following text. For each entity, provide its text and a clear type.
   Respond as a JSON array of objects.
-  {input}
   Respond only in JSON format:
   {{
     "result": [
@@ -11,6 +11,9 @@ main_template: |
       }}
     ]
   }}
+  No addition, No comments, No explanation.
+  Here is the text:
+  {input}
 
 analyze_template: |
   Read the following text and identify any proper nouns, key concepts, or specific mentions that might represent named entities.

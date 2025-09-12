@@ -1,9 +1,12 @@
 main_template: |
+  {user_prompt}
   Extract the most relevant keywords from the following text. Provide them as a list of strings.
-  {input}
   Respond only in JSON format:
   {{"result": ["keyword1", "keyword2", ...]}}.
+  No addition, No comments, No explanation.
   Respond in the language of the input text.
+  Here is the text:
+  {input}
 
 analyze_template: |
   Analyze the following text to identify its main topics, concepts, and important terms.

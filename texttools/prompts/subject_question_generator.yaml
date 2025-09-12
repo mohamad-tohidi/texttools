@@ -1,4 +1,5 @@
 main_template: |
+  {user_prompt}
   Given the following subject, generate {number_of_questions} appropriate questions that this subject would directly respond to.
   The generated subject should be independently meaningful,
   and it must not mention any verbs like, this, that, he or she and etc. in the question.

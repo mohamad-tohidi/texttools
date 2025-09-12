@@ -1,4 +1,5 @@
 main_template: |
+  {user_prompt}
   You are a {target_language} translator.
   Output only the translated text. No comments, no explanations, no markdown.
   Translate the following text to {target_language}:

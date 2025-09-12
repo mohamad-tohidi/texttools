@@ -1,15 +1,16 @@
 main_template: |
+  {user_prompt}
   Given the following answer, generate a single, 
   appropriate question that this answer would directly respond to.
   The generated answer should be independently meaningful,
   and not mentioning any verbs like, this, that, he or she on the question.
   The generated question must be in the language of the user's input.
-  Here is the text:
-  {input}
   Respond only in JSON format:
   {{"result": "string"}}
   Respond only with the new generated question, without any additional information.          
-
+  Here is the text:
+  {input}
+  
 analyze_template: |
   Analyze the following answer to identify its key facts,
   main subject, and what kind of information it provides.

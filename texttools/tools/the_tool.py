@@ -46,7 +46,9 @@ class TheTool:
             **client_kwargs,
         )
 
-    def categorize(self, text: str, with_analysis: bool = False) -> dict[str, str]:
+    def categorize(
+        self, text: str, with_analysis: bool = False, user_prompt: str = ""
+    ) -> dict[str, str]:
         """
         Categorize a text into a single Islamic studies domain category.
 
@@ -64,11 +66,11 @@ class TheTool:
         self.operator.WITH_ANALYSIS = with_analysis
         self.operator.USE_MODES = False
 
-        results = self.operator.run(text)
+        results = self.operator.run(text, user_prompt=user_prompt)
         return results
 
     def extract_keywords(
-        self, text: str, with_analysis: bool = False
+        self, text: str, with_analysis: bool = False, user_prompt: str = ""
     ) -> dict[str, list[str]]:
         """
         Extract salient keywords from text.
@@ -85,11 +87,11 @@ class TheTool:
         self.operator.WITH_ANALYSIS = with_analysis
         self.operator.USE_MODES = False
 
-        results = self.operator.run(text)
+        results = self.operator.run(text, user_prompt=user_prompt)
         return results
 
     def extract_entities(
-        self, text: str, with_analysis: bool = False
+        self, text: str, with_analysis: bool = False, user_prompt: str = ""
     ) -> dict[str, list[dict[str, str]]]:
         """
         Perform Named Entity Recognition (NER) over the input text.
@@ -106,11 +108,11 @@ class TheTool:
         self.operator.WITH_ANALYSIS = with_analysis
         self.operator.USE_MODES = False
 
-        results = self.operator.run(text)
+        results = self.operator.run(text, user_prompt=user_prompt)
         return results
 
     def detect_question(
-        self, question: str, with_analysis: bool = False
+        self, question: str, with_analysis: bool = False, user_prompt: str = ""
     ) -> dict[str, bool]:
         """
         Detect if the input is phrased as a question.
@@ -127,11 +129,11 @@ class TheTool:
         self.operator.WITH_ANALYSIS = with_analysis
         self.operator.USE_MODES = False
 
-        results = self.operator.run(question)
+        results = self.operator.run(question, user_prompt=user_prompt)
         return results
 
     def generate_question_from_text(
-        self, text: str, with_analysis: bool = False
+        self, text: str, with_analysis: bool = False, user_prompt: str = ""
     ) -> dict[str, str]:
         """
         Generate a single question from the given text.
@@ -148,7 +150,7 @@ class TheTool:
         self.operator.WITH_ANALYSIS = with_analysis
         self.operator.USE_MODES = False
 
-        results = self.operator.run(text)
+        results = self.operator.run(text, user_prompt=user_prompt)
         return results
 
     def merge_questions(
@@ -156,6 +158,7 @@ class TheTool:
         questions: list[str],
         mode: Literal["default", "reason"] = "default",
         with_analysis: bool = False,
+        user_prompt: str = "",
     ) -> dict[str, str]:
         """
         Merge multiple questions into a single unified question.
@@ -178,7 +181,7 @@ class TheTool:
         self.operator.USE_MODES = True
         self.operator.MODE = mode
 
-        results = self.operator.run(question_str)
+        results = self.operator.run(question_str, user_prompt=user_prompt)
         return results
 
     def rewrite_question(
@@ -189,6 +192,7 @@ class TheTool:
             "different_meaning_similar_wording",
         ] = "same_meaning_different_wording",
         with_analysis: bool = False,
+        user_prompt: str = "",
     ) -> dict[str, str]:
         """
         Rewrite a question with different wording or meaning.
@@ -209,7 +213,7 @@ class TheTool:
         self.operator.USE_MODES = True
         self.operator.MODE = mode
 
-        results = self.operator.run(question)
+        results = self.operator.run(question, user_prompt=user_prompt)
         return results
 
     def generate_questions_from_subject(
@@ -218,6 +222,7 @@ class TheTool:
         number_of_questions: int,
         language: str = "English",
         with_analysis: bool = False,
+        user_prompt: str = "",
     ) -> dict[str, list[str]]:
         """
         Generate a list of questions about a subject.
@@ -240,10 +245,13 @@ class TheTool:
             subject,
             number_of_questions=number_of_questions,
             language=language,
+            user_prompt=user_prompt,
         )
         return results
 
-    def summarize(self, subject: str, with_analysis: bool = False) -> dict[str, str]:
+    def summarize(
+        self, subject: str, with_analysis: bool = False, user_prompt: str = ""
+    ) -> dict[str, str]:
         """
         Summarize the given subject text.
 
@@ -259,7 +267,7 @@ class TheTool:
         self.operator.WITH_ANALYSIS = with_analysis
         self.operator.USE_MODES = False
 
-        results = self.operator.run(subject)
+        results = self.operator.run(subject, user_prompt=user_prompt)
         return results
 
     def translate(
@@ -267,6 +275,7 @@ class TheTool:
         text: str,
         target_language: str,
         with_analysis: bool = False,
+        user_prompt: str = "",
     ) -> dict[str, str]:
         """
         Translate text between languages.
@@ -285,7 +294,6 @@ class TheTool:
         self.operator.USE_MODES = False
 
         results = self.operator.run(
-            text,
-            target_language=target_language,
+            text, target_language=target_language, user_prompt=user_prompt
         )
         return results

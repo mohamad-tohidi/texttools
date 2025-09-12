@@ -1,4 +1,5 @@
 main_template: |
+  {user_prompt}
   You are a religious scholar.
   As a user, I give you a text and ask you to classify that text into one of the following categories:
   "باورهای دینی",
@@ -14,6 +15,7 @@ main_template: |
     "reason": "<Summary of why did you choose this category?>",
     "result": "<One of the above tags>"
   }}
+  No addition, No comments, No explanation.
   Here is the text:
   {input}
 
