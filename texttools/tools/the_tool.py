@@ -111,7 +111,7 @@ class TheTool:
 
     def detect_question(
         self, question: str, with_analysis: bool = False
-    ) -> dict[str, str]:
+    ) -> dict[str, bool]:
         """
         Detect if the input is phrased as a question.
 
@@ -123,7 +123,7 @@ class TheTool:
             {"result": "true"} or {"result": "false"}
         """
         self.operator.PROMPT_FILE = "question_detector.yaml"
-        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
+        self.operator.OUTPUT_MODEL = OutputModels.BoolOutput
         self.operator.WITH_ANALYSIS = with_analysis
         self.operator.USE_MODES = False
 

@@ -67,9 +67,6 @@ class Operator:
     def _build_user_message(self, prompt: str) -> dict[str, str]:
         return {"role": "user", "content": prompt}
 
-    def _apply_formatter(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
-        return self.formatter.format(messages)
-
     def _analysis_completion(self, analyze_message: list[dict[str, str]]) -> str:
         try:
             completion = self.client.chat.completions.create(
@@ -150,6 +147,11 @@ class Operator:
         try:
             # Clean the response string
             cleaned_json = self._clean_json_response(response_string)
+
+            # Fix Python-style booleans
+            cleaned_json = cleaned_json.replace("False", "false").replace(
+                "True", "true"
+            )
 
             # Convert string to Python dictionary
             response_dict = json.loads(cleaned_json)

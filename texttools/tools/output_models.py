@@ -11,6 +11,14 @@ class StrOutput(BaseModel):
     result: str
 
 
+class BoolOutput(BaseModel):
+    """
+    Output model for a single boolean result.
+    """
+
+    result: bool
+
+
 class ListStrOutput(BaseModel):
     """
     Output model for a list of strings result.
