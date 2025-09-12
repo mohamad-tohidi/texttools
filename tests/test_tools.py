@@ -41,14 +41,14 @@ print(question)
 # Question Merger
 question = t.merge_questions(
     ["چرا ما انسان ها، موجوداتی اجتماعی هستیم؟", "چرا ما باید در کنار هم زندگی کنیم؟"],
-    mode="default_mode",
+    mode="default",
 )
 print(question)
 
 # Question Rewriter
 question = t.rewrite_question(
     "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
-    mode="same_meaning_different_wording_mode",
+    mode="same_meaning_different_wording",
 )
 print(question)
 

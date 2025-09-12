@@ -154,7 +154,7 @@ class TheTool:
     def merge_questions(
         self,
         questions: list[str],
-        mode: Literal["default_mode", "reason_mode"] = "default_mode",
+        mode: Literal["default", "reason"] = "default",
         with_analysis: bool = False,
     ) -> dict[str, str]:
         """
@@ -163,8 +163,8 @@ class TheTool:
         Args:
             questions: List of question strings.
             mode: Merge strategy:
-                - "default_mode": simple merging.
-                - "reason_mode": merging with reasoning explanation.
+                - "default": simple merging.
+                - "reason": merging with reasoning explanation.
             with_analysis: Whether to use an analysis step.
 
         Returns:
@@ -185,9 +185,9 @@ class TheTool:
         self,
         question: str,
         mode: Literal[
-            "same_meaning_different_wording_mode",
-            "different_meaning_similar_wording_mode",
-        ] = "same_meaning_different_wording_mode",
+            "same_meaning_different_wording",
+            "different_meaning_similar_wording",
+        ] = "same_meaning_different_wording",
         with_analysis: bool = False,
     ) -> dict[str, str]:
         """
@@ -196,8 +196,8 @@ class TheTool:
         Args:
             question: Input question to rewrite.
             mode: Rewrite strategy:
-                - "same_meaning_different_wording_mode": keep meaning, change words.
-                - "different_meaning_similar_wording_mode": alter meaning, preserve wording style.
+                - "same_meaning_different_wording": keep meaning, change words.
+                - "different_meaning_similar_wording": alter meaning, preserve wording style.
             with_analysis: Whether to include an analysis step.
 
         Returns:

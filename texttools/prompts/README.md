@@ -7,20 +7,20 @@ This folder contains YAML files for all prompts used in the project. Each file r
 - **prompt_file.yaml**: Each YAML file represents a single prompt template.
 - **main_template**: The main instruction template for the model.
 - **analyze_template** (optional): A secondary reasoning template used before generating the final response.
-- **Modes** (optional): Some prompts may have multiple modes (e.g., `default_mode`, `reason_mode`) to allow different behaviors.
+- **Modes** (optional): Some prompts may have multiple modes (e.g., `default`, `reason`) to allow different behaviors.
 
 ### Example YAML Structure
 ```yaml
 main_template:
-  default_mode: |
+  default: |
     Your main instructions here with placeholders like {input}.
-  reason_mode: |
+  reason: |
     Optional reasoning instructions here.
 
 analyze_template:
-  default_mode: |
+  default: |
     Analyze and summarize the input.
-  reason_mode: |
+  reason: |
     Optional detailed analysis template.
 ```
 

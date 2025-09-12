@@ -144,6 +144,11 @@ class Operator:
             # Clean the response string
             cleaned_json = self._clean_json_response(response_string)
 
+            # Fix Python-style booleans
+            cleaned_json = cleaned_json.replace("False", "false").replace(
+                "True", "true"
+            )
+
             # Convert string to Python dictionary
             response_dict = json.loads(cleaned_json)
 
