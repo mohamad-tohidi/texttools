@@ -116,18 +116,14 @@ class Operator:
         Clean JSON response by removing code block markers and whitespace.
         Handles cases like:
         - ```json{"result": "value"}```
-        - ```{"result": "value"}```
         """
-        # Remove code block markers
         cleaned = response.strip()
 
-        # Remove ```json and ``` markers
+        # Remove ```json marker
         if cleaned.startswith("```json"):
-            cleaned = cleaned[7:]  # Remove ```json
-        elif cleaned.startswith("```"):
-            cleaned = cleaned[3:]  # Remove ```
+            cleaned = cleaned[7:]
 
-        # Remove trailing ``` or '''
+        # Remove trailing ```
         if cleaned.endswith("```"):
             cleaned = cleaned[:-3]
 
