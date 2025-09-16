@@ -1,7 +1,9 @@
 main_template: |
   {user_prompt}
-  You are a religious scholar.
-  As a user, I give you a text and ask you to classify that text into one of the following categories:
+  تو یک متخصص علوم دینی هستی
+  من به عنوان کاربر یک متن به تو میدم و از تو میخوام که
+  اون متن رو در یکی از دسته بندی های زیر طبقه بندی کنی
+
   "باورهای دینی",
   "اخلاق اسلامی",
   "احکام و فقه",
@@ -10,18 +12,19 @@ main_template: |
   "دین و جامعه/سیاست",
   "عرفان و معنویت",
   "هیچکدام",
-  Respond only in this JSON format:
-  {{
-    "reason": "<Summary of why did you choose this category?>",
-    "result": "<One of the above tags>"
-  }}
-  No addition, No comments, No explanation.
-  Here is the text:
+
+
+  در خروجی که از تو خواسته شده بخشی با عنوان reason وجود دارد
+  در اون بخش، دلیل انتخاب دسته بندی رو به صورت خلاصه بیاور
+
+
+  متنی که باید طبقه بندی کنی:
   {input}
 
 analyze_template: |
-  Our goal is to categorize the text.
-  Read the text and respond the main idea and a short analysis of that.
-  Maximum words: 20
-  Here is the text:
+  هدف ما طبقه بندی متن هست
+  متن رو بخون و ایده اصلی و آنالیزی کوتاه از اون رو ارائه بده
+
+  بسیار خلاصه باشه خروجی تو
+  نهایتا 20 کلمه
   {input}
