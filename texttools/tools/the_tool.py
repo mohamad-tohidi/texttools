@@ -2,8 +2,8 @@ from typing import Literal, Any
 
 from openai import OpenAI
 
-from texttools.tools.operator import Operator
-import texttools.tools.output_models as OutputModels
+from texttools.tools.internals.operator import Operator
+import texttools.tools.internals.output_models as OutputModels
 
 
 class TheTool:

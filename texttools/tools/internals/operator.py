@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from texttools.formatters.user_merge_formatter.user_merge_formatter import (
     UserMergeFormatter,
 )
-from texttools.tools.prompt_loader import PromptLoader
+from texttools.tools.internals.prompt_loader import PromptLoader
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
@@ -47,7 +47,7 @@ class Operator:
     WITH_ANALYSIS: bool = False
     USE_MODES: bool
     MODE: str = ""
-    RESP_FORMAT: Literal["vllm", "parse"] = "vllm"
+    RESP_FORMAT: Literal["vllm", "parse"] = "parse"
 
     def __init__(
         self,

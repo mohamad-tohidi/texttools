@@ -29,7 +29,7 @@ class PromptLoader:
         self.PROMPTS_DIR = prompts_dir or "prompts"
 
     def _get_prompt_path(self, prompt_file: str) -> Path:
-        return Path(__file__).parent.parent / self.PROMPTS_DIR / prompt_file
+        return Path(__file__).parent.parent.parent / self.PROMPTS_DIR / prompt_file
 
     def _load_templates(
         self, prompt_file: str, use_modes: bool, mode: str
