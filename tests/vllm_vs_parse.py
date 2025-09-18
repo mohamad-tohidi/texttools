@@ -36,7 +36,7 @@ merge_text = [
 ]
 rewrite_text = "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟"
 qfs_text = "Friendship"
-summary_text = "Tomorrow, we will be dead by the car crash"
+summary_text = "با توجه به تعداد روزهای متعددی که جلسات را با افتخار برگزار میکنیم، باید توجه بنمایید که نباید درگیر مسائل جزئی که میتواند ما را از حل مسئله دور کند توجه کنیم."
 translate_text = "سلام حالت چطوره؟"
 
 # Categorizer
