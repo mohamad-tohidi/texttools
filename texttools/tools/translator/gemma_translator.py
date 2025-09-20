@@ -78,7 +78,7 @@ class GemmaTranslator(BaseTranslator):
             }
 
         # The entire set of instructions is formatted into a single JSON string
-        content = json.dumps(prompt_data, indent=2)
+        content = json.dumps(prompt_data, ensure_ascii=False)
         messages = [{"role": "user", "content": content}]
 
         # Optional additional JSON template for more complex rules
@@ -107,7 +107,12 @@ class GemmaTranslator(BaseTranslator):
             },
         }
 
-        messages = [{"role": "user", "content": json.dumps(prompt_data, indent=2)}]
+        messages = [
+            {
+                "role": "user",
+                "content": json.dumps(prompt_data, ensure_ascii=False),
+            }
+        ]
 
         restructured = self.chat_formatter.format(messages=messages)
         completion = self.client.chat.completions.create(
@@ -131,7 +136,12 @@ class GemmaTranslator(BaseTranslator):
             },
         }
 
-        messages = [{"role": "user", "content": json.dumps(prompt_data, indent=2)}]
+        messages = [
+            {
+                "role": "user",
+                "content": json.dumps(prompt_data, ensure_ascii=False),
+            }
+        ]
 
         restructured = self.chat_formatter.format(messages=messages)
 
@@ -177,7 +187,7 @@ class GemmaTranslator(BaseTranslator):
             print(f"Reasoning Analysis:\n{reason_summary}")
         print("--- Final JSON Prompt Sent to Model ---")
         # Pretty-print the JSON content from the message
-        print(json.dumps(json.loads(messages[0]["content"]), indent=2))
+        print(json.dumps(json.loads(messages[0]["content"]), ensure_ascii=False))
         print("---------------------------")
 
         completion = self.client.chat.completions.create(
