@@ -145,7 +145,10 @@ class GemmaTranslator(BaseTranslator):
             messages=restructured,
             response_format=List[PreprocessorOutput],
             temperature=self.temperature,
-            extra_body=dict(guided_decoding_backend="auto") ** self.client_kwargs,
+            extra_body={
+                "guided_decoding_backend": "auto",
+            },
+            **self.client_kwargs,
         )
         message = completion.choices[0].message
 
