@@ -138,7 +138,7 @@ class GemmaTranslator(BaseTranslator):
         completion = self.client.chat.completions.parse(
             model=self.model,
             messages=restructured,
-            response_model=PreprocessorOutput,
+            response_format=PreprocessorOutput,
             temperature=self.temperature,
             extra_body={
                 "guided_decoding_backend": "auto",
