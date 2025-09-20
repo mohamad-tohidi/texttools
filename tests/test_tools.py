@@ -23,7 +23,9 @@ category = t.categorize("سلام حالت چطوره؟")
 print(category)
 
 # Keyword Extractor
-keywords = t.extract_keywords("Tomorrow, we will be dead by the car crash")
+keywords = t.extract_keywords(
+    "Tomorrow, we will be dead by the car crash", output_lang="Persian"
+)
 print(keywords)
 
 # NER Extractor
@@ -57,7 +59,9 @@ questions = t.generate_questions_from_subject("Friendship", 3)
 print(questions)
 
 # Summarizer
-summary = t.summarize("Tomorrow, we will be dead by the car crash")
+summary = t.summarize(
+    "Tomorrow, we will be dead by the car crash", output_lang="Persian"
+)
 print(summary)
 
 # Translator

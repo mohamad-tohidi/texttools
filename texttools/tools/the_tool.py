@@ -1,4 +1,4 @@
-from typing import Literal, Any
+from typing import Literal, Any, Optional
 
 from openai import OpenAI
 
@@ -47,7 +47,10 @@ class TheTool:
         )
 
     def categorize(
-        self, text: str, with_analysis: bool = False, user_prompt: str = ""
+        self,
+        text: str,
+        with_analysis: bool = False,
+        user_prompt: str = "",
     ) -> dict[str, str]:
         """
         Categorize a text into a single Islamic studies domain category.
@@ -74,7 +77,11 @@ class TheTool:
         return results
 
     def extract_keywords(
-        self, text: str, with_analysis: bool = False, user_prompt: str = ""
+        self,
+        text: str,
+        output_lang: Optional[str] = None,
+        with_analysis: bool = False,
+        user_prompt: str = "",
     ) -> dict[str, list[str]]:
         """
         Extract salient keywords from text.
@@ -93,12 +100,17 @@ class TheTool:
             with_analysis=with_analysis,
             resp_format="parse",
             user_prompt=user_prompt,
+            output_lang=output_lang,
         )
 
         return results
 
     def extract_entities(
-        self, text: str, with_analysis: bool = False, user_prompt: str = ""
+        self,
+        text: str,
+        output_lang: Optional[str] = None,
+        with_analysis: bool = False,
+        user_prompt: str = "",
     ) -> dict[str, list[dict[str, str]]]:
         """
         Perform Named Entity Recognition (NER) over the input text.
@@ -117,12 +129,17 @@ class TheTool:
             with_analysis=with_analysis,
             resp_format="parse",
             user_prompt=user_prompt,
+            output_lang=output_lang,
         )
 
         return results
 
     def detect_question(
-        self, question: str, with_analysis: bool = False, user_prompt: str = ""
+        self,
+        question: str,
+        output_lang: Optional[str] = None,
+        with_analysis: bool = False,
+        user_prompt: str = "",
     ) -> dict[str, bool]:
         """
         Detect if the input is phrased as a question.
@@ -141,12 +158,17 @@ class TheTool:
             with_analysis=with_analysis,
             resp_format="parse",
             user_prompt=user_prompt,
+            output_lang=output_lang,
         )
 
         return results
 
     def generate_question_from_text(
-        self, text: str, with_analysis: bool = False, user_prompt: str = ""
+        self,
+        text: str,
+        output_lang: Optional[str] = None,
+        with_analysis: bool = False,
+        user_prompt: str = "",
     ) -> dict[str, str]:
         """
         Generate a single question from the given text.
@@ -165,6 +187,7 @@ class TheTool:
             with_analysis=with_analysis,
             resp_format="parse",
             user_prompt=user_prompt,
+            output_lang=output_lang,
         )
 
         return results
@@ -172,6 +195,7 @@ class TheTool:
     def merge_questions(
         self,
         questions: list[str],
+        output_lang: Optional[str] = None,
         mode: Literal["default", "reason"] = "default",
         with_analysis: bool = False,
         user_prompt: str = "",
@@ -200,6 +224,7 @@ class TheTool:
             mode=mode,
             resp_format="parse",
             user_prompt=user_prompt,
+            output_lang=output_lang,
         )
 
         return results
@@ -207,6 +232,7 @@ class TheTool:
     def rewrite_question(
         self,
         question: str,
+        output_lang: Optional[str] = None,
         mode: Literal[
             "same_meaning_different_wording",
             "different_meaning_similar_wording",
@@ -236,6 +262,7 @@ class TheTool:
             mode=mode,
             resp_format="parse",
             user_prompt=user_prompt,
+            output_lang=output_lang,
         )
 
         return results
@@ -244,7 +271,7 @@ class TheTool:
         self,
         subject: str,
         number_of_questions: int,
-        language: str = "English",
+        output_lang: Optional[str] = None,
         with_analysis: bool = False,
         user_prompt: str = "",
     ) -> dict[str, list[str]]:
@@ -268,13 +295,17 @@ class TheTool:
             resp_format="parse",
             user_prompt=user_prompt,
             number_of_questions=number_of_questions,
-            language=language,
+            output_lang=output_lang,
         )
 
         return results
 
     def summarize(
-        self, text: str, with_analysis: bool = False, user_prompt: str = ""
+        self,
+        text: str,
+        output_lang: Optional[str] = None,
+        with_analysis: bool = False,
+        user_prompt: str = "",
     ) -> dict[str, str]:
         """
         Summarize the given subject text.
@@ -293,6 +324,7 @@ class TheTool:
             with_analysis=with_analysis,
             resp_format="parse",
             user_prompt=user_prompt,
+            output_lang=output_lang,
         )
 
         return results

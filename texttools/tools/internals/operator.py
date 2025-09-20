@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, TypeVar, Literal
+from typing import Any, TypeVar, Literal, Optional
 import json
 
 from openai import OpenAI
@@ -177,6 +177,7 @@ class Operator:
         use_modes: bool = False,
         mode: str = "",
         resp_format: Literal["vllm", "parse"] = "parse",
+        output_lang: Optional[str] = None,
         **extra_kwargs,
     ) -> dict[str, Any]:
         """
@@ -209,6 +210,13 @@ class Operator:
                 analysis = self._analyze(prompt_configs)
                 messages.append(
                     self._build_user_message(f"Based on this analysis: {analysis}")
+                )
+
+            if output_lang:
+                messages.append(
+                    self._build_user_message(
+                        f"Respond only in the {output_lang} language."
+                    )
                 )
 
             messages.append(self._build_user_message(prompt_configs["main_template"]))

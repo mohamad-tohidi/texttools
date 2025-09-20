@@ -3,11 +3,9 @@ main_template: |
   Given the following subject, generate {number_of_questions} appropriate questions that this subject would directly respond to.
   The generated subject should be independently meaningful,
   and it must not mention any verbs like, this, that, he or she and etc. in the question.
-  The generated question must be in {language} language.
   Here is the text:
   {input}
   Respond only with the new generated question, without any additional information.
-  The generated question must be in {language} language.
   Generate {number_of_questions} number of questions in the questions list.
   You must return ONLY a single JSON object that matches the schema.
   There is a `reason` key, fill that up with a really summerized version
@@ -26,4 +24,3 @@ analyze_template: |
   What point of views can we see and generate questoins from it? (Questions that real users might have.)
   Here is the subject:
   {input}
-  Respond only in {language} language.
