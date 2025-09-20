@@ -1,7 +1,7 @@
 from typing import Any, List, Optional
 
 from openai import OpenAI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from texttools.base.base_translator import BaseTranslator
 from texttools.formatter.gemma3_formatter import Gemma3Formatter
@@ -10,8 +10,16 @@ from texttools.formatter.gemma3_formatter import Gemma3Formatter
 # Pydantic BaseModel to specify the output format of preprocessor
 # Preprocessor's job is to extract proper names
 class PreprocessorOutput(BaseModel):
-    text: str
-    text_type: str
+    """
+    A single proper-name entity extracted from the source text.
+    """
+
+    text: str = Field(
+        description="The exact substring from the original text that represents a proper name."
+    )
+    text_type: str = Field(
+        description='Always use the literal value "Proper Name" when this entity is a real persons name.'
+    )
 
 
 class GemmaTranslator(BaseTranslator):
@@ -153,7 +161,7 @@ class GemmaTranslator(BaseTranslator):
 
         # Extract proper names to tell the LLM what names not to translate, but to transliterate
         extracted = self.preprocess(text)
-        proper_names = [e["text"] for e in extracted]
+        proper_names = [e.text for e in extracted]
 
         reason_summary = None
         if self.use_reason:
