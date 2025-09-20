@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 from openai import OpenAI
 from pydantic import BaseModel
@@ -135,7 +135,7 @@ class GemmaTranslator(BaseTranslator):
         completion = self.client.chat.completions.parse(
             model=self.model,
             messages=restructured,
-            response_format=PreprocessorOutput,
+            response_format=List[PreprocessorOutput],
             temperature=self.temperature,
             extra_body=dict(guided_decoding_backend="auto") ** self.client_kwargs,
         )
