@@ -1,3 +1,4 @@
+import json
 from typing import Any, List, Optional
 
 from openai import OpenAI
@@ -19,7 +20,7 @@ class PreprocessorOutput(BaseModel):
 
 class GemmaTranslator(BaseTranslator):
     """
-    Translator for Gemma-style models with optional reasoning step.
+    Translator for Gemma-style models using structured JSON prompts.
     Outputs only the translated text, without any additional structure.
     """
 
@@ -52,57 +53,61 @@ class GemmaTranslator(BaseTranslator):
         reason: Optional[str] = None,
         proper_names: Optional[list[str]] = None,
     ) -> list[dict[str, str]]:
-        messages: list[dict[str, str]] = []
+        """Constructs a single, comprehensive JSON prompt for the translation task."""
 
-        # This prompt gives initial information about translation like languages and proper names
-        enforce_prompt = f"""
-        You are a {source_language}-to-{target_language} translator.
-        Important Rule: The following are proper names and must NOT be translated.
-        They must be only transliterated into {target_language}.
-        That means preserving their phonetic form without changing their meaning.
-        Apply the rule for **ALL** of following proper names.
-        Proper names (do not translate **** of them):
-        {proper_names if proper_names else "None"}
-        If any proper name is found in the text, you MUST only transliterate it.
-        Output only the translated text. No comments, no explanations, no markdown.
-        """
-        messages.append({"role": "user", "content": enforce_prompt})
+        prompt_data = {
+            "role": "Expert Translator",
+            "task": f"Translate the following text from {source_language or 'the original language'} to {target_language}.",
+            "input_text": text,
+            "rules": {
+                "proper_names": {
+                    "instruction": "These names MUST NOT be translated. Only transliterate them to preserve their phonetic form.",
+                    "list": proper_names if proper_names else "None",
+                }
+            },
+            "output_instructions": [
+                "Provide ONLY the translated text.",
+                "Do not include any explanations, comments, or markdown formatting.",
+            ],
+        }
 
-        clean_text = text
         if reason:
-            reason_prompt = f"""
-            Based on the analysis conducted, translate the following text {"from" + source_language if source_language else ""} to {target_language}.
-            The text to be translated is: "{clean_text}"
-            The analysis conducted: {reason}
-            """
-            messages.append({"role": "user", "content": reason_prompt})
-        else:
-            regular_prompt = f"""Translate the following text from {source_language or "original"} to {target_language}: 
-            {clean_text}"""
-            messages.append({"role": "user", "content": regular_prompt})
+            prompt_data["context"] = {
+                "preliminary_analysis": reason,
+                "instruction": "Use this analysis to inform the translation.",
+            }
 
-        # Optional additional template
+        # The entire set of instructions is formatted into a single JSON string
+        content = json.dumps(prompt_data, indent=2)
+        messages = [{"role": "user", "content": content}]
+
+        # Optional additional JSON template for more complex rules
         if self.prompt_template:
             messages.append({"role": "user", "content": self.prompt_template})
 
-        restructured = self.chat_formatter.format(messages=messages)
-
-        return restructured
+        return self.chat_formatter.format(messages=messages)
 
     def _reason(self, text: str, target_language: str) -> str:
-        """
-        Internal reasoning step to help the model with translation.
-        """
+        """Internal reasoning step using a JSON prompt to analyze text before translation."""
 
-        reason_step_prompt = f"""
-        Analyze the following text and identify important linguistic considerations for translation.
-        Do not translate the text. Point out any idioms, cultural references, or complex structures that need special attention.
-        Also, list all proper nouns that should not be translated. Write your analysis in the {target_language}.
-        """
-        messages = [
-            {"role": "user", "content": reason_step_prompt},
-            {"role": "user", "content": text},
-        ]
+        prompt_data = {
+            "task": "Analyze the provided text to identify potential translation challenges.",
+            "analysis_points": [
+                "Identify idioms or colloquialisms.",
+                "Note any cultural references.",
+                "Point out complex grammatical structures.",
+                "List all proper nouns that should be transliterated, not translated.",
+            ],
+            "input_text": text,
+            "output_instructions": {
+                "language": target_language,
+                "format": "A concise, bulleted list.",
+                "important_rule": "DO NOT TRANSLATE the original text.",
+                "length": "must be less than 200 words.",
+            },
+        }
+
+        messages = [{"role": "user", "content": json.dumps(prompt_data, indent=2)}]
 
         restructured = self.chat_formatter.format(messages=messages)
         completion = self.client.chat.completions.create(
@@ -114,67 +119,66 @@ class GemmaTranslator(BaseTranslator):
 
         return completion.choices[0].message.content.strip()
 
-    def preprocess(self, text: str) -> list:
-        """
-        Preprocessor that finds proper names of Islamic figures. The extractions will be given to the
-        LLm in order to know that it shouldn't translate them, but transliterate them.
-        """
+    def preprocess(self, text: str) -> PreprocessorOutput:
+        """Preprocessor that finds proper names using a structured JSON prompt."""
 
-        messages: list[dict[str, str]] = []
+        prompt_data = {
+            "task_description": "Extract all proper names of people from the provided text.",
+            "input_text": text,
+            "output_format": {
+                "schema": {"entities": ["string"]},
+                "instruction": "Return a JSON object matching this schema. If no names are found, the 'entities' list must be empty.",
+            },
+        }
 
-        main_prompt = """
-        You must detect proper names of people.
-        Your task is to extract a JSON list of entities from the given input. For each entity, include:
-        text: The exact matched string from the original.
-        type: Only include "Proper Name" for actual names of real people. 
-        If there is no proper name in the following text, return empty json.
-        """
-        messages.append({"role": "user", "content": main_prompt})
-
-        text_prompt = f"""The text to be extracted is:{text}"""
-        messages.append({"role": "user", "content": text_prompt})
+        messages = [{"role": "user", "content": json.dumps(prompt_data, indent=2)}]
 
         restructured = self.chat_formatter.format(messages=messages)
+
         completion = self.client.chat.completions.parse(
             model=self.model,
             messages=restructured,
-            response_format=PreprocessorOutput,
+            response_model=PreprocessorOutput,
             temperature=self.temperature,
             extra_body={
                 "guided_decoding_backend": "auto",
             },
             **self.client_kwargs,
         )
-        message = completion.choices[0].message
 
-        entities = message.parsed
-        return entities
+        return completion.choices[0].message.parsed
 
     def translate(
         self, text: str, target_language: str, source_language: Optional[str] = None
     ) -> str:
-        """
-        Translates text and returns only the translated string.
-        """
+        """Translates text using a structured JSON-based workflow."""
 
-        # Extract proper names to tell the LLM what names not to translate, but to transliterate
-        extracted = self.preprocess(text)
-        proper_names = extracted.entities
+        # 1. Preprocess: Extract proper names
+        extracted_data = self.preprocess(text)
+        proper_names = extracted_data.entities
 
+        # 2. Reason (optional): Analyze the text for challenges
         reason_summary = None
         if self.use_reason:
             reason_summary = self._reason(text, target_language)
 
+        # 3. Translate: Build the final prompt and get the translation
         messages = self._build_messages(
             text, target_language, source_language, reason_summary, proper_names
         )
+
+        # For debugging purposes, let's see the final prompt
+        print("--- Translation Request ---")
         print(f"Original: {text}")
         print(
             f"Translating to {target_language} from {source_language or 'original'}..."
         )
-        print(
-            f"Reasoning: {reason_summary}" if reason_summary else "Reasoning not used."
-        )
+        if reason_summary:
+            print(f"Reasoning Analysis:\n{reason_summary}")
+        print("--- Final JSON Prompt Sent to Model ---")
+        # Pretty-print the JSON content from the message
+        print(json.dumps(json.loads(messages[0]["content"]), indent=2))
+        print("---------------------------")
 
         completion = self.client.chat.completions.create(
             model=self.model,
