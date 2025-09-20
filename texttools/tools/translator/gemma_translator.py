@@ -7,18 +7,13 @@ from texttools.base.base_translator import BaseTranslator
 from texttools.formatter.gemma3_formatter import Gemma3Formatter
 
 
-# Pydantic BaseModel to specify the output format of preprocessor
-# Preprocessor's job is to extract proper names
 class PreprocessorOutput(BaseModel):
     """
-    A single proper-name entity extracted from the source text.
+    List of proper-name strings extracted from the source text.
     """
 
-    text: str = Field(
-        description="The exact substring from the original text that represents a proper name."
-    )
-    text_type: str = Field(
-        description='Always use the literal value "Proper Name" when this entity is a real persons name.'
+    entities: List[str] = Field(
+        description="All proper names found in the text; return an empty list if none."
     )
 
 
@@ -143,7 +138,7 @@ class GemmaTranslator(BaseTranslator):
         completion = self.client.chat.completions.parse(
             model=self.model,
             messages=restructured,
-            response_format=List[PreprocessorOutput],
+            response_format=PreprocessorOutput,
             temperature=self.temperature,
             extra_body={
                 "guided_decoding_backend": "auto",
@@ -164,7 +159,7 @@ class GemmaTranslator(BaseTranslator):
 
         # Extract proper names to tell the LLM what names not to translate, but to transliterate
         extracted = self.preprocess(text)
-        proper_names = [e.text for e in extracted]
+        proper_names = extracted.entities
 
         reason_summary = None
         if self.use_reason:
