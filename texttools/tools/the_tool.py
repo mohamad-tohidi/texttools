@@ -61,12 +61,16 @@ class TheTool:
             {"result": <category string>}
             Example: {"result": "باورهای دینی"}
         """
-        self.operator.PROMPT_FILE = "categorizer.yaml"
-        self.operator.OUTPUT_MODEL = OutputModels.CategorizerOutput
-        self.operator.WITH_ANALYSIS = with_analysis
-        self.operator.USE_MODES = False
 
-        results = self.operator.run(text, user_prompt=user_prompt)
+        results = self.operator.run(
+            text,
+            prompt_file="categorizer.yaml",
+            output_model=OutputModels.CategorizerOutput,
+            with_analysis=with_analysis,
+            resp_format="parse",
+            user_prompt=user_prompt,
+        )
+
         return results
 
     def extract_keywords(
@@ -82,12 +86,15 @@ class TheTool:
         Returns:
             {"result": [<keyword1>, <keyword2>, ...]}
         """
-        self.operator.PROMPT_FILE = "keyword_extractor.yaml"
-        self.operator.OUTPUT_MODEL = OutputModels.ListStrOutput
-        self.operator.WITH_ANALYSIS = with_analysis
-        self.operator.USE_MODES = False
+        results = self.operator.run(
+            text,
+            prompt_file="keyword_extractor.yaml",
+            output_model=OutputModels.ListStrOutput,
+            with_analysis=with_analysis,
+            resp_format="parse",
+            user_prompt=user_prompt,
+        )
 
-        results = self.operator.run(text, user_prompt=user_prompt)
         return results
 
     def extract_entities(
@@ -103,12 +110,15 @@ class TheTool:
         Returns:
             {"result": [{"text": <entity>, "type": <entity_type>}, ...]}
         """
-        self.operator.PROMPT_FILE = "ner_extractor.yaml"
-        self.operator.OUTPUT_MODEL = OutputModels.ListDictStrStrOutput
-        self.operator.WITH_ANALYSIS = with_analysis
-        self.operator.USE_MODES = False
+        results = self.operator.run(
+            text,
+            prompt_file="ner_extractor.yaml",
+            output_model=OutputModels.ListDictStrStrOutput,
+            with_analysis=with_analysis,
+            resp_format="parse",
+            user_prompt=user_prompt,
+        )
 
-        results = self.operator.run(text, user_prompt=user_prompt)
         return results
 
     def detect_question(
@@ -124,12 +134,15 @@ class TheTool:
         Returns:
             {"result": "true"} or {"result": "false"}
         """
-        self.operator.PROMPT_FILE = "question_detector.yaml"
-        self.operator.OUTPUT_MODEL = OutputModels.BoolOutput
-        self.operator.WITH_ANALYSIS = with_analysis
-        self.operator.USE_MODES = False
+        results = self.operator.run(
+            question,
+            prompt_file="question_detector.yaml",
+            output_model=OutputModels.BoolOutput,
+            with_analysis=with_analysis,
+            resp_format="parse",
+            user_prompt=user_prompt,
+        )
 
-        results = self.operator.run(question, user_prompt=user_prompt)
         return results
 
     def generate_question_from_text(
@@ -145,12 +158,15 @@ class TheTool:
         Returns:
             {"result": <generated_question>}
         """
-        self.operator.PROMPT_FILE = "question_generator.yaml"
-        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
-        self.operator.WITH_ANALYSIS = with_analysis
-        self.operator.USE_MODES = False
+        results = self.operator.run(
+            text,
+            prompt_file="question_generator.yaml",
+            output_model=OutputModels.StrOutput,
+            with_analysis=with_analysis,
+            resp_format="parse",
+            user_prompt=user_prompt,
+        )
 
-        results = self.operator.run(text, user_prompt=user_prompt)
         return results
 
     def merge_questions(
@@ -175,13 +191,17 @@ class TheTool:
         """
         question_str = ", ".join(questions)
 
-        self.operator.PROMPT_FILE = "question_merger.yaml"
-        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
-        self.operator.WITH_ANALYSIS = with_analysis
-        self.operator.USE_MODES = True
-        self.operator.MODE = mode
+        results = self.operator.run(
+            question_str,
+            prompt_file="question_merger.yaml",
+            output_model=OutputModels.StrOutput,
+            with_analysis=with_analysis,
+            use_modes=True,
+            mode=mode,
+            resp_format="parse",
+            user_prompt=user_prompt,
+        )
 
-        results = self.operator.run(question_str, user_prompt=user_prompt)
         return results
 
     def rewrite_question(
@@ -207,13 +227,17 @@ class TheTool:
         Returns:
             {"result": <rewritten_question>}
         """
-        self.operator.PROMPT_FILE = "question_rewriter.yaml"
-        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
-        self.operator.WITH_ANALYSIS = with_analysis
-        self.operator.USE_MODES = True
-        self.operator.MODE = mode
+        results = self.operator.run(
+            question,
+            prompt_file="question_rewriter.yaml",
+            output_model=OutputModels.StrOutput,
+            with_analysis=with_analysis,
+            use_modes=True,
+            mode=mode,
+            resp_format="parse",
+            user_prompt=user_prompt,
+        )
 
-        results = self.operator.run(question, user_prompt=user_prompt)
         return results
 
     def generate_questions_from_subject(
@@ -236,21 +260,21 @@ class TheTool:
         Returns:
             {"result": [<question1>, <question2>, ...]}
         """
-        self.operator.PROMPT_FILE = "subject_question_generator.yaml"
-        self.operator.OUTPUT_MODEL = OutputModels.ReasonListStrOutput
-        self.operator.WITH_ANALYSIS = with_analysis
-        self.operator.USE_MODES = False
-
         results = self.operator.run(
             subject,
+            prompt_file="subject_question_generator.yaml",
+            output_model=OutputModels.ReasonListStrOutput,
+            with_analysis=with_analysis,
+            resp_format="parse",
+            user_prompt=user_prompt,
             number_of_questions=number_of_questions,
             language=language,
-            user_prompt=user_prompt,
         )
+
         return results
 
     def summarize(
-        self, subject: str, with_analysis: bool = False, user_prompt: str = ""
+        self, text: str, with_analysis: bool = False, user_prompt: str = ""
     ) -> dict[str, str]:
         """
         Summarize the given subject text.
@@ -262,12 +286,15 @@ class TheTool:
         Returns:
             {"result": <summary>}
         """
-        self.operator.PROMPT_FILE = "summarizer.yaml"
-        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
-        self.operator.WITH_ANALYSIS = with_analysis
-        self.operator.USE_MODES = False
+        results = self.operator.run(
+            text,
+            prompt_file="summarizer.yaml",
+            output_model=OutputModels.StrOutput,
+            with_analysis=with_analysis,
+            resp_format="parse",
+            user_prompt=user_prompt,
+        )
 
-        results = self.operator.run(subject, user_prompt=user_prompt)
         return results
 
     def translate(
@@ -288,12 +315,14 @@ class TheTool:
         Returns:
             {"result": <translated_text>}
         """
-        self.operator.PROMPT_FILE = "translator.yaml"
-        self.operator.OUTPUT_MODEL = OutputModels.StrOutput
-        self.operator.WITH_ANALYSIS = with_analysis
-        self.operator.USE_MODES = False
-
         results = self.operator.run(
-            text, target_language=target_language, user_prompt=user_prompt
+            text,
+            prompt_file="translator.yaml",
+            output_model=OutputModels.StrOutput,
+            with_analysis=with_analysis,
+            resp_format="parse",
+            user_prompt=user_prompt,
+            target_language=target_language,
         )
+
         return results

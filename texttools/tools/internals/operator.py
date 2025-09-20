@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, TypeVar, Type, Literal
+from typing import Any, TypeVar, Literal
 import json
 
 from openai import OpenAI
@@ -42,13 +42,6 @@ class Operator:
     - RESP_FORMAT: str → "vllm" or "parse"
     """
 
-    PROMPT_FILE: str
-    OUTPUT_MODEL: Type[T]
-    WITH_ANALYSIS: bool = False
-    USE_MODES: bool
-    MODE: str = ""
-    RESP_FORMAT: Literal["vllm", "parse"] = "parse"
-
     def __init__(
         self,
         client: OpenAI,
@@ -59,8 +52,6 @@ class Operator:
     ):
         self.client: OpenAI = client
         self.model = model
-        self.prompt_loader = PromptLoader()
-        self.formatter = UserMergeFormatter()
         self.temperature = temperature
         self.client_kwargs = client_kwargs
 
@@ -82,25 +73,19 @@ class Operator:
             print(f"[ERROR] Analysis failed: {e}")
             raise
 
-    def _analyze(self) -> str:
-        analyze_prompt = self.prompt_configs["analyze_template"]
+    def _analyze(self, prompt_configs: dict[str, str]) -> str:
+        analyze_prompt = prompt_configs["analyze_template"]
         analyze_message = [self._build_user_message(analyze_prompt)]
         analysis = self._analysis_completion(analyze_message)
 
         return analysis
 
-    def _build_main_message(self) -> list[dict[str, str]]:
-        main_prompt = self.prompt_configs["main_template"]
-        main_message = self._build_user_message(main_prompt)
-
-        return main_message
-
-    def _parse_completion(self, message: list[dict[str, str]]) -> T:
+    def _parse_completion(self, message: list[dict[str, str]], output_model: T) -> T:
         try:
             completion = self.client.beta.chat.completions.parse(
                 model=self.model,
                 messages=message,
-                response_format=self.OUTPUT_MODEL,
+                response_format=output_model,
                 temperature=self.temperature,
                 **self.client_kwargs,
             )
@@ -129,7 +114,7 @@ class Operator:
 
         return cleaned.strip()
 
-    def _convert_to_output_model(self, response_string: str) -> T:
+    def _convert_to_output_model(self, response_string: str, output_model: T) -> T:
         """
         Convert a JSON response string to output model.
 
@@ -153,7 +138,7 @@ class Operator:
             response_dict = json.loads(cleaned_json)
 
             # Convert dictionary to output model
-            return self.OUTPUT_MODEL(**response_dict)
+            return output_model(**response_dict)
 
         except json.JSONDecodeError as e:
             raise ValueError(
@@ -162,9 +147,9 @@ class Operator:
         except Exception as e:
             raise ValueError(f"Failed to convert to output model: {e}")
 
-    def _vllm_completion(self, message: list[dict[str, str]]) -> T:
+    def _vllm_completion(self, message: list[dict[str, str]], output_model: T) -> T:
         try:
-            json_schema = self.OUTPUT_MODEL.model_json_schema()
+            json_schema = output_model.model_json_schema()
             completion = self.client.chat.completions.create(
                 model=self.model,
                 messages=message,
@@ -175,7 +160,7 @@ class Operator:
             response = completion.choices[0].message.content
 
             # Convert the string response to output model
-            parsed_response = self._convert_to_output_model(response)
+            parsed_response = self._convert_to_output_model(response, output_model)
 
             return parsed_response
 
@@ -183,7 +168,17 @@ class Operator:
             print(f"[ERROR] Failed to get vLLM structured output: {e}")
             raise
 
-    def run(self, input_text: str, **extra_kwargs) -> dict[str, Any]:
+    def run(
+        self,
+        input_text: str,
+        prompt_file: str,
+        output_model: T,
+        with_analysis: bool = False,
+        use_modes: bool = False,
+        mode: str = "",
+        resp_format: Literal["vllm", "parse"] = "parse",
+        **extra_kwargs,
+    ) -> dict[str, Any]:
         """
         Execute the LLM pipeline with the given input text.
 
@@ -194,36 +189,41 @@ class Operator:
         Returns:
             Dictionary containing the parsed result and optional analysis
         """
+
+        prompt_loader = PromptLoader()
+        formatter = UserMergeFormatter()
+
         try:
             cleaned_text = input_text.strip()
 
-            self.prompt_configs = self.prompt_loader.load_prompts(
-                self.PROMPT_FILE,
-                self.USE_MODES,
-                self.MODE,
+            prompt_configs = prompt_loader.load_prompts(
+                prompt_file,
+                use_modes,
+                mode,
                 cleaned_text,
                 **extra_kwargs,
             )
 
             messages: list[dict[str, str]] = []
 
-            if self.WITH_ANALYSIS:
-                analysis = self._analyze()
+            if with_analysis:
+                analysis = self._analyze(prompt_configs)
                 messages.append(
                     self._build_user_message(f"Based on this analysis: {analysis}")
                 )
 
-            messages.append(self._build_main_message())
-            messages = self.formatter.format(messages)
+            messages.append(self._build_user_message(prompt_configs["main_template"]))
 
-            if self.RESP_FORMAT == "vllm":
-                parsed = self._vllm_completion(messages)
-            elif self.RESP_FORMAT == "parse":
-                parsed = self._parse_completion(messages)
+            messages = formatter.format(messages)
+
+            if resp_format == "vllm":
+                parsed = self._vllm_completion(messages, output_model)
+            elif resp_format == "parse":
+                parsed = self._parse_completion(messages, output_model)
 
             results = {"result": parsed.result}
 
-            if self.WITH_ANALYSIS:
+            if with_analysis:
                 results["analysis"] = analysis
 
             return results
