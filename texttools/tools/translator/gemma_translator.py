@@ -1,5 +1,3 @@
-import json
-import re
 from typing import Any, Optional
 
 from openai import OpenAI
@@ -35,7 +33,7 @@ class GemmaTranslator(BaseTranslator):
         **client_kwargs: Any,
     ):
         super().__init__(handlers)
-        self.client = client
+        self.client: OpenAI = client
         self.model = model
         self.temperature = temperature
         self.client_kwargs = client_kwargs
@@ -134,27 +132,16 @@ class GemmaTranslator(BaseTranslator):
         messages.append({"role": "user", "content": text_prompt})
 
         restructured = self.chat_formatter.format(messages=messages)
-        completion = self.client.chat.completions.create(
+        completion = self.client.chat.completions.parse(
             model=self.model,
             messages=restructured,
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "NER",
-                    "schema": PreprocessorOutput.model_json_schema(),
-                },
-            },
+            response_format=PreprocessorOutput,
             temperature=self.temperature,
-            **self.client_kwargs,
+            extra_body=dict(guided_decoding_backend="auto") ** self.client_kwargs,
         )
-        response = completion.choices[0].message.content
+        message = completion.choices[0].message
 
-        # Remove Markdown-style triple backticks and any optional language tag like "json"
-        if response.startswith("```"):
-            response = re.sub(r"^```(?:json)?\s*|```$", "", response.strip())
-
-        entities = json.loads(response)
-
+        entities = message.parsed
         return entities
 
     def translate(
@@ -189,7 +176,7 @@ class GemmaTranslator(BaseTranslator):
             temperature=self.temperature,
             **self.client_kwargs,
         )
-        response = completion.choices[0].message.content.strip()
+        response = completion.choices[0].message.content
 
         self._dispatch(
             {
