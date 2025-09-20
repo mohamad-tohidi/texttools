@@ -189,7 +189,6 @@ class Operator:
         Returns:
             Dictionary containing the parsed result and optional analysis
         """
-
         prompt_loader = PromptLoader()
         formatter = UserMergeFormatter()
 
