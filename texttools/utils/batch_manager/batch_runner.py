@@ -9,7 +9,7 @@ from typing import Any, Callable
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools import SimpleBatchManager
+from texttools.utils.batch_manager.batch_manager import SimpleBatchManager
 
 
 class OutputModel(BaseModel):
