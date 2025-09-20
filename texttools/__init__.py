@@ -1,4 +1,3 @@
-from texttools.utils.batch_manager import BatchJobRunner, SimpleBatchManager
 from texttools.handlers import (
     NoOpResultHandler,
     PrintResultHandler,
@@ -11,6 +10,7 @@ from texttools.tools.categorizer.encoder_model.encoder_vectorizer import (
 from texttools.tools.categorizer.llm.openai_categorizer import LLMCategorizer
 from texttools.tools.question_detector.llm_detector import LLMQuestionDetector
 from texttools.tools.summarizer import LLMSummarizer
+from texttools.utils.batch_manager import BatchJobRunner, SimpleBatchManager
 
 __all__ = [
     "LLMQuestionDetector",
