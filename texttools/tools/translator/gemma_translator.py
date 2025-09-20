@@ -68,7 +68,7 @@ class GemmaTranslator(BaseTranslator):
         """
         messages.append({"role": "user", "content": enforce_prompt})
 
-        clean_text = text.strip()
+        clean_text = text
         if reason:
             reason_prompt = f"""
             Based on the analysis conducted, translate the following text {"from" + source_language if source_language else ""} to {target_language}.
@@ -163,7 +163,7 @@ class GemmaTranslator(BaseTranslator):
 
         reason_summary = None
         if self.use_reason:
-            reason_summary = self._reason(text, target_language, source_language)
+            reason_summary = self._reason(text, target_language)
 
         messages = self._build_messages(
             text, target_language, source_language, reason_summary, proper_names
