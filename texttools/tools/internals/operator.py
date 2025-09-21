@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import re
 from typing import Any, TypeVar, Literal, Optional
 import json
 
@@ -196,20 +197,26 @@ class Operator:
 
     def _extract_logprobs(self, completion: dict):
         logprobs_data = []
+        ignore_pattern = re.compile(r'^(result|[\s\[\]\{\}",:]+)$')
 
         for choice in completion.choices:
+            if not getattr(choice, "logprobs", None):
+                continue
+
             for logprob_item in choice.logprobs.content:
+                if ignore_pattern.match(logprob_item.token):
+                    continue
                 token_entry = {
                     "token": logprob_item.token,
-                    "logprob": logprob_item.logprob,
                     "prob": math.exp(logprob_item.logprob),
                     "top_alternatives": [],
                 }
                 for alt in logprob_item.top_logprobs:
+                    if ignore_pattern.match(alt.token):
+                        continue
                     token_entry["top_alternatives"].append(
                         {
                             "token": alt.token,
-                            "logprob": alt.logprob,
                             "prob": math.exp(alt.logprob),
                         }
                     )
