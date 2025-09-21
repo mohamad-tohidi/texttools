@@ -208,7 +208,7 @@ class Operator:
                     continue
                 token_entry = {
                     "token": logprob_item.token,
-                    "prob": math.exp(logprob_item.logprob),
+                    "prob": round(math.exp(logprob_item.logprob), 8),
                     "top_alternatives": [],
                 }
                 for alt in logprob_item.top_logprobs:
@@ -217,7 +217,7 @@ class Operator:
                     token_entry["top_alternatives"].append(
                         {
                             "token": alt.token,
-                            "prob": math.exp(alt.logprob),
+                            "prob": round(math.exp(alt.logprob), 8),
                         }
                     )
                 logprobs_data.append(token_entry)
