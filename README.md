@@ -3,7 +3,10 @@
 ## 📌 Overview
 
 **TextTools** is a high-level **NLP toolkit** built on top of modern **LLMs**.  
+
 It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER extractor, and more** — designed to help you integrate AI-powered text processing into your applications with minimal effort.
+
+**Thread Safety:** All methods in TheTool are thread-safe, allowing concurrent usage across multiple threads without conflicts.
 
 ---
 
@@ -25,11 +28,20 @@ Each tool is designed to work out-of-the-box with structured outputs (JSON / Pyd
 
 ---
 
-## 🔍 `with_analysis` Mode
+## ⚙️ with_analysis, logprobs, output_lang, and user_prompt parameters
 
-The `with_analysis=True` flag enhances the tool's output by providing a detailed reasoning chain behind its result. This is valuable for debugging, improving prompts, or understanding model behavior.
+TextTools provides several optional flags to customize LLM behavior:
 
-**Please be aware:** This feature works by making an additional LLM API call for each tool invocation, which will **effectively double your token usage** for that operation.
+- **`with_analysis=True`** → Adds a reasoning step before generating the final output. Useful for debugging, improving prompts, or understanding model behavior.  
+  ⚠️ Note: This doubles token usage per call because it triggers an additional LLM request.
+
+- **`logprobs=True`** → Returns token-level probabilities for the generated output. You can also specify `top_logprobs=<N>` to get the top N alternative tokens and their probabilities.  
+
+- **`output_lang="en"`** → Forces the model to respond in a specific language. The model will ignore other instructions about language and respond strictly in the requested language.
+
+- **`user_prompt="..."`** → Allows you to inject a custom instruction or prompt into the model alongside the main template. This gives you fine-grained control over how the model interprets or modifies the input text.
+
+All these flags can be used individually or together to tailor the behavior of any tool in **TextTools**.
 
 ---
 
@@ -65,7 +77,7 @@ print(the_tool.detect_question("Is this project open source?")["result"])
 # Output: True
 
 # Example: Translation
-print(the_tool.translate("سلام، حالت چطوره؟")["result"])
+print(the_tool.translate("سلام، حالت چطوره؟", target_language="English")["result"])
 # Output: "Hi! How are you?"
 ```
 
@@ -79,7 +91,7 @@ Use **TextTools** when you need to:
 - 🌍 **Translate** and process multilingual corpora with ease  
 - 🧩 **Integrate** LLMs into production pipelines (structured outputs)  
 - 📊 **Analyze** large text collections using embeddings and categorization  
-- ⚙️ **Automate** common text-processing tasks without reinventing the wheel  
+- 👍 **Automate** common text-processing tasks without reinventing the wheel  
 
 ---
 
