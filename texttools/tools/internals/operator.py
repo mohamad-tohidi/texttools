@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from typing import Any, TypeVar, Literal, Optional
 import json
 
@@ -80,17 +81,28 @@ class Operator:
 
         return analysis
 
-    def _parse_completion(self, message: list[dict[str, str]], output_model: T) -> T:
+    def _parse_completion(
+        self,
+        message: list[dict[str, str]],
+        output_model: T,
+        logprobs: bool = False,
+        top_logprobs: int = 3,
+    ) -> tuple[T, Any]:
         try:
-            completion = self.client.beta.chat.completions.parse(
-                model=self.model,
-                messages=message,
-                response_format=output_model,
-                temperature=self.temperature,
+            request_kwargs = {
+                "model": self.model,
+                "messages": message,
+                "response_format": output_model,
+                "temperature": self.temperature,
                 **self.client_kwargs,
-            )
+            }
+            if logprobs:
+                request_kwargs["logprobs"] = True
+                request_kwargs["top_logprobs"] = top_logprobs
+
+            completion = self.client.beta.chat.completions.parse(**request_kwargs)
             parsed = completion.choices[0].message.parsed
-            return parsed
+            return parsed, completion
 
         except Exception as e:
             print(f"[ERROR] Failed to parse completion: {e}")
@@ -147,26 +159,63 @@ class Operator:
         except Exception as e:
             raise ValueError(f"Failed to convert to output model: {e}")
 
-    def _vllm_completion(self, message: list[dict[str, str]], output_model: T) -> T:
+    def _vllm_completion(
+        self,
+        message: list[dict[str, str]],
+        output_model: T,
+        logprobs: bool = False,
+        top_logprobs: int = 3,
+    ) -> tuple[T, Any]:
         try:
             json_schema = output_model.model_json_schema()
-            completion = self.client.chat.completions.create(
-                model=self.model,
-                messages=message,
-                extra_body={"guided_json": json_schema},
-                temperature=self.temperature,
+
+            # Build kwargs dynamically
+            request_kwargs = {
+                "model": self.model,
+                "messages": message,
+                "extra_body": {"guided_json": json_schema},
+                "temperature": self.temperature,
                 **self.client_kwargs,
-            )
+            }
+
+            if logprobs:
+                request_kwargs["logprobs"] = True
+                request_kwargs["top_logprobs"] = top_logprobs
+
+            completion = self.client.chat.completions.create(**request_kwargs)
             response = completion.choices[0].message.content
 
             # Convert the string response to output model
-            parsed_response = self._convert_to_output_model(response, output_model)
+            parsed = self._convert_to_output_model(response, output_model)
 
-            return parsed_response
+            return parsed, completion
 
         except Exception as e:
             print(f"[ERROR] Failed to get vLLM structured output: {e}")
             raise
+
+    def _extract_logprobs(self, completion: dict):
+        logprobs_data = []
+
+        for choice in completion.choices:
+            for logprob_item in choice.logprobs.content:
+                token_entry = {
+                    "token": logprob_item.token,
+                    "logprob": logprob_item.logprob,
+                    "prob": math.exp(logprob_item.logprob),
+                    "top_alternatives": [],
+                }
+                for alt in logprob_item.top_logprobs:
+                    token_entry["top_alternatives"].append(
+                        {
+                            "token": alt.token,
+                            "logprob": alt.logprob,
+                            "prob": math.exp(alt.logprob),
+                        }
+                    )
+                logprobs_data.append(token_entry)
+
+        return logprobs_data
 
     def run(
         self,
@@ -178,6 +227,8 @@ class Operator:
         mode: str = "",
         resp_format: Literal["vllm", "parse"] = "parse",
         output_lang: Optional[str] = None,
+        logprobs: bool = False,
+        top_logprobs: int = 3,
         **extra_kwargs,
     ) -> dict[str, Any]:
         """
@@ -224,11 +275,18 @@ class Operator:
             messages = formatter.format(messages)
 
             if resp_format == "vllm":
-                parsed = self._vllm_completion(messages, output_model)
+                parsed, completion = self._vllm_completion(
+                    messages, output_model, logprobs, top_logprobs
+                )
             elif resp_format == "parse":
-                parsed = self._parse_completion(messages, output_model)
+                parsed, completion = self._parse_completion(
+                    messages, output_model, logprobs, top_logprobs
+                )
 
             results = {"result": parsed.result}
+
+            if logprobs:
+                results["logprobs"] = self._extract_logprobs(completion)
 
             if with_analysis:
                 results["analysis"] = analysis

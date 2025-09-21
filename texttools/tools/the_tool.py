@@ -51,6 +51,8 @@ class TheTool:
         text: str,
         with_analysis: bool = False,
         user_prompt: str = "",
+        logprobs: bool = False,
+        top_logprobs: int = 8,
     ) -> dict[str, str]:
         """
         Categorize a text into a single Islamic studies domain category.
@@ -72,6 +74,8 @@ class TheTool:
             with_analysis=with_analysis,
             resp_format="parse",
             user_prompt=user_prompt,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
         )
 
         return results
@@ -82,6 +86,8 @@ class TheTool:
         output_lang: Optional[str] = None,
         with_analysis: bool = False,
         user_prompt: str = "",
+        logprobs: bool = False,
+        top_logprobs: int = 3,
     ) -> dict[str, list[str]]:
         """
         Extract salient keywords from text.
@@ -101,6 +107,8 @@ class TheTool:
             resp_format="parse",
             user_prompt=user_prompt,
             output_lang=output_lang,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
         )
 
         return results
@@ -111,6 +119,8 @@ class TheTool:
         output_lang: Optional[str] = None,
         with_analysis: bool = False,
         user_prompt: str = "",
+        logprobs: bool = False,
+        top_logprobs: int = 3,
     ) -> dict[str, list[dict[str, str]]]:
         """
         Perform Named Entity Recognition (NER) over the input text.
@@ -130,6 +140,8 @@ class TheTool:
             resp_format="parse",
             user_prompt=user_prompt,
             output_lang=output_lang,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
         )
 
         return results
@@ -140,6 +152,8 @@ class TheTool:
         output_lang: Optional[str] = None,
         with_analysis: bool = False,
         user_prompt: str = "",
+        logprobs: bool = False,
+        top_logprobs: int = 2,
     ) -> dict[str, bool]:
         """
         Detect if the input is phrased as a question.
@@ -159,6 +173,8 @@ class TheTool:
             resp_format="parse",
             user_prompt=user_prompt,
             output_lang=output_lang,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
         )
 
         return results
@@ -169,6 +185,8 @@ class TheTool:
         output_lang: Optional[str] = None,
         with_analysis: bool = False,
         user_prompt: str = "",
+        logprobs: bool = False,
+        top_logprobs: int = 3,
     ) -> dict[str, str]:
         """
         Generate a single question from the given text.
@@ -188,6 +206,8 @@ class TheTool:
             resp_format="parse",
             user_prompt=user_prompt,
             output_lang=output_lang,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
         )
 
         return results
@@ -199,6 +219,8 @@ class TheTool:
         mode: Literal["default", "reason"] = "default",
         with_analysis: bool = False,
         user_prompt: str = "",
+        logprobs: bool = False,
+        top_logprobs: int = 3,
     ) -> dict[str, str]:
         """
         Merge multiple questions into a single unified question.
@@ -225,6 +247,8 @@ class TheTool:
             resp_format="parse",
             user_prompt=user_prompt,
             output_lang=output_lang,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
         )
 
         return results
@@ -239,6 +263,8 @@ class TheTool:
         ] = "same_meaning_different_wording",
         with_analysis: bool = False,
         user_prompt: str = "",
+        logprobs: bool = False,
+        top_logprobs: int = 3,
     ) -> dict[str, str]:
         """
         Rewrite a question with different wording or meaning.
@@ -263,6 +289,8 @@ class TheTool:
             resp_format="parse",
             user_prompt=user_prompt,
             output_lang=output_lang,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
         )
 
         return results
@@ -274,6 +302,8 @@ class TheTool:
         output_lang: Optional[str] = None,
         with_analysis: bool = False,
         user_prompt: str = "",
+        logprobs: bool = False,
+        top_logprobs: int = 3,
     ) -> dict[str, list[str]]:
         """
         Generate a list of questions about a subject.
@@ -296,6 +326,8 @@ class TheTool:
             user_prompt=user_prompt,
             number_of_questions=number_of_questions,
             output_lang=output_lang,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
         )
 
         return results
@@ -306,6 +338,8 @@ class TheTool:
         output_lang: Optional[str] = None,
         with_analysis: bool = False,
         user_prompt: str = "",
+        logprobs: bool = False,
+        top_logprobs: int = 3,
     ) -> dict[str, str]:
         """
         Summarize the given subject text.
@@ -325,6 +359,8 @@ class TheTool:
             resp_format="parse",
             user_prompt=user_prompt,
             output_lang=output_lang,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
         )
 
         return results
@@ -335,6 +371,8 @@ class TheTool:
         target_language: str,
         with_analysis: bool = False,
         user_prompt: str = "",
+        logprobs: bool = False,
+        top_logprobs: int = 3,
     ) -> dict[str, str]:
         """
         Translate text between languages.
@@ -355,6 +393,8 @@ class TheTool:
             resp_format="parse",
             user_prompt=user_prompt,
             target_language=target_language,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
         )
 
         return results
