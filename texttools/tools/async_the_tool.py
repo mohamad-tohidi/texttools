@@ -4,7 +4,7 @@ from typing import Any, Literal, Optional
 from openai import AsyncOpenAI
 
 import texttools.tools.internals.output_models as OutputModels
-from texttools.tools.internals.operator import AsyncOperator
+from texttools.tools.internals.async_operator import AsyncOperator
 
 
 class AsyncTheTool:
