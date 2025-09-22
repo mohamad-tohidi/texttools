@@ -4,6 +4,8 @@
 
 **TextTools** is a high-level **NLP toolkit** built on top of modern **LLMs**.  
 
+It provides both **sync (`TheTool`)** and **async (`AsyncTheTool`)** APIs for maximum flexibility.
+
 It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER extractor, and more** — designed to help you integrate AI-powered text processing into your applications with minimal effort.
 
 **Thread Safety:** All methods in TheTool are thread-safe, allowing concurrent usage across multiple threads without conflicts.
@@ -28,7 +30,7 @@ Each tool is designed to work out-of-the-box with structured outputs (JSON / Pyd
 
 ---
 
-## ⚙️ with_analysis, logprobs, output_lang, and user_prompt parameters
+## ⚙️ `with_analysis`, `logprobs`, `output_lang`, and `user_prompt` parameters
 
 TextTools provides several optional flags to customize LLM behavior:
 
@@ -55,7 +57,15 @@ pip install -U hamta-texttools
 
 ---
 
-## ⚡ Quick Start
+## Sync vs Async
+| Tool         | Style   | Use case                                    |
+|--------------|---------|---------------------------------------------|
+| `TheTool`    | Sync    | Simple scripts, sequential workflows        |
+| `AsyncTheTool` | Async | High-throughput apps, APIs, concurrent tasks |
+
+---
+
+## ⚡ Quick Start (Sync)
 
 ```python
 from openai import OpenAI
@@ -79,6 +89,33 @@ print(the_tool.detect_question("Is this project open source?")["result"])
 # Example: Translation
 print(the_tool.translate("سلام، حالت چطوره؟", target_language="English")["result"])
 # Output: "Hi! How are you?"
+```
+
+---
+
+## ⚡ Quick Start (Async)
+
+```python
+import asyncio
+from openai import AsyncOpenAI
+from texttools import AsyncTheTool
+
+async def main():
+    # Create your async OpenAI client
+    async_client = AsyncOpenAI(base_url="your_url", api_key="your_api_key")
+
+    # Specify the model
+    model = "gpt-4o-mini"
+
+    # Create an instance of AsyncTheTool
+    the_tool = AsyncTheTool(client=async_client, model=model)
+
+    # Example: Async Translation
+    result = await the_tool.translate("سلام، حالت چطوره؟", target_language="English")
+    print(result["result"])
+    # Output: "Hi! How are you?"
+
+asyncio.run(main())
 ```
 
 ---
