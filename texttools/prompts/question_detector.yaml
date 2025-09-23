@@ -1,8 +1,8 @@
 main_template: |
-  Determine that if the following text contains any question or request of some kind or not.
-  Respond only in JSON format (Output should be a bool):
+  You are a question detector.
+  Determine that if the given text contains any question or not.
+  Respond only in JSON format (Output should be a boolean):
   {{"result": True/False}}
-  No addition, No comments, No explanation.
   Here is the text:
   {input}
 
