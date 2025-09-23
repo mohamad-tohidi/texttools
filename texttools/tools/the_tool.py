@@ -1,4 +1,4 @@
-from typing import Optional, Literal
+from typing import Optional, Literal, Any
 
 from openai import OpenAI
 
@@ -481,6 +481,45 @@ class TheTool:
             with_analysis=self.with_analysis
             if with_analysis is None
             else with_analysis,
+            temperature=self.temperature if temperature is None else temperature,
+            logprobs=self.logprobs if logprobs is None else logprobs,
+            top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
+        )
+
+        return results
+
+    def custom_tool(
+        self,
+        prompt: str,
+        output_model: Any,
+        model: Optional[str] = None,
+        output_lang: Optional[str] = None,
+        temperature: Optional[float] = None,
+        logprobs: Optional[float] = None,
+        top_logprobs: Optional[int] = None,
+    ) -> dict[str, Any]:
+        """
+        Custom tool that can do almost anything!
+
+        Args:
+            prompt: Custom prompt.
+            output_model: Custom BaseModel output model.
+
+        Returns:
+            {"result": <Any>}
+        """
+        results = self.operator.run(
+            # Internal parameters
+            prompt_file="custom_tool.yaml",
+            resp_format="parse",
+            user_prompt=False,
+            with_analysis=False,
+            # User paramaeters
+            text=prompt,
+            output_model=output_model,
+            output_model_str=output_model.model_json_schema(),
+            model=self.model if model is None else model,
+            output_lang=self.output_lang if output_lang is None else output_lang,
             temperature=self.temperature if temperature is None else temperature,
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
