@@ -16,16 +16,14 @@ model = "google/gemma-3n-e4b-it"
 client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
 
 # Create an instance of TheTool
-t = TheTool(client=client, model=model)
+t = TheTool(client=client, output_lang="Persian")
 
 # Categorizer
 category = t.categorize("سلام حالت چطوره؟")
 print(category)
 
 # Keyword Extractor
-keywords = t.extract_keywords(
-    "Tomorrow, we will be dead by the car crash", output_lang="Persian"
-)
+keywords = t.extract_keywords("Tomorrow, we will be dead by the car crash")
 print(keywords)
 
 # NER Extractor
@@ -59,9 +57,7 @@ questions = t.generate_questions_from_subject("Friendship", 3)
 print(questions)
 
 # Summarizer
-summary = t.summarize(
-    "Tomorrow, we will be dead by the car crash", output_lang="Persian"
-)
+summary = t.summarize("Tomorrow, we will be dead by the car crash")
 print(summary)
 
 # Translator

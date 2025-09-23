@@ -44,29 +44,23 @@ class Operator:
     - RESP_FORMAT: str → "vllm" or "parse"
     """
 
-    def __init__(
-        self,
-        client: OpenAI,
-        *,
-        model: str,
-        temperature: float = 0.0,
-        **client_kwargs: Any,
-    ):
+    def __init__(self, client: OpenAI):
         self.client: OpenAI = client
-        self.model = model
-        self.temperature = temperature
-        self.client_kwargs = client_kwargs
 
     def _build_user_message(self, prompt: str) -> dict[str, str]:
         return {"role": "user", "content": prompt}
 
-    def _analysis_completion(self, analyze_message: list[dict[str, str]]) -> str:
+    def _analysis_completion(
+        self,
+        analyze_message: list[dict[str, str]],
+        model: str,
+        temperature: float,
+    ) -> str:
         try:
             completion = self.client.chat.completions.create(
-                model=self.model,
+                model=model,
                 messages=analyze_message,
-                temperature=self.temperature,
-                **self.client_kwargs,
+                temperature=temperature,
             )
             analysis = completion.choices[0].message.content.strip()
             return analysis
@@ -75,10 +69,15 @@ class Operator:
             print(f"[ERROR] Analysis failed: {e}")
             raise
 
-    def _analyze(self, prompt_configs: dict[str, str]) -> str:
+    def _analyze(
+        self,
+        prompt_configs: dict[str, str],
+        model: str,
+        temperature: float,
+    ) -> str:
         analyze_prompt = prompt_configs["analyze_template"]
         analyze_message = [self._build_user_message(analyze_prompt)]
-        analysis = self._analysis_completion(analyze_message)
+        analysis = self._analysis_completion(analyze_message, model, temperature)
 
         return analysis
 
@@ -86,16 +85,17 @@ class Operator:
         self,
         message: list[dict[str, str]],
         output_model: T,
+        model: str,
+        temperature: float,
         logprobs: bool = False,
         top_logprobs: int = 3,
     ) -> tuple[T, Any]:
         try:
             request_kwargs = {
-                "model": self.model,
+                "model": model,
                 "messages": message,
                 "response_format": output_model,
-                "temperature": self.temperature,
-                **self.client_kwargs,
+                "temperature": temperature,
             }
             if logprobs:
                 request_kwargs["logprobs"] = True
@@ -164,6 +164,8 @@ class Operator:
         self,
         message: list[dict[str, str]],
         output_model: T,
+        model: str,
+        temperature: float,
         logprobs: bool = False,
         top_logprobs: int = 3,
     ) -> tuple[T, Any]:
@@ -172,11 +174,10 @@ class Operator:
 
             # Build kwargs dynamically
             request_kwargs = {
-                "model": self.model,
+                "model": model,
                 "messages": message,
                 "extra_body": {"guided_json": json_schema},
-                "temperature": self.temperature,
-                **self.client_kwargs,
+                "temperature": temperature,
             }
 
             if logprobs:
@@ -226,23 +227,27 @@ class Operator:
 
     def run(
         self,
-        input_text: str,
+        text: str,
+        # User parameters
+        model: str,
+        with_analysis: bool,
+        temperature: float,
+        logprobs: bool,
+        top_logprobs: int,
+        user_prompt: Optional[str],
+        output_lang: Optional[str],
+        # Each tool's parameters
         prompt_file: str,
         output_model: T,
-        with_analysis: bool = False,
-        use_modes: bool = False,
-        mode: str = "",
         resp_format: Literal["vllm", "parse"] = "parse",
-        output_lang: Optional[str] = None,
-        logprobs: bool = False,
-        top_logprobs: int = 3,
+        mode: Optional[str] = None,
         **extra_kwargs,
     ) -> dict[str, Any]:
         """
         Execute the LLM pipeline with the given input text.
 
         Args:
-            input_text: The text to process (will be stripped of whitespace)
+            text: The text to process (will be stripped of whitespace)
             **extra_kwargs: Additional variables to inject into prompt templates
 
         Returns:
@@ -252,20 +257,19 @@ class Operator:
         formatter = UserMergeFormatter()
 
         try:
-            cleaned_text = input_text.strip()
+            cleaned_text = text.strip()
 
             prompt_configs = prompt_loader.load_prompts(
-                prompt_file,
-                use_modes,
-                mode,
-                cleaned_text,
+                prompt_file=prompt_file,
+                text=cleaned_text,
+                mode=mode,
                 **extra_kwargs,
             )
 
             messages: list[dict[str, str]] = []
 
             if with_analysis:
-                analysis = self._analyze(prompt_configs)
+                analysis = self._analyze(prompt_configs, model, temperature)
                 messages.append(
                     self._build_user_message(f"Based on this analysis: {analysis}")
                 )
@@ -277,17 +281,22 @@ class Operator:
                     )
                 )
 
+            if user_prompt:
+                messages.append(
+                    self._build_user_message(f"Consider this instruction {user_prompt}")
+                )
+
             messages.append(self._build_user_message(prompt_configs["main_template"]))
 
             messages = formatter.format(messages)
 
             if resp_format == "vllm":
                 parsed, completion = self._vllm_completion(
-                    messages, output_model, logprobs, top_logprobs
+                    messages, output_model, model, temperature, logprobs, top_logprobs
                 )
             elif resp_format == "parse":
                 parsed, completion = self._parse_completion(
-                    messages, output_model, logprobs, top_logprobs
+                    messages, output_model, model, temperature, logprobs, top_logprobs
                 )
 
             results = {"result": parsed.result}

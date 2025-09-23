@@ -1,5 +1,4 @@
 main_template: |
-  {user_prompt}
   Identify and extract all named entities (e.g., PER, ORG, LOC, DAT, etc.) from the following text. For each entity, provide its text and a clear type.
   Respond as a JSON array of objects.
   Respond only in JSON format:

@@ -1,4 +1,4 @@
-from typing import Literal, Any, Optional
+from typing import Optional, Literal
 
 from openai import OpenAI
 
@@ -35,24 +35,36 @@ class TheTool:
         self,
         client: OpenAI,
         *,
-        model: str,
+        model: str = "google/gemma-3n-e4b-it",
+        user_prompt: Optional[str] = None,
+        output_lang: Optional[str] = None,
+        with_analysis: bool = False,
         temperature: float = 0.0,
-        **client_kwargs: Any,
+        logprobs: bool = False,
+        top_logprobs: int = 3,
     ):
-        self.operator = Operator(
-            client=client,
-            model=model,
-            temperature=temperature,
-            **client_kwargs,
-        )
+        # Initialize Operator
+        self.operator = Operator(client=client)
+
+        # Initialize default values
+        self.model = model
+        self.user_prompt = user_prompt
+        self.output_lang = output_lang
+        self.with_analysis = with_analysis
+        self.temperature = temperature
+        self.logprobs = logprobs
+        self.top_logprobs = top_logprobs
 
     def categorize(
         self,
         text: str,
-        with_analysis: bool = False,
-        user_prompt: str = "",
-        logprobs: bool = False,
-        top_logprobs: int = 8,
+        model: Optional[str] = None,
+        user_prompt: Optional[str] = None,
+        output_lang: Optional[str] = None,
+        with_analysis: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        logprobs: Optional[bool] = None,
+        top_logprobs: Optional[int] = None,
     ) -> dict[str, str]:
         """
         Categorize a text into a single Islamic studies domain category.
@@ -68,14 +80,21 @@ class TheTool:
         """
 
         results = self.operator.run(
-            text,
+            # Internal parameters
             prompt_file="categorizer.yaml",
             output_model=OutputModels.CategorizerOutput,
-            with_analysis=with_analysis,
             resp_format="parse",
-            user_prompt=user_prompt,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
+            # User parameters
+            text=text,
+            model=self.model if model is None else model,
+            user_prompt=self.user_prompt if user_prompt is None else user_prompt,
+            output_lang=self.output_lang if output_lang is None else output_lang,
+            with_analysis=self.with_analysis
+            if with_analysis is None
+            else with_analysis,
+            temperature=self.temperature if temperature is None else temperature,
+            logprobs=self.logprobs if logprobs is None else logprobs,
+            top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
         return results
@@ -83,11 +102,13 @@ class TheTool:
     def extract_keywords(
         self,
         text: str,
+        model: Optional[str] = None,
+        user_prompt: Optional[str] = None,
         output_lang: Optional[str] = None,
-        with_analysis: bool = False,
-        user_prompt: str = "",
-        logprobs: bool = False,
-        top_logprobs: int = 3,
+        with_analysis: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        logprobs: Optional[bool] = None,
+        top_logprobs: Optional[int] = None,
     ) -> dict[str, list[str]]:
         """
         Extract salient keywords from text.
@@ -100,15 +121,21 @@ class TheTool:
             {"result": [<keyword1>, <keyword2>, ...]}
         """
         results = self.operator.run(
-            text,
+            # Internal parameters
             prompt_file="keyword_extractor.yaml",
             output_model=OutputModels.ListStrOutput,
-            with_analysis=with_analysis,
             resp_format="parse",
-            user_prompt=user_prompt,
-            output_lang=output_lang,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
+            # User parameters
+            text=text,
+            model=self.model if model is None else model,
+            user_prompt=self.user_prompt if user_prompt is None else user_prompt,
+            output_lang=self.output_lang if output_lang is None else output_lang,
+            with_analysis=self.with_analysis
+            if with_analysis is None
+            else with_analysis,
+            temperature=self.temperature if temperature is None else temperature,
+            logprobs=self.logprobs if logprobs is None else logprobs,
+            top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
         return results
@@ -116,11 +143,13 @@ class TheTool:
     def extract_entities(
         self,
         text: str,
+        model: Optional[str] = None,
+        user_prompt: Optional[str] = None,
         output_lang: Optional[str] = None,
-        with_analysis: bool = False,
-        user_prompt: str = "",
-        logprobs: bool = False,
-        top_logprobs: int = 3,
+        with_analysis: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        logprobs: Optional[bool] = None,
+        top_logprobs: Optional[int] = None,
     ) -> dict[str, list[dict[str, str]]]:
         """
         Perform Named Entity Recognition (NER) over the input text.
@@ -133,27 +162,34 @@ class TheTool:
             {"result": [{"text": <entity>, "type": <entity_type>}, ...]}
         """
         results = self.operator.run(
-            text,
+            # Internal parameters
             prompt_file="ner_extractor.yaml",
             output_model=OutputModels.ListDictStrStrOutput,
-            with_analysis=with_analysis,
             resp_format="parse",
-            user_prompt=user_prompt,
-            output_lang=output_lang,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
+            # User parameters
+            text=text,
+            model=self.model if model is None else model,
+            user_prompt=self.user_prompt if user_prompt is None else user_prompt,
+            output_lang=self.output_lang if output_lang is None else output_lang,
+            with_analysis=self.with_analysis
+            if with_analysis is None
+            else with_analysis,
+            temperature=self.temperature if temperature is None else temperature,
+            logprobs=self.logprobs if logprobs is None else logprobs,
+            top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
         return results
 
     def detect_question(
         self,
-        question: str,
-        output_lang: Optional[str] = None,
-        with_analysis: bool = False,
-        user_prompt: str = "",
-        logprobs: bool = False,
-        top_logprobs: int = 2,
+        text: str,
+        model: Optional[str] = None,
+        user_prompt: Optional[str] = None,
+        with_analysis: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        logprobs: Optional[bool] = None,
+        top_logprobs: Optional[int] = None,
     ) -> dict[str, bool]:
         """
         Detect if the input is phrased as a question.
@@ -166,15 +202,21 @@ class TheTool:
             {"result": "true"} or {"result": "false"}
         """
         results = self.operator.run(
-            question,
+            # Internal parameters
             prompt_file="question_detector.yaml",
             output_model=OutputModels.BoolOutput,
-            with_analysis=with_analysis,
             resp_format="parse",
-            user_prompt=user_prompt,
-            output_lang=output_lang,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
+            output_lang=False,
+            # User parameters
+            text=text,
+            model=self.model if model is None else model,
+            user_prompt=self.user_prompt if user_prompt is None else user_prompt,
+            with_analysis=self.with_analysis
+            if with_analysis is None
+            else with_analysis,
+            temperature=self.temperature if temperature is None else temperature,
+            logprobs=self.logprobs if logprobs is None else logprobs,
+            top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
         return results
@@ -182,11 +224,13 @@ class TheTool:
     def generate_question_from_text(
         self,
         text: str,
+        model: Optional[str] = None,
+        user_prompt: Optional[str] = None,
         output_lang: Optional[str] = None,
-        with_analysis: bool = False,
-        user_prompt: str = "",
-        logprobs: bool = False,
-        top_logprobs: int = 3,
+        with_analysis: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        logprobs: Optional[bool] = None,
+        top_logprobs: Optional[int] = None,
     ) -> dict[str, str]:
         """
         Generate a single question from the given text.
@@ -199,15 +243,21 @@ class TheTool:
             {"result": <generated_question>}
         """
         results = self.operator.run(
-            text,
+            # Internal parameters
             prompt_file="question_generator.yaml",
             output_model=OutputModels.StrOutput,
-            with_analysis=with_analysis,
             resp_format="parse",
-            user_prompt=user_prompt,
-            output_lang=output_lang,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
+            # User parameters
+            text=text,
+            model=self.model if model is None else model,
+            user_prompt=self.user_prompt if user_prompt is None else user_prompt,
+            output_lang=self.output_lang if output_lang is None else output_lang,
+            with_analysis=self.with_analysis
+            if with_analysis is None
+            else with_analysis,
+            temperature=self.temperature if temperature is None else temperature,
+            logprobs=self.logprobs if logprobs is None else logprobs,
+            top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
         return results
@@ -215,12 +265,14 @@ class TheTool:
     def merge_questions(
         self,
         questions: list[str],
-        output_lang: Optional[str] = None,
         mode: Literal["default", "reason"] = "default",
-        with_analysis: bool = False,
-        user_prompt: str = "",
-        logprobs: bool = False,
-        top_logprobs: int = 3,
+        model: Optional[str] = None,
+        user_prompt: Optional[str] = None,
+        output_lang: Optional[str] = None,
+        with_analysis: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        logprobs: Optional[bool] = None,
+        top_logprobs: Optional[int] = None,
     ) -> dict[str, str]:
         """
         Merge multiple questions into a single unified question.
@@ -235,36 +287,43 @@ class TheTool:
         Returns:
             {"result": <merged_question>}
         """
-        question_str = ", ".join(questions)
+        text = ", ".join(questions)
 
         results = self.operator.run(
-            question_str,
+            # Internal parameters
             prompt_file="question_merger.yaml",
             output_model=OutputModels.StrOutput,
-            with_analysis=with_analysis,
-            use_modes=True,
-            mode=mode,
             resp_format="parse",
-            user_prompt=user_prompt,
-            output_lang=output_lang,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
+            # User parameters
+            text=text,
+            mode=mode,
+            model=self.model if model is None else model,
+            user_prompt=self.user_prompt if user_prompt is None else user_prompt,
+            output_lang=self.output_lang if output_lang is None else output_lang,
+            with_analysis=self.with_analysis
+            if with_analysis is None
+            else with_analysis,
+            temperature=self.temperature if temperature is None else temperature,
+            logprobs=self.logprobs if logprobs is None else logprobs,
+            top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
         return results
 
     def rewrite_question(
         self,
-        question: str,
-        output_lang: Optional[str] = None,
+        text: str,
         mode: Literal[
             "same_meaning_different_wording",
             "different_meaning_similar_wording",
         ] = "same_meaning_different_wording",
-        with_analysis: bool = False,
-        user_prompt: str = "",
-        logprobs: bool = False,
-        top_logprobs: int = 3,
+        model: Optional[str] = None,
+        user_prompt: Optional[str] = None,
+        output_lang: Optional[str] = None,
+        with_analysis: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        logprobs: Optional[bool] = None,
+        top_logprobs: Optional[int] = None,
     ) -> dict[str, str]:
         """
         Rewrite a question with different wording or meaning.
@@ -280,30 +339,37 @@ class TheTool:
             {"result": <rewritten_question>}
         """
         results = self.operator.run(
-            question,
+            # Internal parameters
             prompt_file="question_rewriter.yaml",
             output_model=OutputModels.StrOutput,
-            with_analysis=with_analysis,
-            use_modes=True,
-            mode=mode,
             resp_format="parse",
-            user_prompt=user_prompt,
-            output_lang=output_lang,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
+            # User parameters
+            text=text,
+            mode=mode,
+            model=self.model if model is None else model,
+            user_prompt=self.user_prompt if user_prompt is None else user_prompt,
+            output_lang=self.output_lang if output_lang is None else output_lang,
+            with_analysis=self.with_analysis
+            if with_analysis is None
+            else with_analysis,
+            temperature=self.temperature if temperature is None else temperature,
+            logprobs=self.logprobs if logprobs is None else logprobs,
+            top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
         return results
 
     def generate_questions_from_subject(
         self,
-        subject: str,
+        text: str,
         number_of_questions: int,
+        model: Optional[str] = None,
+        user_prompt: Optional[str] = None,
         output_lang: Optional[str] = None,
-        with_analysis: bool = False,
-        user_prompt: str = "",
-        logprobs: bool = False,
-        top_logprobs: int = 3,
+        with_analysis: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        logprobs: Optional[bool] = None,
+        top_logprobs: Optional[int] = None,
     ) -> dict[str, list[str]]:
         """
         Generate a list of questions about a subject.
@@ -318,16 +384,22 @@ class TheTool:
             {"result": [<question1>, <question2>, ...]}
         """
         results = self.operator.run(
-            subject,
+            # Internal parameters
             prompt_file="subject_question_generator.yaml",
             output_model=OutputModels.ReasonListStrOutput,
-            with_analysis=with_analysis,
             resp_format="parse",
-            user_prompt=user_prompt,
+            # User parameters
+            text=text,
             number_of_questions=number_of_questions,
-            output_lang=output_lang,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
+            model=self.model if model is None else model,
+            user_prompt=self.user_prompt if user_prompt is None else user_prompt,
+            output_lang=self.output_lang if output_lang is None else output_lang,
+            with_analysis=self.with_analysis
+            if with_analysis is None
+            else with_analysis,
+            temperature=self.temperature if temperature is None else temperature,
+            logprobs=self.logprobs if logprobs is None else logprobs,
+            top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
         return results
@@ -335,11 +407,13 @@ class TheTool:
     def summarize(
         self,
         text: str,
+        model: Optional[str] = None,
+        user_prompt: Optional[str] = None,
         output_lang: Optional[str] = None,
-        with_analysis: bool = False,
-        user_prompt: str = "",
-        logprobs: bool = False,
-        top_logprobs: int = 3,
+        with_analysis: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        logprobs: Optional[bool] = None,
+        top_logprobs: Optional[int] = None,
     ) -> dict[str, str]:
         """
         Summarize the given subject text.
@@ -352,15 +426,21 @@ class TheTool:
             {"result": <summary>}
         """
         results = self.operator.run(
-            text,
+            # Internal parameters
             prompt_file="summarizer.yaml",
             output_model=OutputModels.StrOutput,
-            with_analysis=with_analysis,
             resp_format="parse",
-            user_prompt=user_prompt,
-            output_lang=output_lang,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
+            # User paramaeters
+            text=text,
+            model=self.model if model is None else model,
+            user_prompt=self.user_prompt if user_prompt is None else user_prompt,
+            output_lang=self.output_lang if output_lang is None else output_lang,
+            with_analysis=self.with_analysis
+            if with_analysis is None
+            else with_analysis,
+            temperature=self.temperature if temperature is None else temperature,
+            logprobs=self.logprobs if logprobs is None else logprobs,
+            top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
         return results
@@ -369,10 +449,12 @@ class TheTool:
         self,
         text: str,
         target_language: str,
-        with_analysis: bool = False,
-        user_prompt: str = "",
-        logprobs: bool = False,
-        top_logprobs: int = 3,
+        model: Optional[str] = None,
+        user_prompt: Optional[str] = None,
+        with_analysis: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        logprobs: Optional[bool] = None,
+        top_logprobs: Optional[int] = None,
     ) -> dict[str, str]:
         """
         Translate text between languages.
@@ -386,15 +468,22 @@ class TheTool:
             {"result": <translated_text>}
         """
         results = self.operator.run(
-            text,
+            # Internal parameters
             prompt_file="translator.yaml",
             output_model=OutputModels.StrOutput,
-            with_analysis=with_analysis,
             resp_format="parse",
-            user_prompt=user_prompt,
+            output_lang=False,
+            # User parameters
+            text=text,
             target_language=target_language,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
+            model=self.model if model is None else model,
+            user_prompt=self.user_prompt if user_prompt is None else user_prompt,
+            with_analysis=self.with_analysis
+            if with_analysis is None
+            else with_analysis,
+            temperature=self.temperature if temperature is None else temperature,
+            logprobs=self.logprobs if logprobs is None else logprobs,
+            top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
         return results

@@ -1,7 +1,6 @@
 main_template:
 
   same_meaning_different_wording: |
-    {user_prompt}
     Rewrite the following question using completely different wording and phrasing, 
     ensuring its original meaning is perfectly preserved. The rewritten question 
     should be distinct from the original but convey the exact same inquiry.
@@ -13,7 +12,6 @@ main_template:
     The generated question must be in the language of the users input.
 
   different_meaning_similar_wording: |
-    {user_prompt}
     Rewrite the following question using *very similar wording and phrasing* 
     to the original, but ensure the rewritten question has a *completely different meaning*. 
     Focus on subtle changes that drastically alter the intent or subject of the question.

@@ -1,3 +1,4 @@
+from typing import Optional
 from pathlib import Path
 import yaml
 
@@ -31,8 +32,7 @@ class PromptLoader:
         self,
         prompts_dir: str,
         prompt_file: str,
-        use_modes: bool,
-        mode: str,
+        mode: Optional[str],
     ) -> dict[str, str]:
         prompt_path = self._get_prompt_path(prompt_file, prompts_dir)
 
@@ -47,16 +47,16 @@ class PromptLoader:
 
         return {
             "main_template": data["main_template"][mode]
-            if use_modes
+            if mode
             else data["main_template"],
             "analyze_template": data.get("analyze_template")[mode]
-            if use_modes
+            if mode
             else data.get("analyze_template"),
         }
 
-    def _build_format_args(self, input_text: str, **extra_kwargs) -> dict[str, str]:
+    def _build_format_args(self, text: str, **extra_kwargs) -> dict[str, str]:
         # Base formatting args
-        format_args = {"input": input_text}
+        format_args = {"input": text}
         # Merge extras
         format_args.update(extra_kwargs)
         return format_args
@@ -64,16 +64,13 @@ class PromptLoader:
     def load_prompts(
         self,
         prompt_file: str,
-        use_modes: bool,
+        text: str,
         mode: str,
-        input_text: str,
         prompts_dir: str = "prompts",
         **extra_kwargs,
     ) -> dict[str, str]:
-        template_configs = self._load_templates(
-            prompts_dir, prompt_file, use_modes, mode
-        )
-        format_args = self._build_format_args(input_text, **extra_kwargs)
+        template_configs = self._load_templates(prompts_dir, prompt_file, mode)
+        format_args = self._build_format_args(text, **extra_kwargs)
 
         # Inject variables inside each template
         for key in template_configs.keys():

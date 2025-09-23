@@ -1,5 +1,4 @@
 main_template: |
-  {user_prompt}
   Given the following answer, generate a single, 
   appropriate question that this answer would directly respond to.
   The generated answer should be independently meaningful,

@@ -1,5 +1,4 @@
 main_template: |
-  {user_prompt}
   Extract the most relevant keywords from the following text. Provide them as a list of strings.
   Respond only in JSON format:
   {{"result": ["keyword1", "keyword2", ...]}}.

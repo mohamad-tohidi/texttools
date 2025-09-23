@@ -1,7 +1,6 @@
 main_template:
 
   default: |
-    {user_prompt}
     You are a language expert.
     I will give you a list of questions that are semantically similar.
     Your task is to merge them into one unified question that:
@@ -17,7 +16,6 @@ main_template:
     The generated question must be in the language of the users input.
 
   reason: |
-    {user_prompt}
     You are an AI assistant helping to unify semantically similar questions.
     First, briefly extract the unique intent or content from each input question.
     Then, write one merged question that combines all their content clearly and naturally, without redundancy.

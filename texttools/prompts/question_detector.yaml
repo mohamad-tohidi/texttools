@@ -1,5 +1,4 @@
 main_template: |
-  {user_prompt}
   Determine that if the following text contains any question or request of some kind or not.
   Respond only in JSON format (Output should be a bool):
   {{"result": True/False}}

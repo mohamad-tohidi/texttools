@@ -1,5 +1,4 @@
 main_template: |
-  {user_prompt}
   Provide a concise summary of the following text:
   {input}
   Respond only in JSON format:
