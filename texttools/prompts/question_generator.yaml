@@ -1,13 +1,11 @@
 main_template: |
-  Given the following answer, generate a single, 
+  Given the following answer, generate one 
   appropriate question that this answer would directly respond to.
   The generated answer should be independently meaningful,
   and not mentioning any verbs like, this, that, he or she on the question.
-  The generated question must be in the language of the user's input.
   Respond only in JSON format:
   {{"result": "string"}}
-  Respond only with the new generated question, without any additional information.          
-  Here is the text:
+  Here is the answer:
   {input}
   
 analyze_template: |
@@ -15,8 +13,7 @@ analyze_template: |
   main subject, and what kind of information it provides.
   Provide a brief, summarized understanding of the answer's content that will 
   help in formulating a relevant and direct question.
-  Provide the summary in the language of the content.
   Just mention the keypoints that was provided in the answer
-  Here is the text:
+  Here is the answer:
   {input}
                 
