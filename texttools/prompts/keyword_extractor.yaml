@@ -1,9 +1,12 @@
 main_template: |
-  Extract the most relevant keywords from the following text. Provide them as a list of strings.
-  Respond only in JSON format:
-  {{"result": ["keyword1", "keyword2", ...]}}.
-  No addition, No comments, No explanation.
-  Respond in the language of the input text.
+  You are an expert keyword extractor.
+  Extract the most relevant keywords from the given text.
+  Guidelines:
+  1. Keywords must represent the main concepts of the text.  
+  2. If two words have overlapping meanings, choose only one.  
+  3. Do not include generic or unrelated words.  
+  4. Keywords must be single, self-contained words (no phrases).
+  5. Output between 3 and 7 keywords based on the input length. 
   Here is the text:
   {input}
 
