@@ -1,21 +1,18 @@
 main_template: |
+  You are a question from subject generator.
   Given the following subject, generate {number_of_questions} appropriate questions that this subject would directly respond to.
   The generated subject should be independently meaningful,
   and it must not mention any verbs like, this, that, he or she and etc. in the question.
-  Here is the text:
-  {input}
-  Respond only with the new generated question, without any additional information.
-  Generate {number_of_questions} number of questions in the questions list.
-  You must return ONLY a single JSON object that matches the schema.
-  There is a `reason` key, fill that up with a really summerized version
-  of your thoughts.
+  There is a `reason` key, fill that up with a summerized version of your thoughts.
   The `reason` must be less than 20 words.
   Don't forget to fill the reason.
   Respond only in JSON format:
-  {{"result": [str, str, ...], "reason": str}}
+  {{"result": ["question1", "question2", ...], "reason": "string"}}
+  Here is the text:
+  {input}
 
 analyze_template: |
-  Our goal is to generate questions, from the given subject that I've provided.
+  Our goal is to generate questions from the given subject.
   The questions must be meaningfull, some of them should be specific and some should be general.
   But first, in this step we want to analyze the subject that I asked to generate questions for it.
   We need a summerized analysis of the subject.
