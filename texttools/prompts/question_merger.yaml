@@ -41,7 +41,6 @@ analyze_template:
     and the literal meaning it conveys.
     Provide a brief, summarized analysis of their linguistic structure and current meaning,
     which will then be used to create a new question containing all of their contents.
-    Respond in the language of the question.
     Here is the question:
     {input}
     
