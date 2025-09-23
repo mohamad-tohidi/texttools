@@ -1,6 +1,7 @@
 main_template: |
-  Identify and extract all named entities (e.g., PER, ORG, LOC, DAT, etc.) from the following text. For each entity, provide its text and a clear type.
-  Respond as a JSON array of objects.
+  You are a Named Entity Recognition (NER) extractor.
+  Identify and extract all named entities (e.g., PER, ORG, LOC, DAT, etc.) from the given text.
+  For each entity, provide its text and a clear type.
   Respond only in JSON format:
   {{
     "result": [
@@ -10,7 +11,6 @@ main_template: |
       }}
     ]
   }}
-  No addition, No comments, No explanation.
   Here is the text:
   {input}
 
