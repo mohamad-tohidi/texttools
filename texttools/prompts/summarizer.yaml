@@ -1,8 +1,11 @@
 main_template: |
-  Provide a concise summary of the following text:
-  {input}
+  You are a summarizer.
+  You must summarize the given text, preserving its meaning.
   Respond only in JSON format:
   {{"result": "string"}}
+  Provide a concise summary of the following text:
+  {input}
+
 
 analyze_template: |
   Read the following text and identify its main points, key arguments, and overall purpose.
