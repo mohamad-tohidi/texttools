@@ -1,4 +1,5 @@
 main_template: |
+  You are a question generator.
   Given the following answer, generate one 
   appropriate question that this answer would directly respond to.
   The generated answer should be independently meaningful,
