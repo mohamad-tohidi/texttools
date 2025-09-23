@@ -6,7 +6,9 @@ main_template: |
   2. If two words have overlapping meanings, choose only one.  
   3. Do not include generic or unrelated words.  
   4. Keywords must be single, self-contained words (no phrases).
-  5. Output between 3 and 7 keywords based on the input length. 
+  5. Output between 3 and 7 keywords based on the input length.
+  6. Respond only in JSON format:
+  {{"result": ["keyword1", "keyword2", etc.]}}
   Here is the text:
   {input}
 
