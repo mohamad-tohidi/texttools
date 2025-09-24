@@ -143,6 +143,13 @@ class BatchJobRunner:
             part_job_name = (
                 f"{self.job_name}_part_{idx + 1}" if len(self.parts) > 1 else self.job_name
             )
+            # If a job with this name already exists, register and skip submitting
+            existing_job = self.manager._load_state(part_job_name)
+            if existing_job:
+                print(f"Skipping part {idx + 1}: job already exists ({part_job_name}).")
+                self.part_idx_to_job_name[idx] = part_job_name
+                self.part_attempts.setdefault(idx, 0)
+                continue
             # payload = self._to_manager_payload(part)
             payload = part
             print(f"Submitting job for part {idx + 1}/{len(self.parts)}: {part_job_name}")
