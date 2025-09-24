@@ -27,6 +27,7 @@ Each tool is designed to work out-of-the-box with structured outputs (JSON / Pyd
 - **Rewriter** → Rewrite text while preserving meaning or without it.
 - **Summarizer** → Condense long passages into clear, structured summaries. 
 - **Translator** → Translate text across multiple languages, with support for custom rules.
+- **Custom Tool** → Allows users to define a custom tool with arbitrary BaseModel. 
 
 ---
 
@@ -35,7 +36,7 @@ Each tool is designed to work out-of-the-box with structured outputs (JSON / Pyd
 TextTools provides several optional flags to customize LLM behavior:
 
 - **`with_analysis=True`** → Adds a reasoning step before generating the final output. Useful for debugging, improving prompts, or understanding model behavior.  
-  ⚠️ Note: This doubles token usage per call because it triggers an additional LLM request.
+Note: This doubles token usage per call because it triggers an additional LLM request.
 
 - **`logprobs=True`** → Returns token-level probabilities for the generated output. You can also specify `top_logprobs=<N>` to get the top N alternative tokens and their probabilities.  
 
@@ -69,7 +70,7 @@ pip install -U hamta-texttools
 
 ```python
 from openai import OpenAI
-
+from pydantic import BaseModel
 from texttools import TheTool
 
 # Create your OpenAI client
@@ -79,16 +80,29 @@ client = OpenAI(base_url = "your_url", API_KEY = "your_api_key")
 model = "gpt-4o-mini"
 
 # Create an instance of TheTool
-# ⚠️ Note: Enabling `with_analysis=True` provides deeper insights but incurs additional LLM calls and token usage.
-the_tool = TheTool(client = client, model = model, with_analysis = True)
+# Note: You can give parameters to TheTool so that you don't need to give them to each tool
+the_tool = TheTool(client=client, model=model, with_analysis=True, output_lang="English")
 
 # Example: Question Detection
-print(the_tool.detect_question("Is this project open source?")["result"])
+detection = the_tool.detect_question("Is this project open source?", logpobs=True, top_logprobs=2)
+print(detection["result"])
+print(detection["logprobs"])
 # Output: True
 
 # Example: Translation
-print(the_tool.translate("سلام، حالت چطوره؟", target_language="English")["result"])
+# Note: You can overwrite with_analysis if defined at TheTool
+print(the_tool.translate("سلام، حالت چطوره؟", target_language="English", with_analysis=False)["result"])
 # Output: "Hi! How are you?"
+
+# Example: Custom Tool
+# Note: Output model should only contain result key
+# Everything else will be ignored
+class Custom(BaseModel):
+  result: list[list[dict[str, int]]]
+
+custom_prompt = "Something"
+custom_result = the_tool.custom_tool(custom_prompt, Custom)
+print(custom_result)
 ```
 
 ---
