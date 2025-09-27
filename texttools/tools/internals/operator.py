@@ -60,18 +60,13 @@ class Operator:
         model: str,
         temperature: float,
     ) -> str:
-        try:
-            completion = self.client.chat.completions.create(
-                model=model,
-                messages=analyze_message,
-                temperature=temperature,
-            )
-            analysis = completion.choices[0].message.content.strip()
-            return analysis
-
-        except Exception as e:
-            logger.error(f"Failed to run analysis completion: {e}")
-            raise
+        completion = self.client.chat.completions.create(
+            model=model,
+            messages=analyze_message,
+            temperature=temperature,
+        )
+        analysis = completion.choices[0].message.content.strip()
+        return analysis
 
     def _analyze(
         self,
@@ -93,24 +88,19 @@ class Operator:
         logprobs: bool = False,
         top_logprobs: int = 3,
     ) -> tuple[T, Any]:
-        try:
-            request_kwargs = {
-                "model": model,
-                "messages": message,
-                "response_format": output_model,
-                "temperature": temperature,
-            }
-            if logprobs:
-                request_kwargs["logprobs"] = True
-                request_kwargs["top_logprobs"] = top_logprobs
+        request_kwargs = {
+            "model": model,
+            "messages": message,
+            "response_format": output_model,
+            "temperature": temperature,
+        }
+        if logprobs:
+            request_kwargs["logprobs"] = True
+            request_kwargs["top_logprobs"] = top_logprobs
 
-            completion = self.client.beta.chat.completions.parse(**request_kwargs)
-            parsed = completion.choices[0].message.parsed
-            return parsed, completion
-
-        except Exception as e:
-            logger.error(f"Failed to run parse completion: {e}")
-            raise
+        completion = self.client.beta.chat.completions.parse(**request_kwargs)
+        parsed = completion.choices[0].message.parsed
+        return parsed, completion
 
     def _clean_json_response(self, response: str) -> str:
         """
@@ -141,30 +131,17 @@ class Operator:
         Returns:
             Instance of your output model
         """
-        try:
-            # Clean the response string
-            cleaned_json = self._clean_json_response(response_string)
+        # Clean the response string
+        cleaned_json = self._clean_json_response(response_string)
 
-            # Fix Python-style booleans
-            cleaned_json = cleaned_json.replace("False", "false").replace(
-                "True", "true"
-            )
+        # Fix Python-style booleans
+        cleaned_json = cleaned_json.replace("False", "false").replace("True", "true")
 
-            # Convert string to Python dictionary
-            response_dict = json.loads(cleaned_json)
+        # Convert string to Python dictionary
+        response_dict = json.loads(cleaned_json)
 
-            # Convert dictionary to output model
-            return output_model(**response_dict)
-
-        except json.JSONDecodeError as e:
-            logger.error(
-                f"Failed to parse JSON response: {e}\nResponse: {response_string}"
-            )
-            raise
-
-        except Exception as e:
-            logger.error(f"Failed to convert to output model: {e}")
-            raise
+        # Convert dictionary to output model
+        return output_model(**response_dict)
 
     def _vllm_completion(
         self,
@@ -175,31 +152,26 @@ class Operator:
         logprobs: bool = False,
         top_logprobs: int = 3,
     ) -> tuple[T, Any]:
-        try:
-            json_schema = output_model.model_json_schema()
+        json_schema = output_model.model_json_schema()
 
-            # Build kwargs dynamically
-            request_kwargs = {
-                "model": model,
-                "messages": message,
-                "extra_body": {"guided_json": json_schema},
-                "temperature": temperature,
-            }
+        # Build kwargs dynamically
+        request_kwargs = {
+            "model": model,
+            "messages": message,
+            "extra_body": {"guided_json": json_schema},
+            "temperature": temperature,
+        }
 
-            if logprobs:
-                request_kwargs["logprobs"] = True
-                request_kwargs["top_logprobs"] = top_logprobs
+        if logprobs:
+            request_kwargs["logprobs"] = True
+            request_kwargs["top_logprobs"] = top_logprobs
 
-            completion = self.client.chat.completions.create(**request_kwargs)
-            response = completion.choices[0].message.content
+        completion = self.client.chat.completions.create(**request_kwargs)
+        response = completion.choices[0].message.content
 
-            # Convert the string response to output model
-            parsed = self._convert_to_output_model(response, output_model)
-            return parsed, completion
-
-        except Exception as e:
-            logger.error(f"Failed to get vLLM structured output: {e}")
-            raise
+        # Convert the string response to output model
+        parsed = self._convert_to_output_model(response, output_model)
+        return parsed, completion
 
     def _extract_logprobs(self, completion: dict):
         logprobs_data = []
