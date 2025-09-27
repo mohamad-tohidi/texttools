@@ -4,6 +4,7 @@ import math
 import re
 from typing import Any, TypeVar, Literal, Optional
 import json
+import logging
 
 from openai import OpenAI
 from pydantic import BaseModel
@@ -15,6 +16,9 @@ from texttools.tools.internals.prompt_loader import PromptLoader
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
+
+# Configure logger
+logger = logging.getLogger("operator")
 
 
 class Operator:
@@ -66,7 +70,7 @@ class Operator:
             return analysis
 
         except Exception as e:
-            print(f"[ERROR] Analysis failed: {e}")
+            logger.error(f"Failed to run analysis completion: {e}")
             raise
 
     def _analyze(
@@ -78,7 +82,6 @@ class Operator:
         analyze_prompt = prompt_configs["analyze_template"]
         analyze_message = [self._build_user_message(analyze_prompt)]
         analysis = self._analysis_completion(analyze_message, model, temperature)
-
         return analysis
 
     def _parse_completion(
@@ -106,7 +109,7 @@ class Operator:
             return parsed, completion
 
         except Exception as e:
-            print(f"[ERROR] Failed to parse completion: {e}")
+            logger.error(f"Failed to run parse completion: {e}")
             raise
 
     def _clean_json_response(self, response: str) -> str:
@@ -154,11 +157,14 @@ class Operator:
             return output_model(**response_dict)
 
         except json.JSONDecodeError as e:
-            raise ValueError(
+            logger.error(
                 f"Failed to parse JSON response: {e}\nResponse: {response_string}"
             )
+            raise
+
         except Exception as e:
-            raise ValueError(f"Failed to convert to output model: {e}")
+            logger.error(f"Failed to convert to output model: {e}")
+            raise
 
     def _vllm_completion(
         self,
@@ -189,11 +195,10 @@ class Operator:
 
             # Convert the string response to output model
             parsed = self._convert_to_output_model(response, output_model)
-
             return parsed, completion
 
         except Exception as e:
-            print(f"[ERROR] Failed to get vLLM structured output: {e}")
+            logger.error(f"Failed to get vLLM structured output: {e}")
             raise
 
     def _extract_logprobs(self, completion: dict):
@@ -202,6 +207,7 @@ class Operator:
 
         for choice in completion.choices:
             if not getattr(choice, "logprobs", None):
+                logger.info("No logprobs found.")
                 continue
 
             for logprob_item in choice.logprobs.content:
@@ -299,6 +305,13 @@ class Operator:
                     messages, output_model, model, temperature, logprobs, top_logprobs
                 )
 
+            # Ensure output_model has a `result` field
+            if not hasattr(parsed, "result"):
+                logger.error(
+                    "The provided output_model must define a field named 'result'"
+                )
+                raise
+
             results = {"result": parsed.result}
 
             if logprobs:
@@ -310,6 +323,5 @@ class Operator:
             return results
 
         except Exception as e:
-            # Print error clearly and exit
-            print(f"[ERROR] Operation failed: {e}")
-            exit(1)
+            logger.exception(f"Operation failed: {e}")
+            raise
