@@ -25,16 +25,13 @@ class PromptLoader:
     MAIN_TEMPLATE: str = "main_template"
     ANALYZE_TEMPLATE: str = "analyze_template"
 
-    def _get_prompt_path(self, prompt_file: str, prompts_dir: str) -> Path:
-        return Path(__file__).parent.parent.parent / prompts_dir / prompt_file
-
     def _load_templates(
         self,
         prompts_dir: str,
         prompt_file: str,
         mode: Optional[str],
     ) -> dict[str, str]:
-        prompt_path = self._get_prompt_path(prompt_file, prompts_dir)
+        prompt_path = Path(__file__).parent.parent.parent / prompts_dir / prompt_file
 
         if not prompt_path.exists():
             raise FileNotFoundError(f"Prompt file not found: {prompt_path}")
