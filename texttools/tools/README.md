@@ -19,6 +19,7 @@ The `TheTool` class provides the following NLP operations:
 - **`rewrite_question()`** - Rewrites questions with different wording/meaning
 - **`generate_questions_from_subject()`** - Generates questions about a specific subject
 - **`translate()`** - Text translation between languages
+- **`custom_tool()`** - Allows users to define a custom tool with arbitrary BaseModel
 
 ## Architecture
 
@@ -46,6 +47,12 @@ The `PromptLoader` class:
 - Supports mode-based template selection
 - Handles variable injection into templates
 - Manages both main and analysis templates
+
+## Sync vs Async
+| Tool         | Style   | Use case                                    |
+|--------------|---------|---------------------------------------------|
+| `TheTool`    | Sync    | Simple scripts, sequential workflows        |
+| `AsyncTheTool` | Async | High-throughput apps, APIs, concurrent tasks |
 
 ## Usage Example
 
