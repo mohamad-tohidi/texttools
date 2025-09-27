@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 import re
-from typing import Any, TypeVar, Literal, Optional
+from typing import Any, TypeVar, Type, Literal, Optional
 import json
 import logging
 
@@ -82,12 +82,12 @@ class Operator:
     def _parse_completion(
         self,
         message: list[dict[str, str]],
-        output_model: T,
+        output_model: Type[T],
         model: str,
         temperature: float,
         logprobs: bool = False,
         top_logprobs: int = 3,
-    ) -> tuple[T, Any]:
+    ) -> tuple[Type[T], Any]:
         request_kwargs = {
             "model": model,
             "messages": message,
@@ -120,7 +120,9 @@ class Operator:
 
         return cleaned.strip()
 
-    def _convert_to_output_model(self, response_string: str, output_model: T) -> T:
+    def _convert_to_output_model(
+        self, response_string: str, output_model: Type[T]
+    ) -> Type[T]:
         """
         Convert a JSON response string to output model.
 
@@ -146,12 +148,12 @@ class Operator:
     def _vllm_completion(
         self,
         message: list[dict[str, str]],
-        output_model: T,
+        output_model: Type[T],
         model: str,
         temperature: float,
         logprobs: bool = False,
         top_logprobs: int = 3,
-    ) -> tuple[T, Any]:
+    ) -> tuple[Type[T], Any]:
         json_schema = output_model.model_json_schema()
 
         # Build kwargs dynamically
@@ -216,7 +218,7 @@ class Operator:
         output_lang: Optional[str],
         # Each tool's parameters
         prompt_file: str,
-        output_model: T,
+        output_model: Type[T],
         resp_format: Literal["vllm", "parse"] = "parse",
         mode: Optional[str] = None,
         **extra_kwargs,
