@@ -108,15 +108,9 @@ class Operator:
         Handles cases like:
         - ```json{"result": "value"}```
         """
-        cleaned = response.strip()
-
-        # Remove ```json marker
-        if cleaned.startswith("```json"):
-            cleaned = cleaned[7:]
-
-        # Remove trailing ```
-        if cleaned.endswith("```"):
-            cleaned = cleaned[:-3]
+        stripped = response.strip()
+        cleaned = re.sub(r"^```(?:json)?\s*", "", stripped)
+        cleaned = re.sub(r"\s*```$", "", cleaned)
 
         return cleaned.strip()
 
