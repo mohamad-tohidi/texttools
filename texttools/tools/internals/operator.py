@@ -19,6 +19,7 @@ T = TypeVar("T", bound=BaseModel)
 
 # Configure logger
 logger = logging.getLogger("operator")
+logger.setLevel(logging.INFO)
 
 
 class Operator:
