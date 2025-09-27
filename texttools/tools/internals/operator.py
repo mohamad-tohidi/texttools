@@ -279,7 +279,6 @@ class Operator:
                 logger.error(
                     "The provided output_model must define a field named 'result'"
                 )
-                raise
 
             results = {"result": parsed.result}
 
@@ -292,5 +291,5 @@ class Operator:
             return results
 
         except Exception as e:
-            logger.exception(f"Operation failed: {e}")
-            raise
+            logger.error(f"Operation failed: {e}")
+            return {"Error": str(e), "result": ""}

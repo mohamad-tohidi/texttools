@@ -78,8 +78,7 @@ class TheTool:
             {"result": <category string>}
             Example: {"result": "باورهای دینی"}
         """
-
-        results = self.operator.run(
+        return self.operator.run(
             # Internal parameters
             prompt_file="categorizer.yaml",
             output_model=OutputModels.CategorizerOutput,
@@ -96,8 +95,6 @@ class TheTool:
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
-
-        return results
 
     def extract_keywords(
         self,
@@ -120,7 +117,7 @@ class TheTool:
         Returns:
             {"result": [<keyword1>, <keyword2>, ...]}
         """
-        results = self.operator.run(
+        return self.operator.run(
             # Internal parameters
             prompt_file="keyword_extractor.yaml",
             output_model=OutputModels.ListStrOutput,
@@ -137,8 +134,6 @@ class TheTool:
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
-
-        return results
 
     def extract_entities(
         self,
@@ -161,7 +156,7 @@ class TheTool:
         Returns:
             {"result": [{"text": <entity>, "type": <entity_type>}, ...]}
         """
-        results = self.operator.run(
+        return self.operator.run(
             # Internal parameters
             prompt_file="ner_extractor.yaml",
             output_model=OutputModels.ListDictStrStrOutput,
@@ -178,8 +173,6 @@ class TheTool:
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
-
-        return results
 
     def detect_question(
         self,
@@ -201,7 +194,7 @@ class TheTool:
         Returns:
             {"result": "true"} or {"result": "false"}
         """
-        results = self.operator.run(
+        return self.operator.run(
             # Internal parameters
             prompt_file="question_detector.yaml",
             output_model=OutputModels.BoolOutput,
@@ -218,8 +211,6 @@ class TheTool:
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
-
-        return results
 
     def generate_question_from_text(
         self,
@@ -242,7 +233,7 @@ class TheTool:
         Returns:
             {"result": <generated_question>}
         """
-        results = self.operator.run(
+        return self.operator.run(
             # Internal parameters
             prompt_file="question_generator.yaml",
             output_model=OutputModels.StrOutput,
@@ -259,8 +250,6 @@ class TheTool:
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
-
-        return results
 
     def merge_questions(
         self,
@@ -288,8 +277,7 @@ class TheTool:
             {"result": <merged_question>}
         """
         text = ", ".join(questions)
-
-        results = self.operator.run(
+        return self.operator.run(
             # Internal parameters
             prompt_file="question_merger.yaml",
             output_model=OutputModels.StrOutput,
@@ -307,8 +295,6 @@ class TheTool:
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
-
-        return results
 
     def rewrite_question(
         self,
@@ -338,7 +324,7 @@ class TheTool:
         Returns:
             {"result": <rewritten_question>}
         """
-        results = self.operator.run(
+        return self.operator.run(
             # Internal parameters
             prompt_file="question_rewriter.yaml",
             output_model=OutputModels.StrOutput,
@@ -356,8 +342,6 @@ class TheTool:
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
-
-        return results
 
     def generate_questions_from_subject(
         self,
@@ -383,7 +367,7 @@ class TheTool:
         Returns:
             {"result": [<question1>, <question2>, ...]}
         """
-        results = self.operator.run(
+        return self.operator.run(
             # Internal parameters
             prompt_file="subject_question_generator.yaml",
             output_model=OutputModels.ReasonListStrOutput,
@@ -401,8 +385,6 @@ class TheTool:
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
-
-        return results
 
     def summarize(
         self,
@@ -425,7 +407,7 @@ class TheTool:
         Returns:
             {"result": <summary>}
         """
-        results = self.operator.run(
+        return self.operator.run(
             # Internal parameters
             prompt_file="summarizer.yaml",
             output_model=OutputModels.StrOutput,
@@ -442,8 +424,6 @@ class TheTool:
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
-
-        return results
 
     def translate(
         self,
@@ -467,7 +447,7 @@ class TheTool:
         Returns:
             {"result": <translated_text>}
         """
-        results = self.operator.run(
+        return self.operator.run(
             # Internal parameters
             prompt_file="translator.yaml",
             output_model=OutputModels.StrOutput,
@@ -485,8 +465,6 @@ class TheTool:
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
-
-        return results
 
     def custom_tool(
         self,
@@ -508,7 +486,7 @@ class TheTool:
         Returns:
             {"result": <Any>}
         """
-        results = self.operator.run(
+        return self.operator.run(
             # Internal parameters
             prompt_file="custom_tool.yaml",
             resp_format="parse",
@@ -524,5 +502,3 @@ class TheTool:
             logprobs=self.logprobs if logprobs is None else logprobs,
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
-
-        return results
