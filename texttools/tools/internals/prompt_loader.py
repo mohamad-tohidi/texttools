@@ -43,12 +43,12 @@ class PromptLoader:
             raise ValueError(f"Invalid YAML in {prompt_path}: {e}")
 
         return {
-            "main_template": data["main_template"][mode]
+            "main_template": data[self.MAIN_TEMPLATE][mode]
             if mode
-            else data["main_template"],
-            "analyze_template": data.get("analyze_template")[mode]
+            else data[self.MAIN_TEMPLATE],
+            "analyze_template": data.get(self.ANALYZE_TEMPLATE)[mode]
             if mode
-            else data.get("analyze_template"),
+            else data.get(self.ANALYZE_TEMPLATE),
         }
 
     def _build_format_args(self, text: str, **extra_kwargs) -> dict[str, str]:
