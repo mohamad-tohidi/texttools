@@ -73,22 +73,50 @@ main_template:
 
 analyze_template:
 
-  positive: | 
-    Analyze the following text to identify its core intent, key concepts, 
-    and the specific information it is seeking.
-    Provide a brief, summarized understanding of the text's meaning that
-    will help in rephrasing it accurately without changing its intent.       
-    Here is the text:
+  positive: |
+    Analyze the following text to understand its CORE SEMANTIC MEANING for creating a high-quality POSITIVE sample.
+    
+    Focus on:
+    - Core Intent: What is the fundamental question or statement being made?
+    - Key Entities/Concepts: What are the main subjects, objects, and concepts?
+    - Semantic Relationships: How are the entities related?
+    - Context & Domain: What is the broader context and domain?
+    
+    Your analysis should capture the ESSENTIAL MEANING that must be preserved in any paraphrase.
+    
+    Text:
     {input}
 
   negative: |
-    Analyze the following text to identify its exact wording, phrasing,
-    and the literal meaning it conveys.
-    Provide a brief, summarized analysis of its linguistic structure and current meaning,
-    which will then be used to create a new text with similar words but a different meaning.      
-    Here is the text:
+    Analyze the following text to identify its SPECIFIC TOPIC and DOMAIN for creating a high-quality NEGATIVE sample.
+    
+    Focus on:
+    - Specific Topic: What exact subject is this text about?
+    - Domain Context: What broader domain does this belong to?
+    - Key Elements to AVOID: What concepts, entities, or phrases must NOT appear in the negative sample?
+    - Alternative Topics: What are related but DISTINCT topics within the same domain?
+    
+    The goal is to find topics that are in the same domain but semantically unrelated to this specific text.
+    
+    Text:
     {input}
 
   hard_negative: |
-  
+    Analyze this text to identify EXACTLY ONE ELEMENT that can be changed to create a hard-negative sample.
+    
+    CRITICAL: The hard-negative must keep the SAME TOPIC and MOST WORDS identical.
+    
+    Identify ONE change from these options:
+    - Change a quantity/order word (first→last, one→many)
+    - Change a key location/entity to a related one (paradise→hell, heaven→earth)
+    - Change the question focus slightly (who→what, what→how)
+    - Change a key action verb to a related action (enter→exit, give→take)
+    
+    PRESERVE:
+    - Main topic and subject
+    - Sentence structure
+    - 80-90% of the vocabulary
+    
+    Text:
+    {input}
     

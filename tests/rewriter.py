@@ -16,25 +16,25 @@ model = "google/gemma-3n-e4b-it"
 client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
 
 # Create an instance of TheTool
-t = TheTool(client=client, model=model, output_lang="Persian")
+t = TheTool(client=client, model=model, output_lang="Persian", with_analysis=True)
 
 # Rewriter
 print("original: چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟")
 
 mode1 = t.rewrite(
-    "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
+    "چرا بلعم باعورا در قرآن به سگ تشبیه شده است؟",
     mode="positive",
 )["result"]
 print(f"positive: {mode1}")
 
 mode2 = t.rewrite(
-    "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
+    "چرا بلعم باعورا در قرآن به سگ تشبیه شده است؟",
     mode="negative",
 )["result"]
 print(f"negative: {mode2}")
 
 mode3 = t.rewrite(
-    "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
+    "چرا بلعم باعورا در قرآن به سگ تشبیه شده است؟",
     mode="hard_negative",
 )["result"]
 print(f"hard_negative: {mode3}")
