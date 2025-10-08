@@ -1,0 +1,52 @@
+main_template:
+
+  positive: |
+    You are a professional text rewriter.
+    Rewrite the following text to create a new version that:
+    - Keeps the original meaning exactly.
+    - Uses completely different wording and sentence structure.
+    - Avoids copying phrases from the original.
+    - Uses natural, grammatically correct English.
+    Respond only in JSON format:
+    {{"result": "str"}}
+    Here is the text:
+    {input}
+
+  negative: |
+    You are a professional text manipulator.
+    You must create negative samples of the input text.
+    The output will be used as negative samples for fine-tuning an embedding model.
+    Rewrite the following text so that:
+    - The literal meaning is completely changed.
+    - Change key elements such as subjects, objects, numbers, verbs, or adjectives to alter the meaning.
+    - Keep the sentence natural and grammatically correct.
+    Respond only in JSON format:
+    {{"result": "str"}}
+    Here is the text:
+    {input}
+
+  hard_negative: |
+
+
+
+analyze_template:
+
+  positive: | 
+    Analyze the following text to identify its core intent, key concepts, 
+    and the specific information it is seeking.
+    Provide a brief, summarized understanding of the text's meaning that
+    will help in rephrasing it accurately without changing its intent.       
+    Here is the text:
+    {input}
+
+  negative: |
+    Analyze the following text to identify its exact wording, phrasing,
+    and the literal meaning it conveys.
+    Provide a brief, summarized analysis of its linguistic structure and current meaning,
+    which will then be used to create a new text with similar words but a different meaning.      
+    Here is the text:
+    {input}
+
+  hard_negative: |
+  
+    

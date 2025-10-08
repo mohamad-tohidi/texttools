@@ -1,0 +1,32 @@
+import os
+
+from dotenv import load_dotenv
+from openai import OpenAI
+
+from texttools import TheTool
+
+# Load environment variables from .env
+load_dotenv()
+
+# Load API key from environment variable
+API_KEY = os.getenv("OPENAI_API_KEY")
+model = "google/gemma-3n-e4b-it"
+
+# Create OpenAI client
+client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
+
+# Create an instance of TheTool
+t = TheTool(client=client, model=model, output_lang="Persian")
+
+# Rewriter
+mode1 = t.rewrite(
+    "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
+    mode="same_meaning_different_wording",
+)
+print(f"mode1: {mode1}")
+
+mode2 = t.rewrite(
+    "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
+    mode="different_meaning_similar_wording",
+)
+print(f"mode2: {mode2}")

@@ -20,7 +20,7 @@ class TheTool:
     - detect_question: binary check whether input is a question.
     - generate_question_from_text: produce a new question from a text.
     - merge_questions: combine multiple questions (default/reason modes).
-    - rewrite_question: rephrase questions (same meaning/different wording, or vice versa).
+    - rewrite: rephrase questions (same meaning/different wording, or vice versa).
     - generate_questions_from_subject: generate multiple questions given a subject.
     - summarize: produce a concise summary of a subject.
     - translate: translate text between languages.
@@ -296,7 +296,7 @@ class TheTool:
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
-    def rewrite_question(
+    def rewrite(
         self,
         text: str,
         mode: Literal[
@@ -326,7 +326,7 @@ class TheTool:
         """
         return self.operator.run(
             # Internal parameters
-            prompt_file="question_rewriter.yaml",
+            prompt_file="rewriter.yaml",
             output_model=OutputModels.StrOutput,
             resp_format="parse",
             # User parameters

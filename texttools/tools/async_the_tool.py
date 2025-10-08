@@ -166,7 +166,7 @@ class AsyncTheTool:
         )
         return results
 
-    async def rewrite_question(
+    async def rewrite(
         self,
         question: str,
         output_lang: Optional[str] = None,

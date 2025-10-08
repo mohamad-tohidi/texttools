@@ -46,8 +46,8 @@ question = t.merge_questions(
 )
 print(question)
 
-# Question Rewriter
-question = t.rewrite_question(
+# Rewriter
+question = t.rewrite(
     "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
     mode="same_meaning_different_wording",
 )
