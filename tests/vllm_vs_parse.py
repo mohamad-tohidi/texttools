@@ -70,8 +70,8 @@ vllm = vllm_tool.merge_questions(merge_text, mode="default")
 print(f"Question Merger\nParse: {parse}\nvllm:  {vllm}\n\n")
 
 # Question Rewriter
-parse = parse_tool.rewrite(rewrite_text, mode="same_meaning_different_wording")
-vllm = vllm_tool.rewrite(rewrite_text, mode="same_meaning_different_wording")
+parse = parse_tool.rewrite(rewrite_text, mode="positive")
+vllm = vllm_tool.rewrite(rewrite_text, mode="positive")
 print(f"Question Rewriter\nParse: {parse}\nvllm:  {vllm}\n\n")
 
 # Question Generator from Subject

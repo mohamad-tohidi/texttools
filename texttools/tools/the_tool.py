@@ -300,9 +300,9 @@ class TheTool:
         self,
         text: str,
         mode: Literal[
-            "same_meaning_different_wording",
-            "different_meaning_similar_wording",
-        ] = "same_meaning_different_wording",
+            "positive",
+            "negative",
+        ] = "positive",
         model: Optional[str] = None,
         user_prompt: Optional[str] = None,
         output_lang: Optional[str] = None,
@@ -317,8 +317,8 @@ class TheTool:
         Args:
             question: Input question to rewrite.
             mode: Rewrite strategy:
-                - "same_meaning_different_wording": keep meaning, change words.
-                - "different_meaning_similar_wording": alter meaning, preserve wording style.
+                - "positive": keep meaning, change words.
+                - "negative": alter meaning, preserve wording style.
             with_analysis: Whether to include an analysis step.
 
         Returns:

@@ -171,9 +171,9 @@ class AsyncTheTool:
         question: str,
         output_lang: Optional[str] = None,
         mode: Literal[
-            "same_meaning_different_wording",
-            "different_meaning_similar_wording",
-        ] = "same_meaning_different_wording",
+            "positive",
+            "negative",
+        ] = "positive",
         with_analysis: bool = False,
         user_prompt: str = "",
         logprobs: bool = False,

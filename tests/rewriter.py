@@ -21,12 +21,12 @@ t = TheTool(client=client, model=model, output_lang="Persian")
 # Rewriter
 mode1 = t.rewrite(
     "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
-    mode="same_meaning_different_wording",
+    mode="positive",
 )
 print(f"mode1: {mode1}")
 
 mode2 = t.rewrite(
     "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
-    mode="different_meaning_similar_wording",
+    mode="negative",
 )
 print(f"mode2: {mode2}")

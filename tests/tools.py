@@ -49,7 +49,7 @@ print(question)
 # Rewriter
 question = t.rewrite(
     "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
-    mode="same_meaning_different_wording",
+    mode="positive",
 )
 print(question)
 
