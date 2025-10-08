@@ -19,6 +19,8 @@ client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
 t = TheTool(client=client, model=model, output_lang="Persian")
 
 # Rewriter
+print("original: چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟")
+
 mode1 = t.rewrite(
     "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
     mode="positive",
