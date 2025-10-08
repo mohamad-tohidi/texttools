@@ -220,13 +220,6 @@ class AsyncOperator:
     ) -> dict[str, Any]:
         """
         Execute the async LLM pipeline with the given input text.
-
-        Args:
-            input_text: The text to process (will be stripped of whitespace)
-            **extra_kwargs: Additional variables to inject into prompt templates
-
-        Returns:
-            Dictionary containing the parsed result and optional analysis
         """
         prompt_loader = PromptLoader()
         formatter = UserMergeFormatter()
@@ -234,11 +227,11 @@ class AsyncOperator:
         try:
             cleaned_text = input_text.strip()
 
+            # FIXED: Correct parameter order for load_prompts
             prompt_configs = prompt_loader.load_prompts(
-                prompt_file,
-                use_modes,
-                mode,
-                cleaned_text,
+                prompt_file=prompt_file,  # prompt_file
+                text=cleaned_text,  # text
+                mode=mode if use_modes else "",  # mode
                 **extra_kwargs,
             )
 
@@ -258,7 +251,6 @@ class AsyncOperator:
                 )
 
             messages.append(self._build_user_message(prompt_configs["main_template"]))
-
             messages = formatter.format(messages)
 
             if resp_format == "vllm":
@@ -283,6 +275,5 @@ class AsyncOperator:
             return results
 
         except Exception as e:
-            # Print error clearly and re-raise for the caller to handle
             print(f"[ERROR] Async operation failed: {e}")
             raise
