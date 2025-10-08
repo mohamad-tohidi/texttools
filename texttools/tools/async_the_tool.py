@@ -170,10 +170,7 @@ class AsyncTheTool:
         self,
         question: str,
         output_lang: Optional[str] = None,
-        mode: Literal[
-            "positive",
-            "negative",
-        ] = "positive",
+        mode: Literal["positive", "negative", "hard_negative"] = "positive",
         with_analysis: bool = False,
         user_prompt: str = "",
         logprobs: bool = False,
@@ -181,7 +178,7 @@ class AsyncTheTool:
     ) -> dict[str, str]:
         results = await self.operator.run(
             question,
-            prompt_file="question_rewriter.yaml",
+            prompt_file="rewriter.yaml",
             output_model=OutputModels.StrOutput,
             with_analysis=with_analysis,
             use_modes=True,
