@@ -30,17 +30,6 @@ main_template:
     - Stay in Domain: The sentence must be about the text's topics, but on a different subject
     - Ensure Clear Distinction: The topic should be clearly different from the anchor's specific focus
 
-    Good Examples for religious anchors:
-    Anchor: "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟"
-    Negative: "احکام وضو در اسلام چیست؟"
-    Negative: "داستان حضرت موسی در قرآن چگونه بیان شده است؟"
-    Negative: "فضیلت های ماه رمضان چیست؟"
-
-    Bad Examples (too related):
-    Bad: "چه کسی بهشت را مدیریت می کند؟" 
-    Bad: "ویژگی های بهشت چیست؟"
-    Bad: "شرایط ورود به بهشت کدامند؟"
-
     Respond only in JSON format:
     {{"result": "str"}}
 
