@@ -299,10 +299,7 @@ class TheTool:
     def rewrite(
         self,
         text: str,
-        mode: Literal[
-            "positive",
-            "negative",
-        ] = "positive",
+        mode: Literal["positive", "negative", "hard_negative"] = "positive",
         model: Optional[str] = None,
         user_prompt: Optional[str] = None,
         output_lang: Optional[str] = None,

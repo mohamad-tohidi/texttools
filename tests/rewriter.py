@@ -35,4 +35,4 @@ mode3 = t.rewrite(
     "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
     mode="hard_negative",
 )["result"]
-print(f"hard_negative: {mode2}")
+print(f"hard_negative: {mode3}")
