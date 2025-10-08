@@ -8,7 +8,7 @@ It provides both **sync (`TheTool`)** and **async (`AsyncTheTool`)** APIs for ma
 
 It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER extractor, and more** — designed to help you integrate AI-powered text processing into your applications with minimal effort.
 
-**Thread Safety:** All methods in TheTool are thread-safe, allowing concurrent usage across multiple threads without conflicts.
+**Thread Safety:** All methods in AsyncTheTool are thread-safe, allowing concurrent usage across multiple threads without conflicts.
 
 ---
 
