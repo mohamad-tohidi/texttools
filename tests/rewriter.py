@@ -22,11 +22,17 @@ t = TheTool(client=client, model=model, output_lang="Persian")
 mode1 = t.rewrite(
     "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
     mode="positive",
-)
-print(f"mode1: {mode1}")
+)["result"]
+print(f"positive: {mode1}")
 
 mode2 = t.rewrite(
     "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
     mode="negative",
-)
-print(f"mode2: {mode2}")
+)["result"]
+print(f"negative: {mode2}")
+
+mode3 = t.rewrite(
+    "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟",
+    mode="hard_negative",
+)["result"]
+print(f"hard_negative: {mode2}")
