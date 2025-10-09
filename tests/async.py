@@ -3,6 +3,7 @@ import asyncio
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
+import time
 
 from texttools import AsyncTheTool
 
@@ -14,15 +15,28 @@ tool = AsyncTheTool(client=client, model="gpt-4o-mini")
 
 
 async def main():
+    s = time.time()
     original = "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟"
-    result1 = await tool.rewrite(original, mode="positive")
-    result2 = await tool.rewrite(original, mode="negative")
-    result3 = await tool.rewrite(original, mode="hard_negative")
+    positive_task = tool.rewrite(original, mode="positive", with_analysis=True)
+    negative_task = tool.rewrite(original, mode="negative", with_analysis=True)
+    hard_negative_task = tool.rewrite(
+        original, mode="hard_negative", with_analysis=True
+    )
+    translation_task = tool.translate(
+        original, target_language="Enlgish", with_analysis=True
+    )
+
+    positive, negative, hard_negative, translation = await asyncio.gather(
+        positive_task, negative_task, hard_negative_task, translation_task
+    )
+    e = time.time()
 
     print("Original:", original)
-    print("Positive rewrite:", result1["result"])
-    print("Negative rewrite:", result2["result"])
-    print("Hard negative rewrite:", result3["result"])
+    print("Positive:", positive["result"])
+    print("Negative:", negative["result"])
+    print("Hard negative:", hard_negative["result"])
+    print("Translation:", translation["result"])
+    print(e - s)
 
 
 if __name__ == "__main__":
