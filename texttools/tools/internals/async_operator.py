@@ -68,6 +68,7 @@ class AsyncOperator:
         output_model: T,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_tokens: Optional[int] = None,
     ) -> tuple[T, Any]:
         try:
             request_kwargs = {
@@ -77,6 +78,10 @@ class AsyncOperator:
                 "temperature": self.temperature,
                 **self.client_kwargs,
             }
+
+            if max_tokens is not None:
+                request_kwargs["max_tokens"] = max_tokens
+
             if logprobs:
                 request_kwargs["logprobs"] = True
                 request_kwargs["top_logprobs"] = top_logprobs
@@ -146,6 +151,7 @@ class AsyncOperator:
         output_model: T,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_tokens: Optional[int] = None,
     ) -> tuple[T, Any]:
         try:
             json_schema = output_model.model_json_schema()
@@ -158,6 +164,9 @@ class AsyncOperator:
                 "temperature": self.temperature,
                 **self.client_kwargs,
             }
+
+            if max_tokens is not None:
+                request_kwargs["max_tokens"] = max_tokens
 
             if logprobs:
                 request_kwargs["logprobs"] = True
@@ -216,6 +225,7 @@ class AsyncOperator:
         output_lang: Optional[str] = None,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_tokens: Optional[int] = None,
         **extra_kwargs,
     ) -> dict[str, Any]:
         """
@@ -255,11 +265,19 @@ class AsyncOperator:
 
             if resp_format == "vllm":
                 parsed, completion = await self._vllm_completion(
-                    messages, output_model, logprobs, top_logprobs
+                    messages,
+                    output_model,
+                    logprobs,
+                    top_logprobs,
+                    max_tokens,  # Pass max_tokens
                 )
             elif resp_format == "parse":
                 parsed, completion = await self._parse_completion(
-                    messages, output_model, logprobs, top_logprobs
+                    messages,
+                    output_model,
+                    logprobs,
+                    top_logprobs,
+                    max_tokens,  # Pass max_tokens
                 )
             else:
                 raise ValueError(f"Unknown resp_format: {resp_format}")

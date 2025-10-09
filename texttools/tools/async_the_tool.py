@@ -1,6 +1,5 @@
-from typing import Any, Literal, Optional
+from typing import Literal, Optional
 
-# async clients / operator
 from openai import AsyncOpenAI
 
 import texttools.tools.internals.output_models as OutputModels
@@ -23,13 +22,11 @@ class AsyncTheTool:
         *,
         model: str,
         temperature: float = 0.0,
-        **client_kwargs: Any,
     ):
         self.operator = AsyncOperator(
             client=client,
             model=model,
             temperature=temperature,
-            **client_kwargs,
         )
 
     async def categorize(
@@ -39,6 +36,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 8,
+        max_tokens: Optional[int] = None,
     ) -> dict[str, str]:
         results = await self.operator.run(
             text,
@@ -49,6 +47,7 @@ class AsyncTheTool:
             user_prompt=user_prompt,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            max_tokens=max_tokens,
         )
         return results
 
@@ -60,6 +59,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_tokens: Optional[int] = None,
     ) -> dict[str, list[str]]:
         results = await self.operator.run(
             text,
@@ -71,6 +71,7 @@ class AsyncTheTool:
             output_lang=output_lang,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            max_tokens=max_tokens,
         )
         return results
 
@@ -82,6 +83,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_tokens: Optional[int] = None,
     ) -> dict[str, list[dict[str, str]]]:
         results = await self.operator.run(
             text,
@@ -93,6 +95,7 @@ class AsyncTheTool:
             output_lang=output_lang,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            max_tokens=max_tokens,
         )
         return results
 
@@ -104,6 +107,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 2,
+        max_tokens: Optional[int] = None,
     ) -> dict[str, bool]:
         results = await self.operator.run(
             question,
@@ -115,6 +119,7 @@ class AsyncTheTool:
             output_lang=output_lang,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            max_tokens=max_tokens,
         )
         return results
 
@@ -126,6 +131,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_tokens: Optional[int] = None,
     ) -> dict[str, str]:
         results = await self.operator.run(
             text,
@@ -137,6 +143,7 @@ class AsyncTheTool:
             output_lang=output_lang,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            max_tokens=max_tokens,
         )
         return results
 
@@ -149,6 +156,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_tokens: Optional[int] = None,
     ) -> dict[str, str]:
         question_str = ", ".join(questions)
         results = await self.operator.run(
@@ -163,6 +171,7 @@ class AsyncTheTool:
             output_lang=output_lang,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            max_tokens=max_tokens,
         )
         return results
 
@@ -175,6 +184,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_tokens: Optional[int] = None,
     ) -> dict[str, str]:
         results = await self.operator.run(
             question,
@@ -188,6 +198,7 @@ class AsyncTheTool:
             output_lang=output_lang,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            max_tokens=max_tokens,
         )
         return results
 
@@ -200,6 +211,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_tokens: Optional[int] = None,
     ) -> dict[str, list[str]]:
         results = await self.operator.run(
             subject,
@@ -212,6 +224,7 @@ class AsyncTheTool:
             output_lang=output_lang,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            max_tokens=max_tokens,
         )
         return results
 
@@ -223,6 +236,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_tokens: Optional[int] = None,
     ) -> dict[str, str]:
         results = await self.operator.run(
             text,
@@ -234,6 +248,7 @@ class AsyncTheTool:
             output_lang=output_lang,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            max_tokens=max_tokens,
         )
         return results
 
@@ -245,6 +260,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_tokens: Optional[int] = None,
     ) -> dict[str, str]:
         results = await self.operator.run(
             text,
@@ -256,5 +272,6 @@ class AsyncTheTool:
             target_language=target_language,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            max_tokens=max_tokens,
         )
         return results
