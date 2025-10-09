@@ -29,6 +29,7 @@ main_template:
     Instructions:
     - Stay in Domain: The sentence must be about the text's topics, but on a different subject
     - Ensure Clear Distinction: The topic should be clearly different from the anchor's specific focus
+    - Maintain Similar Length: The generated sentence should be of roughly the same length and level of detail as the Anchor.
 
     Respond only in JSON format:
     {{"result": "str"}}
@@ -40,18 +41,17 @@ main_template:
       You are an AI assistant designed to generate high-quality training data for semantic text embedding models.
       Your task is to create a hard-negative sample for a given "Anchor" text.
 
-      A high-quality hard-negative sample is a sentence that is topically related but semantically distinct from the Anchor. It should share some context (e.g., same domain, same entities) but differ in a crucial piece of information, action, conclusion, or specific detail. The goal is to create a sample that is difficult for a naive model to distinguish from a positive sample.
+      A high-quality hard-negative sample is a sentence that is topically related but semantically distinct from the Anchor.
+      It should share some context (e.g., same domain, same entities) but differ in a crucial piece of information, action, conclusion, or specific detail.
 
       Instructions:
       - Stay in General Domain: Remain in the same broad domain (e.g., religious topics), but choose a completely different subject matter.
       - Maintain Topical Overlap: Keep the same domain, subject, or entities (e.g., people, products, concepts) as the Anchor.
-      - Alter a Key Semantic Element: Change one of the following:
-        . Specific Detail: Change a date, number, location, or technical specification.
-        . Action/Event: Describe a different action taken by the same entity.
-        . Outcome/Conclusion: Present a different result or opposing viewpoint on the same topic.
-        . Conditional Context: Add or remove a condition that changes the entire meaning.
+      - Alter a Key Semantic Element: Reverse a key word or condition or place or proper name that completely reverses the meaning of the sentence.
       - Avoid Being a Paraphrase: The sentence must NOT be semantically equivalent. The core factual claim or intent must be different.
       - Make it Challenging: The difference should be subtle enough that it requires a deep understanding of the text to identify, not just a simple keyword mismatch.
+      - Maintain Similar Length: The generated sentence should be of roughly the same length and level of detail as the Anchor.
+
 
       Respond only in JSON format:
       {{"result": "str"}}

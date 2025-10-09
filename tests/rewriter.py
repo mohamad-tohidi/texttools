@@ -1,9 +1,10 @@
 import os
+import asyncio
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import AsyncOpenAI
 
-from texttools import TheTool
+from texttools import AsyncTheTool
 
 # Load environment variables from .env
 load_dotenv()
@@ -13,30 +14,26 @@ API_KEY = os.getenv("OPENAI_API_KEY")
 model = "google/gemma-3n-e4b-it"
 
 # Create OpenAI client
-client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
+client = AsyncOpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
 
 # Create an instance of TheTool
-t = TheTool(client=client, model=model, output_lang="Persian", with_analysis=False)
+t = AsyncTheTool(client=client, model=model)
 
-# Rewriter
-original = "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟"
 
-print("original: چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟")
+async def main():
+    original = "چرا خداوند نظام هستی را به طور کلی کمی با حساب و کتاب سبک تر برای ما طراحی نفرموده است؟"
 
-mode1 = t.rewrite(
-    original,
-    mode="positive",
-)["result"]
-print(f"positive: {mode1}")
+    print(f"original: {original}")
 
-mode2 = t.rewrite(
-    original,
-    mode="negative",
-)["result"]
-print(f"negative: {mode2}")
+    pos_task = t.rewrite(original, mode="positive", output_lang="Persian")
+    neg_task = t.rewrite(original, mode="negative", output_lang="Persian")
+    hard_neg_task = t.rewrite(original, mode="hard_negative", output_lang="Persian")
+    pos, neg, hard_neg = await asyncio.gather(pos_task, neg_task, hard_neg_task)
 
-mode3 = t.rewrite(
-    original,
-    mode="hard_negative",
-)["result"]
-print(f"hard_negative: {mode3}")
+    print(f"Pos: {pos['result']}")
+    print(f"Neg: {neg['result']}")
+    print(f"Hard Neg: {hard_neg['result']}")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
