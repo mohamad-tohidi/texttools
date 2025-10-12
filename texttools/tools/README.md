@@ -1,15 +1,15 @@
 # Tools
 
 ## Overview
-This folder contains all the **tools** provided by TextTools. Each tool is implemented in TheTool class, designed to work with **LLMs** and structured outputs (e.g., Pydantic models, JSON).
+This folder contains all the **tools** provided by TextTools. Each tool is implemented in TheTool/AsyncTheTool class, designed to work with **LLMs** and structured outputs (e.g., Pydantic models, JSON).
 
 Tools are modular, easy to extend, and ready to use for common NLP tasks.
 
 ## Available Tools
 
-The `TheTool` class provides the following NLP operations:
+The `TheTool/AsyncTheTool` class provides the following NLP operations:
 
-- **`categorize()`** - Classifies text into Islamic studies categories (باورهای دینی, اخلاق اسلامی, etc.)
+- **`categorize()`** - Classifies text into Islamic studies categories 
 - **`detect_question()`** - Binary detection of whether input is a question
 - **`extract_keywords()`** - Extracts keywords from text
 - **`extract_entities()`** - Named Entity Recognition (NER) system
@@ -25,7 +25,7 @@ The `TheTool` class provides the following NLP operations:
 
 ### Core Components
 
-#### Operator Class
+#### Operator/AsyncOperator Class
 The base `Operator` class provides:
 - LLM client integration (OpenAI)
 - Prompt loading and formatting
@@ -53,23 +53,3 @@ The `PromptLoader` class:
 |--------------|---------|---------------------------------------------|
 | `TheTool`    | Sync    | Simple scripts, sequential workflows        |
 | `AsyncTheTool` | Async | High-throughput apps, APIs, concurrent tasks |
-
-## Usage Example
-
-```python
-from openai import OpenAI
-from texttools import TheTool
-
-# Initialize client and tool
-client = OpenAI(base_url="your-base-url", api_key="your-api-key")
-tool = TheTool(client=client, model="gpt-4")
-
-# Use any tool
-result = tool.categorize("نمازهای یومیه چگونه خوانده می‌شوند؟")
-print(result["result"])
-
-# With analysis
-result = tool.extract_keywords("متن نمونه برای استخراج کلمات کلیدی", with_analysis=True)
-print(result["result"])
-print(result["analysis"])  # Available when with_analysis=True
-```
