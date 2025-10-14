@@ -237,8 +237,8 @@ class AsyncOperator:
         try:
             cleaned_text = input_text.strip()
 
-            # FIXED: Correct parameter order for load_prompts
-            prompt_configs = prompt_loader.load_prompts(
+            # FIXED: Correct parameter order for load
+            prompt_configs = prompt_loader.load(
                 prompt_file=prompt_file,  # prompt_file
                 text=cleaned_text,  # text
                 mode=mode if use_modes else "",  # mode

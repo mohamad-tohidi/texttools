@@ -58,7 +58,7 @@ class PromptLoader:
         format_args.update(extra_kwargs)
         return format_args
 
-    def load_prompts(
+    def load(
         self,
         prompt_file: str,
         text: str,

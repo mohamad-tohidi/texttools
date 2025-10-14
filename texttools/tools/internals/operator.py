@@ -234,7 +234,7 @@ class Operator:
         try:
             cleaned_text = text.strip()
 
-            prompt_configs = prompt_loader.load_prompts(
+            prompt_configs = prompt_loader.load(
                 prompt_file=prompt_file,
                 text=cleaned_text,
                 mode=mode,
