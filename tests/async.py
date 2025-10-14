@@ -7,11 +7,18 @@ import time
 
 from texttools import AsyncTheTool
 
+# Load environment variables from .env
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY")
+BASE_URL = os.getenc("BASE_URL")
 
-client = AsyncOpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
-tool = AsyncTheTool(client=client, model="gpt-4o-mini")
+model = "gpt-4o-mini"
+
+# Create AsyncOpenAI client
+client = AsyncOpenAI(base_url=BASE_URL, api_key=API_KEY)
+
+# Create an instance of TheTool
+tool = AsyncTheTool(client=client, model=model)
 
 
 async def main():

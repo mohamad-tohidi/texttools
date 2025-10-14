@@ -8,13 +8,13 @@ from texttools import AsyncTheTool
 
 # Load environment variables from .env
 load_dotenv()
-
-# Load API key from environment variable
 API_KEY = os.getenv("OPENAI_API_KEY")
+BASE_URL = os.getenv("BASE_URL")
+
 model = "google/gemma-3n-e4b-it"
 
 # Create OpenAI client
-client = AsyncOpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
+client = AsyncOpenAI(base_url=BASE_URL, api_key=API_KEY)
 
 # Create an instance of TheTool
 t = AsyncTheTool(client=client, model=model)

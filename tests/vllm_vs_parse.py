@@ -7,14 +7,13 @@ from texttools import TheTool
 
 # Load environment variables from .env
 load_dotenv()
-
-
-# Load API key from environment variable
 API_KEY = os.getenv("OPENAI_API_KEY")
+BASE_URL = os.getenv("BASE_URL")
+
 model = "google/gemma-3n-e4b-it"
 
 # Create OpenAI client
-client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
+client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 
 # Create a parser instance of TheTool
 parse_tool = TheTool(client=client, model=model)

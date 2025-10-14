@@ -7,13 +7,13 @@ from texttools import TheTool
 
 # Load environment variables from .env
 load_dotenv()
-
-# Load API key from environment variable
 API_KEY = os.getenv("OPENAI_API_KEY")
+BASE_URL = os.getenc("BASE_URL")
+
 model = "gpt-4o-mini"
 
 # Create OpenAI client
-client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
+client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 
 # Create an instance of TheTool
 t = TheTool(client=client, model=model)
