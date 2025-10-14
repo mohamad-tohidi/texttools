@@ -8,7 +8,7 @@ from typing import Any, Literal, Optional, TypeVar
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
-from texttools.formatters.user_merge_formatter.user_merge_formatter import (
+from texttools.formatters.user_merge_formatter import (
     UserMergeFormatter,
 )
 from texttools.tools.internals.prompt_loader import PromptLoader
