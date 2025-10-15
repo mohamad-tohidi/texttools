@@ -1,55 +1,41 @@
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class StrOutput(BaseModel):
-    """
-    Output model for a single string result.
-    """
-
-    result: str
+    result: str = Field(..., description="The output string")
 
 
 class BoolOutput(BaseModel):
-    """
-    Output model for a single boolean result.
-    """
-
-    result: bool
+    result: bool = Field(
+        ..., description="Boolean indicating the output state", example=True
+    )
 
 
 class ListStrOutput(BaseModel):
-    """
-    Output model for a list of strings result.
-    """
-
-    result: list[str]
+    result: list[str] = Field(
+        ..., description="The output list of strings", example=["text_1", "text_2"]
+    )
 
 
 class ListDictStrStrOutput(BaseModel):
-    """
-    Output model for a list of dictionaries with string key-value pairs.
-    """
-
-    result: list[dict[str, str]]
+    result: list[dict[str, str]] = Field(
+        ...,
+        description="List of dictionaries containing string key-value pairs",
+        example=[{"text": "Mohammad", "type": "PER"}],
+    )
 
 
 class ReasonListStrOutput(BaseModel):
-    """
-    Output model containing a reasoning string followed by a list of strings.
-    """
-
-    reason: str
-    result: list[str]
+    reason: str = Field(..., description="Thinking process that led to the output")
+    result: list[str] = Field(..., description="The output list of strings")
 
 
 class CategorizerOutput(BaseModel):
-    """
-    Output model for categorization with reasoning and a predefined category result.
-    """
-
-    reason: str
+    reason: str = Field(
+        ..., description="Explanation of why the input belongs to the category"
+    )
     result: Literal[
         "باورهای دینی",
         "اخلاق اسلامی",
@@ -59,4 +45,8 @@ class CategorizerOutput(BaseModel):
         "دین و جامعه/سیاست",
         "عرفان و معنویت",
         "هیچکدام",
-    ]
+    ] = Field(
+        ...,
+        description="Predicted category label",
+        example="اخلاق اسلامی",
+    )
