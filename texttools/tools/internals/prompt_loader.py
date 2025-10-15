@@ -29,7 +29,7 @@ class PromptLoader:
         self,
         prompts_dir: str,
         prompt_file: str,
-        mode: Optional[str],
+        mode: str | None,
     ) -> dict[str, str]:
         prompt_path = Path(__file__).parent.parent.parent / prompts_dir / prompt_file
 

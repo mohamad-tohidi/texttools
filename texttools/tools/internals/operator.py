@@ -209,13 +209,13 @@ class Operator:
         temperature: float,
         logprobs: bool,
         top_logprobs: int,
-        user_prompt: Optional[str],
-        output_lang: Optional[str],
+        user_prompt: str | None,
+        output_lang: str | None,
         # Each tool's parameters
         prompt_file: str,
         output_model: Type[T],
         resp_format: Literal["vllm", "parse"] = "parse",
-        mode: Optional[str] = None,
+        mode: str | None = None,
         **extra_kwargs,
     ) -> dict[str, Any]:
         """

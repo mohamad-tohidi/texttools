@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal
 
 from openai import AsyncOpenAI
 
@@ -36,7 +36,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 8,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> dict[str, str]:
         results = await self.operator.run(
             text,
@@ -54,12 +54,12 @@ class AsyncTheTool:
     async def extract_keywords(
         self,
         text: str,
-        output_lang: Optional[str] = None,
+        output_lang: str | None = None,
         with_analysis: bool = False,
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> dict[str, list[str]]:
         results = await self.operator.run(
             text,
@@ -78,12 +78,12 @@ class AsyncTheTool:
     async def extract_entities(
         self,
         text: str,
-        output_lang: Optional[str] = None,
+        output_lang: str | None = None,
         with_analysis: bool = False,
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> dict[str, list[dict[str, str]]]:
         results = await self.operator.run(
             text,
@@ -102,12 +102,12 @@ class AsyncTheTool:
     async def detect_question(
         self,
         question: str,
-        output_lang: Optional[str] = None,
+        output_lang: str | None = None,
         with_analysis: bool = False,
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 2,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> dict[str, bool]:
         results = await self.operator.run(
             question,
@@ -126,12 +126,12 @@ class AsyncTheTool:
     async def generate_question_from_text(
         self,
         text: str,
-        output_lang: Optional[str] = None,
+        output_lang: str | None = None,
         with_analysis: bool = False,
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> dict[str, str]:
         results = await self.operator.run(
             text,
@@ -150,13 +150,13 @@ class AsyncTheTool:
     async def merge_questions(
         self,
         questions: list[str],
-        output_lang: Optional[str] = None,
+        output_lang: str | None = None,
         mode: Literal["default", "reason"] = "default",
         with_analysis: bool = False,
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> dict[str, str]:
         question_str = ", ".join(questions)
         results = await self.operator.run(
@@ -178,13 +178,13 @@ class AsyncTheTool:
     async def rewrite(
         self,
         question: str,
-        output_lang: Optional[str] = None,
+        output_lang: str | None = None,
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
         with_analysis: bool = False,
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> dict[str, str]:
         results = await self.operator.run(
             question,
@@ -206,12 +206,12 @@ class AsyncTheTool:
         self,
         subject: str,
         number_of_questions: int,
-        output_lang: Optional[str] = None,
+        output_lang: str | None = None,
         with_analysis: bool = False,
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> dict[str, list[str]]:
         results = await self.operator.run(
             subject,
@@ -231,12 +231,12 @@ class AsyncTheTool:
     async def summarize(
         self,
         text: str,
-        output_lang: Optional[str] = None,
+        output_lang: str | None = None,
         with_analysis: bool = False,
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> dict[str, str]:
         results = await self.operator.run(
             text,
@@ -260,7 +260,7 @@ class AsyncTheTool:
         user_prompt: str = "",
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> dict[str, str]:
         results = await self.operator.run(
             text,

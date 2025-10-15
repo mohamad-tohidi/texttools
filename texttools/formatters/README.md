@@ -12,7 +12,7 @@ Each formatter is responsible for transforming raw messages or text into a stand
 - Defines a common interface for all formatters.
 - Abstract method:
   ```python
-  def format(self, text: str, analysis: Optional[str], schema_instr: str, prompt_template: Optional[str]) -> Any
+  def format(self, text: str, analysis: str | None, schema_instr: str, prompt_template: str | None) -> Any
   ```
 - Implementations decide the final shape (string, list of role/content dicts, or provider-specific JSON).
 

@@ -1,4 +1,4 @@
-from typing import Optional, Literal, Any
+from typing import Literal, Any
 
 from openai import OpenAI
 
@@ -36,8 +36,8 @@ class TheTool:
         client: OpenAI,
         *,
         model: str = "google/gemma-3n-e4b-it",
-        user_prompt: Optional[str] = None,
-        output_lang: Optional[str] = None,
+        user_prompt: str | None = None,
+        output_lang: str | None = None,
         with_analysis: bool = False,
         temperature: float = 0.0,
         logprobs: bool = False,
@@ -58,13 +58,13 @@ class TheTool:
     def categorize(
         self,
         text: str,
-        model: Optional[str] = None,
-        user_prompt: Optional[str] = None,
-        output_lang: Optional[str] = None,
-        with_analysis: Optional[bool] = None,
-        temperature: Optional[float] = None,
-        logprobs: Optional[bool] = None,
-        top_logprobs: Optional[int] = None,
+        model: str | None = None,
+        user_prompt: str | None = None,
+        output_lang: str | None = None,
+        with_analysis: bool | None = None,
+        temperature: float | None = None,
+        logprobs: bool | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, str]:
         """
         Categorize a text into a single Islamic studies domain category.
@@ -99,13 +99,13 @@ class TheTool:
     def extract_keywords(
         self,
         text: str,
-        model: Optional[str] = None,
-        user_prompt: Optional[str] = None,
-        output_lang: Optional[str] = None,
-        with_analysis: Optional[bool] = None,
-        temperature: Optional[float] = None,
-        logprobs: Optional[bool] = None,
-        top_logprobs: Optional[int] = None,
+        model: str | None = None,
+        user_prompt: str | None = None,
+        output_lang: str | None = None,
+        with_analysis: bool | None = None,
+        temperature: float | None = None,
+        logprobs: bool | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, list[str]]:
         """
         Extract salient keywords from text.
@@ -138,13 +138,13 @@ class TheTool:
     def extract_entities(
         self,
         text: str,
-        model: Optional[str] = None,
-        user_prompt: Optional[str] = None,
-        output_lang: Optional[str] = None,
-        with_analysis: Optional[bool] = None,
-        temperature: Optional[float] = None,
-        logprobs: Optional[bool] = None,
-        top_logprobs: Optional[int] = None,
+        model: str | None = None,
+        user_prompt: str | None = None,
+        output_lang: str | None = None,
+        with_analysis: bool | None = None,
+        temperature: float | None = None,
+        logprobs: bool | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, list[dict[str, str]]]:
         """
         Perform Named Entity Recognition (NER) over the input text.
@@ -177,12 +177,12 @@ class TheTool:
     def detect_question(
         self,
         text: str,
-        model: Optional[str] = None,
-        user_prompt: Optional[str] = None,
-        with_analysis: Optional[bool] = None,
-        temperature: Optional[float] = None,
-        logprobs: Optional[bool] = None,
-        top_logprobs: Optional[int] = None,
+        model: str | None = None,
+        user_prompt: str | None = None,
+        with_analysis: bool | None = None,
+        temperature: float | None = None,
+        logprobs: bool | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, bool]:
         """
         Detect if the input is phrased as a question.
@@ -215,13 +215,13 @@ class TheTool:
     def generate_question_from_text(
         self,
         text: str,
-        model: Optional[str] = None,
-        user_prompt: Optional[str] = None,
-        output_lang: Optional[str] = None,
-        with_analysis: Optional[bool] = None,
-        temperature: Optional[float] = None,
-        logprobs: Optional[bool] = None,
-        top_logprobs: Optional[int] = None,
+        model: str | None = None,
+        user_prompt: str | None = None,
+        output_lang: str | None = None,
+        with_analysis: bool | None = None,
+        temperature: float | None = None,
+        logprobs: bool | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, str]:
         """
         Generate a single question from the given text.
@@ -255,13 +255,13 @@ class TheTool:
         self,
         questions: list[str],
         mode: Literal["default", "reason"] = "default",
-        model: Optional[str] = None,
-        user_prompt: Optional[str] = None,
-        output_lang: Optional[str] = None,
-        with_analysis: Optional[bool] = None,
-        temperature: Optional[float] = None,
-        logprobs: Optional[bool] = None,
-        top_logprobs: Optional[int] = None,
+        model: str | None = None,
+        user_prompt: str | None = None,
+        output_lang: str | None = None,
+        with_analysis: bool | None = None,
+        temperature: float | None = None,
+        logprobs: bool | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, str]:
         """
         Merge multiple questions into a single unified question.
@@ -300,13 +300,13 @@ class TheTool:
         self,
         text: str,
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
-        model: Optional[str] = None,
-        user_prompt: Optional[str] = None,
-        output_lang: Optional[str] = None,
-        with_analysis: Optional[bool] = None,
-        temperature: Optional[float] = None,
-        logprobs: Optional[bool] = None,
-        top_logprobs: Optional[int] = None,
+        model: str | None = None,
+        user_prompt: str | None = None,
+        output_lang: str | None = None,
+        with_analysis: bool | None = None,
+        temperature: float | None = None,
+        logprobs: bool | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, str]:
         """
         Rewrite a question with different wording or meaning.
@@ -344,13 +344,13 @@ class TheTool:
         self,
         text: str,
         number_of_questions: int,
-        model: Optional[str] = None,
-        user_prompt: Optional[str] = None,
-        output_lang: Optional[str] = None,
-        with_analysis: Optional[bool] = None,
-        temperature: Optional[float] = None,
-        logprobs: Optional[bool] = None,
-        top_logprobs: Optional[int] = None,
+        model: str | None = None,
+        user_prompt: str | None = None,
+        output_lang: str | None = None,
+        with_analysis: bool | None = None,
+        temperature: float | None = None,
+        logprobs: bool | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, list[str]]:
         """
         Generate a list of questions about a subject.
@@ -386,13 +386,13 @@ class TheTool:
     def summarize(
         self,
         text: str,
-        model: Optional[str] = None,
-        user_prompt: Optional[str] = None,
-        output_lang: Optional[str] = None,
-        with_analysis: Optional[bool] = None,
-        temperature: Optional[float] = None,
-        logprobs: Optional[bool] = None,
-        top_logprobs: Optional[int] = None,
+        model: str | None = None,
+        user_prompt: str | None = None,
+        output_lang: str | None = None,
+        with_analysis: bool | None = None,
+        temperature: float | None = None,
+        logprobs: bool | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, str]:
         """
         Summarize the given subject text.
@@ -426,12 +426,12 @@ class TheTool:
         self,
         text: str,
         target_language: str,
-        model: Optional[str] = None,
-        user_prompt: Optional[str] = None,
-        with_analysis: Optional[bool] = None,
-        temperature: Optional[float] = None,
-        logprobs: Optional[bool] = None,
-        top_logprobs: Optional[int] = None,
+        model: str | None = None,
+        user_prompt: str | None = None,
+        with_analysis: bool | None = None,
+        temperature: float | None = None,
+        logprobs: bool | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, str]:
         """
         Translate text between languages.
@@ -467,11 +467,11 @@ class TheTool:
         self,
         prompt: str,
         output_model: Any,
-        model: Optional[str] = None,
-        output_lang: Optional[str] = None,
-        temperature: Optional[float] = None,
-        logprobs: Optional[float] = None,
-        top_logprobs: Optional[int] = None,
+        model: str | None = None,
+        output_lang: str | None = None,
+        temperature: float | None = None,
+        logprobs: float | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, Any]:
         """
         Custom tool that can do almost anything!

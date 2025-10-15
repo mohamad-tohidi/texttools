@@ -68,7 +68,7 @@ class AsyncOperator:
         output_model: T,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> tuple[T, Any]:
         try:
             request_kwargs = {
@@ -151,7 +151,7 @@ class AsyncOperator:
         output_model: T,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
     ) -> tuple[T, Any]:
         try:
             json_schema = output_model.model_json_schema()
@@ -222,10 +222,10 @@ class AsyncOperator:
         use_modes: bool = False,
         mode: str = "",
         resp_format: Literal["vllm", "parse"] = "parse",
-        output_lang: Optional[str] = None,
+        output_lang: str | None = None,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
         **extra_kwargs,
     ) -> dict[str, Any]:
         """
