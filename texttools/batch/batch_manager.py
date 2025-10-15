@@ -1,7 +1,7 @@
 import json
 import uuid
 from pathlib import Path
-from typing import Any, Optional, Type
+from typing import Any, Type
 
 from pydantic import BaseModel
 from openai import OpenAI
@@ -23,9 +23,9 @@ class SimpleBatchManager:
         model: str,
         output_model: Type[BaseModel],
         prompt_template: str,
-        handlers: Optional[list[Any]] = None,
+        handlers: list[Any] | None = None,
         state_dir: Path = Path(".batch_jobs"),
-        custom_json_schema_obj_str: Optional[dict] = None,
+        custom_json_schema_obj_str: dict | None = None,
         **client_kwargs: Any,
     ):
         self.client = client
