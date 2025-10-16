@@ -53,7 +53,7 @@ All these flags can be used individually or together to tailor the behavior of a
 Install the latest release via PyPI:
 
 ```bash
-pip install -U hamta-texttools
+pip install -U hamtaa-texttools
 ```
 
 ---
