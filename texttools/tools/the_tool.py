@@ -470,7 +470,7 @@ class TheTool:
         model: str | None = None,
         output_lang: str | None = None,
         temperature: float | None = None,
-        logprobs: float | None = None,
+        logprobs: bool | None = None,
         top_logprobs: int | None = None,
     ) -> dict[str, Any]:
         """
