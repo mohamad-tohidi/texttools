@@ -164,7 +164,7 @@ class SimpleBatchManager:
         info = self.client.batches.retrieve(job["id"])
         job = info.to_dict()
         self._save_state(job_name, [job])
-        logger.info("Here is the job", job)
+        logger.info("Batch job status: %s", job)
         return job["status"]
 
     def fetch_results(
