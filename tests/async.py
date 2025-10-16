@@ -30,7 +30,7 @@ async def main():
         original, mode="hard_negative", with_analysis=True
     )
     translation_task = tool.translate(
-        original, target_language="Enlgish", with_analysis=True
+        original, target_language="English", with_analysis=True
     )
 
     positive, negative, hard_negative, translation = await asyncio.gather(
