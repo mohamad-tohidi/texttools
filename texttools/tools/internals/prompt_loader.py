@@ -7,10 +7,6 @@ class PromptLoader:
     """
     Utility for loading and formatting YAML prompt templates.
 
-    Each YAML file under `prompts/` must define at least a `main_template`,
-    and optionally an `analyze_template`. These can either be a single string
-    or a dictionary keyed by mode names (if `use_modes=True`).
-
     Responsibilities:
     - Load and parse YAML prompt definitions.
     - Select the right template (by mode, if applicable).
@@ -22,33 +18,30 @@ class PromptLoader:
         }
     """
 
+    def __init__(self):
+        self.base_dir = Path(__file__).parent.parent.parent / Path("prompts")
+
     MAIN_TEMPLATE: str = "main_template"
     ANALYZE_TEMPLATE: str = "analyze_template"
 
     # Use lru_cache to load each file once
     @lru_cache(maxsize=32)
-    def _load_templates(
-        self,
-        prompts_dir: str,
-        prompt_file: str,
-        mode: str | None,
-    ) -> dict[str, str]:
-        prompt_path = Path(__file__).parent.parent.parent / prompts_dir / prompt_file
+    def _load_templates(self, prompt_file: str, mode: str | None) -> dict[str, str]:
+        prompt_path = self.base_dir / prompt_file
 
         if not prompt_path.exists():
             raise FileNotFoundError(f"Prompt file not found: {prompt_path}")
 
         try:
-            # Load the data
             data = yaml.safe_load(prompt_path.read_text(encoding="utf-8"))
         except yaml.YAMLError as e:
             raise ValueError(f"Invalid YAML in {prompt_path}: {e}")
 
         return {
-            "main_template": data[self.MAIN_TEMPLATE][mode]
+            self.MAIN_TEMPLATE: data[self.MAIN_TEMPLATE][mode]
             if mode
             else data[self.MAIN_TEMPLATE],
-            "analyze_template": data.get(self.ANALYZE_TEMPLATE)[mode]
+            self.ANALYZE_TEMPLATE: data.get(self.ANALYZE_TEMPLATE)[mode]
             if mode
             else data.get(self.ANALYZE_TEMPLATE),
         }
@@ -61,14 +54,9 @@ class PromptLoader:
         return format_args
 
     def load(
-        self,
-        prompt_file: str,
-        text: str,
-        mode: str,
-        prompts_dir: str = "prompts",
-        **extra_kwargs,
+        self, prompt_file: str, text: str, mode: str, **extra_kwargs
     ) -> dict[str, str]:
-        template_configs = self._load_templates(prompts_dir, prompt_file, mode)
+        template_configs = self._load_templates(prompt_file, mode)
         format_args = self._build_format_args(text, **extra_kwargs)
 
         # Inject variables inside each template

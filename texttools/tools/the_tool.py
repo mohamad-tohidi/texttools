@@ -35,7 +35,7 @@ class TheTool:
         self,
         client: OpenAI,
         *,
-        model: str,
+        model: str = "google/gemma-3n-e4b-it",
         user_prompt: str | None = None,
         output_lang: str | None = None,
         with_analysis: bool = False,
