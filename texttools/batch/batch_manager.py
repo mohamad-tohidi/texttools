@@ -167,22 +167,6 @@ class SimpleBatchManager:
         logger.info("Here is the job", job)
         return job["status"]
 
-    def _parsed(self, result: dict) -> list:
-        """
-        Parses the result dictionary, extracting the desired output or error for each item.
-        Returns a list of dictionaries with 'id' and 'output' keys.
-        """
-        modified_result = []
-
-        for key, d in result.items():
-            if "desired_output" in d:
-                new_dict = {"id": key, "output": d["desired_output"]}
-                modified_result.append(new_dict)
-            else:
-                new_dict = {"id": key, "output": d["error"]}
-                modified_result.append(new_dict)
-        return modified_result
-
     def fetch_results(
         self, job_name: str, remove_cache: bool = True
     ) -> tuple[dict[str, str], list]:
