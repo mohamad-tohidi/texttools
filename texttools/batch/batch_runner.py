@@ -1,7 +1,6 @@
 import json
 import os
 import time
-import deprecation
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -217,44 +216,6 @@ class BatchJobRunner:
                     f"Waiting {self.config.poll_interval_seconds}s before next status check for parts: {sorted(pending_parts)}"
                 )
                 time.sleep(self.config.poll_interval_seconds)
-
-    @deprecation.deprecated(
-        deprecated_in="0.1.44",
-        removed_in="0.1.45",
-        current_version="0.1.44",
-        details="Use the bar _submit_all_jobs instead",
-    )
-    def _process_part(
-        self, part: list[dict[str, Any]], part_job_name: str, part_idx: int
-    ):
-        # Deprecated in favor of concurrent run flow; keep for backward compatibility if needed
-        while True:
-            logger.info(f"Starting job for part: {part_job_name}")
-            payload = self._to_manager_payload(part)
-            self.manager.start(payload, job_name=part_job_name)
-            logger.info("Started batch job. Checking status...")
-            while True:
-                status = self.manager.check_status(job_name=part_job_name)
-                logger.info(f"Status: {status}")
-                if status == "completed":
-                    logger.info("Job completed. Fetching results...")
-                    output_data, log = self.manager.fetch_results(
-                        job_name=part_job_name, remove_cache=False
-                    )
-                    output_data = self.config.import_function(output_data)
-                    self._save_results(output_data, log, part_idx)
-                    logger.info("Fetched and saved results for this part.")
-                    return
-                elif status == "failed":
-                    logger.info("Job failed. Clearing state, waiting, and retrying...")
-                    self.manager._clear_state(part_job_name)
-                    # Wait before retrying
-                    time.sleep(10)
-                    # Break inner loop to restart the job
-                    break
-                # Wait before checking again
-                else:
-                    time.sleep(5)
 
     def _save_results(
         self,
