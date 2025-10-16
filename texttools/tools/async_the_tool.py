@@ -111,7 +111,7 @@ class AsyncTheTool:
     ) -> dict[str, bool]:
         results = await self.operator.run(
             question,
-            prompt_file="question_detector.yaml",
+            prompt_file="is_question.yaml",
             output_model=OutputModels.BoolOutput,
             with_analysis=with_analysis,
             resp_format="parse",
@@ -135,7 +135,7 @@ class AsyncTheTool:
     ) -> dict[str, str]:
         results = await self.operator.run(
             text,
-            prompt_file="question_generator.yaml",
+            prompt_file="text_to_question.yaml",
             output_model=OutputModels.StrOutput,
             with_analysis=with_analysis,
             resp_format="parse",
@@ -215,7 +215,7 @@ class AsyncTheTool:
     ) -> dict[str, list[str]]:
         results = await self.operator.run(
             subject,
-            prompt_file="subject_question_generator.yaml",
+            prompt_file="subject_to_question.yaml",
             output_model=OutputModels.ReasonListStrOutput,
             with_analysis=with_analysis,
             resp_format="parse",

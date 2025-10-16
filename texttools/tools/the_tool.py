@@ -196,7 +196,7 @@ class TheTool:
         """
         return self.operator.run(
             # Internal parameters
-            prompt_file="question_detector.yaml",
+            prompt_file="is_question.yaml",
             output_model=OutputModels.BoolOutput,
             resp_format="parse",
             output_lang=False,
@@ -235,7 +235,7 @@ class TheTool:
         """
         return self.operator.run(
             # Internal parameters
-            prompt_file="question_generator.yaml",
+            prompt_file="text_to_question.yaml",
             output_model=OutputModels.StrOutput,
             resp_format="parse",
             # User parameters
@@ -366,7 +366,7 @@ class TheTool:
         """
         return self.operator.run(
             # Internal parameters
-            prompt_file="subject_question_generator.yaml",
+            prompt_file="subject_to_question.yaml",
             output_model=OutputModels.ReasonListStrOutput,
             resp_format="parse",
             # User parameters
