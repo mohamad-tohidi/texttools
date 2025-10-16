@@ -4,6 +4,8 @@
 This folder contains formatter classes used to structure inputs before sending them to different AI model providers.  
 Each formatter is responsible for transforming raw messages or text into a standardized payload format.
 
+---
+
 ## Structure
 - **base_formatter.py**: Defines the abstract `BaseFormatter` class. All custom formatters should inherit from this.
 - **user_merge_formatter.py**: Implements the `UserMergeFormatter`, which merges consecutive user messages and replaces system roles with user roles.
@@ -41,6 +43,8 @@ formatted = formatter.format(messages)
 #   {"role": "assistant", "content": "I'm fine, thanks."}
 # ]
 ```
+
+---
 
 ## Guidelines
 1. **Inheritance**: New formatters must inherit from `BaseFormatter`.

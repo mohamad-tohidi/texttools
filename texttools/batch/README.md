@@ -11,9 +11,6 @@
 
 This tool is especially useful if you need to process thousands of inputs (NER, classification, summarization, etc.) without manually managing batch job lifecycles.
 
----
-
-
 ## Usage
 
 ### 1. Import libraries

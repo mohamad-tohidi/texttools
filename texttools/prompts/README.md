@@ -3,6 +3,8 @@
 ## Overview
 This folder contains YAML files for all prompts used in the project. Each file represents a separate prompt template, which can be loaded by tools or scripts that require structured prompts for AI models.
 
+---
+
 ## Structure
 - **prompt_file.yaml**: Each YAML file represents a single prompt template.
 - **main_template**: The main instruction template for the model.
@@ -23,6 +25,8 @@ analyze_template:
   reason: |
     Optional detailed analysis template.
 ```
+
+---
 
 ## Guidelines
 1. **Naming**: Use descriptive names for each YAML file corresponding to the tool or task it serves.

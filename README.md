@@ -17,17 +17,17 @@ It provides ready-to-use utilities for **translation, question detection, keywor
 TextTools provides a rich collection of high-level NLP utilities built on top of LLMs.  
 Each tool is designed to work out-of-the-box with structured outputs (JSON / Pydantic).
 
-- **Categorizer** → Zero-finetuning text categorization for fast, scalable classification.  
-- **Keyword Extractor** → Identify the most important keywords in a text.  
-- **Question Merger** → Merge the provided questions, preserving all the main points 
-- **NER (Named Entity Recognition) Extractor** → Extract people, places, organizations, and other entities.  
-- **Question Detector** → Determine whether a text is a question or not.  
-- **Question Generator From Text** → Generate high-quality, context-relevant questions from provided text.
-- **Question Generator From Subject** → Generate high-quality, context-relevant questions from a subject.
-- **Rewriter** → Rewrite text while preserving meaning or without it.
-- **Summarizer** → Condense long passages into clear, structured summaries. 
-- **Translator** → Translate text across multiple languages, with support for custom rules.
-- **Custom Tool** → Allows users to define a custom tool with arbitrary BaseModel. 
+- **`categorize()`** - Classifies text into Islamic studies categories 
+- **`is_question()`** - Binary detection of whether input is a question
+- **`extract_keywords()`** - Extracts keywords from text
+- **`extract_entities()`** - Named Entity Recognition (NER) system
+- **`summarize()`** - Text summarization
+- **`text_to_question()`** - Generates questions from text
+- **`merge_questions()`** - Merges multiple questions with different modes
+- **`rewrite()`** - Rewrites text with different wording/meaning
+- **`subject_to_question()`** - Generates questions about a specific subject
+- **`translate()`** - Text translation between languages
+- **`run_custom()`** - Allows users to define a custom tool with arbitrary BaseModel
 
 ---
 
