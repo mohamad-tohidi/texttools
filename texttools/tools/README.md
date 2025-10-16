@@ -10,16 +10,16 @@ Tools are modular, easy to extend, and ready to use for common NLP tasks.
 The `TheTool/AsyncTheTool` class provides the following NLP operations:
 
 - **`categorize()`** - Classifies text into Islamic studies categories 
-- **`detect_question()`** - Binary detection of whether input is a question
+- **`is_question()`** - Binary detection of whether input is a question
 - **`extract_keywords()`** - Extracts keywords from text
 - **`extract_entities()`** - Named Entity Recognition (NER) system
 - **`summarize()`** - Text summarization
-- **`generate_question_from_text()`** - Generates questions from text
+- **`text_to_question()`** - Generates questions from text
 - **`merge_questions()`** - Merges multiple questions with different modes
 - **`rewrite()`** - Rewrites text with different wording/meaning
-- **`generate_questions_from_subject()`** - Generates questions about a specific subject
+- **`subject_to_question()`** - Generates questions about a specific subject
 - **`translate()`** - Text translation between languages
-- **`custom_tool()`** - Allows users to define a custom tool with arbitrary BaseModel
+- **`run_custom()`** - Allows users to define a custom tool with arbitrary BaseModel
 
 ## Architecture
 

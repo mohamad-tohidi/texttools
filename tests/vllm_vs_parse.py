@@ -54,13 +54,13 @@ vllm = vllm_tool.extract_entities(ner_text)
 print(f"NER Extractor\nParse: {parse}\nvllm:  {vllm}\n\n")
 
 # Question Detector
-parse = parse_tool.detect_question(qd_text)
-vllm = vllm_tool.detect_question(qd_text)
+parse = parse_tool.is_question(qd_text)
+vllm = vllm_tool.is_question(qd_text)
 print(f"Question Detector\nParse: {parse}\nvllm:  {vllm}\n\n")
 
 # Question from Answer Generator
-parse = parse_tool.generate_question_from_text(qfa_text)
-vllm = vllm_tool.generate_question_from_text(qfa_text)
+parse = parse_tool.text_to_question(qfa_text)
+vllm = vllm_tool.text_to_question(qfa_text)
 print(f"Question from Answer Generator\nParse: {parse}\nvllm:  {vllm}\n\n")
 
 # Question Merger
@@ -74,8 +74,8 @@ vllm = vllm_tool.rewrite(rewrite_text, mode="positive")
 print(f"Question Rewriter\nParse: {parse}\nvllm:  {vllm}\n\n")
 
 # Question Generator from Subject
-parse = parse_tool.generate_questions_from_subject(qfs_text, 3)
-vllm = vllm_tool.generate_questions_from_subject(qfs_text, 3)
+parse = parse_tool.subject_to_question(qfs_text, 3)
+vllm = vllm_tool.subject_to_question(qfs_text, 3)
 print(f"Question Generator from Subject\nParse: {parse}\nvllm:  {vllm}\n\n")
 
 # Summarizer

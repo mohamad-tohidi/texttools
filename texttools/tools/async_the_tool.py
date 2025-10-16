@@ -99,7 +99,7 @@ class AsyncTheTool:
         )
         return results
 
-    async def detect_question(
+    async def is_question(
         self,
         question: str,
         output_lang: str | None = None,
@@ -123,7 +123,7 @@ class AsyncTheTool:
         )
         return results
 
-    async def generate_question_from_text(
+    async def text_to_question(
         self,
         text: str,
         output_lang: str | None = None,
@@ -202,7 +202,7 @@ class AsyncTheTool:
         )
         return results
 
-    async def generate_questions_from_subject(
+    async def subject_to_question(
         self,
         subject: str,
         number_of_questions: int,

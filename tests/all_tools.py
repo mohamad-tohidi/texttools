@@ -32,11 +32,11 @@ entities = t.extract_entities("We will be dead by the car crash")
 print(entities)
 
 # Question Detector
-detection = t.detect_question("We will be dead by the car crash")
+detection = t.is_question("We will be dead by the car crash")
 print(detection)
 
 # Question from Answer Generator
-question = t.generate_question_from_text("We will be dead by the car crash")
+question = t.text_to_question("We will be dead by the car crash")
 print(question)
 
 # Question Merger
@@ -54,7 +54,7 @@ question = t.rewrite(
 print(question)
 
 # Question Generator from Subject
-questions = t.generate_questions_from_subject("Friendship", 3)
+questions = t.subject_to_question("Friendship", 3)
 print(questions)
 
 # Summarizer
@@ -77,5 +77,5 @@ custom_prompt = """You are a random student information generator.
                    Create one student with these info:
                    [{"name": str}, {"age": int}, {"std_id": int}]"""
 
-student_info = t.custom_tool(custom_prompt, Student)
+student_info = t.run_custom(custom_prompt, Student)
 print(student_info)

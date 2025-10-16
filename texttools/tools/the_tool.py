@@ -17,11 +17,11 @@ class TheTool:
     - categorize: assign a text to one of several Islamic categories.
     - extract_keywords: produce a keyword list from text.
     - extract_entities: simple NER (name/type pairs).
-    - detect_question: binary check whether input is a question.
-    - generate_question_from_text: produce a new question from a text.
+    - is_question: binary check whether input is a question.
+    - text_to_question: produce a new question from a text.
     - merge_questions: combine multiple questions (default/reason modes).
     - rewrite: rephrase questions (same meaning/different wording, or vice versa).
-    - generate_questions_from_subject: generate multiple questions given a subject.
+    - subject_to_question: generate multiple questions given a subject.
     - summarize: produce a concise summary of a subject.
     - translate: translate text between languages.
 
@@ -174,7 +174,7 @@ class TheTool:
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
-    def detect_question(
+    def is_question(
         self,
         text: str,
         model: str | None = None,
@@ -212,7 +212,7 @@ class TheTool:
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
-    def generate_question_from_text(
+    def text_to_question(
         self,
         text: str,
         model: str | None = None,
@@ -340,7 +340,7 @@ class TheTool:
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
-    def generate_questions_from_subject(
+    def subject_to_question(
         self,
         text: str,
         number_of_questions: int,
@@ -463,7 +463,7 @@ class TheTool:
             top_logprobs=self.top_logprobs if top_logprobs is None else top_logprobs,
         )
 
-    def custom_tool(
+    def run_custom(
         self,
         prompt: str,
         output_model: Any,
@@ -485,7 +485,7 @@ class TheTool:
         """
         return self.operator.run(
             # Internal parameters
-            prompt_file="custom_tool.yaml",
+            prompt_file="run_custom.yaml",
             resp_format="parse",
             user_prompt=False,
             with_analysis=False,

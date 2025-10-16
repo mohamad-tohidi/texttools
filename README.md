@@ -84,7 +84,7 @@ model = "gpt-4o-mini"
 the_tool = TheTool(client=client, model=model, with_analysis=True, output_lang="English")
 
 # Example: Question Detection
-detection = the_tool.detect_question("Is this project open source?", logpobs=True, top_logprobs=2)
+detection = the_tool.is_question("Is this project open source?", logpobs=True, top_logprobs=2)
 print(detection["result"])
 print(detection["logprobs"])
 # Output: True
@@ -101,7 +101,7 @@ class Custom(BaseModel):
   result: list[list[dict[str, int]]]
 
 custom_prompt = "Something"
-custom_result = the_tool.custom_tool(custom_prompt, Custom)
+custom_result = the_tool.run_custom(custom_prompt, Custom)
 print(custom_result)
 ```
 

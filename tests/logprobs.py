@@ -30,7 +30,7 @@ for d in logprobs:
 
 # Question Detector
 print("\n\nQUESTION DETECTOR\n")
-detection = t.detect_question(
+detection = t.is_question(
     "What is the capital of France?", logprobs=True, top_logprobs=3
 )
 logprobs = detection["logprobs"]
