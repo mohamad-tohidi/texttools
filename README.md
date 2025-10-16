@@ -84,7 +84,7 @@ model = "gpt-4o-mini"
 the_tool = TheTool(client=client, model=model, with_analysis=True, output_lang="English")
 
 # Example: Question Detection
-detection = the_tool.is_question("Is this project open source?", logpobs=True, top_logprobs=2)
+detection = the_tool.is_question("Is this project open source?", logprobs=True, top_logprobs=2)
 print(detection["result"])
 print(detection["logprobs"])
 # Output: True
