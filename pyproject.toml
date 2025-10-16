@@ -17,7 +17,8 @@ license = {file = "LICENSE"}
 requires-python = ">=3.8"
 dependencies = [
   "openai==1.97.1",
-  "PyYAML>=6.0"
+  "PyYAML>=6.0",
+  "deprecation==2.1.*"
 ]
 keywords = ["nlp", "llm", "text-processing", "openai"]
 
