@@ -5,11 +5,11 @@ main_template:
     I will give you a list of questions that are semantically similar.
     Your task is to merge them into one unified question.
     Guidelines:
-    1. Preserves all the information and intent from the original questions.
-    2. Sounds natural, fluent, and concise.
-    3. Avoids redundancy or unnecessary repetition.
-    4. Does not omit any unique idea from the originals.
-    5. Respond only in JSON format:
+    - Preserves all the information and intent from the original questions.
+    - Sounds natural, fluent, and concise.
+    - Avoids redundancy or unnecessary repetition.
+    - Does not omit any unique idea from the originals.
+    - Respond only in JSON format:
     {{"result": "string"}}
     Here is the questions:
     {input}
