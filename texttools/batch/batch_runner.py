@@ -5,12 +5,17 @@ import deprecation
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
+import logging
 
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 
 from texttools.batch import SimpleBatchManager
+
+# Configure logger
+logger = logging.getLogger("batch_runner")
+logger.setLevel(logging.INFO)
 
 
 class OutputModel(BaseModel):
@@ -114,7 +119,7 @@ class BatchJobRunner:
         prompt_length = len(self.system_prompt)
         total = total_length + (prompt_length * len(self.data))
         calculation = total / self.config.CHARS_PER_TOKEN
-        print(
+        logger.info(
             f"Total chars: {total_length}, Prompt chars: {prompt_length}, Total: {total}, Tokens: {calculation}"
         )
         if calculation < self.config.MAX_TOTAL_TOKENS:
@@ -125,12 +130,12 @@ class BatchJobRunner:
                 self.data[i : i + self.config.MAX_BATCH_SIZE]
                 for i in range(0, len(self.data), self.config.MAX_BATCH_SIZE)
             ]
-        print(f"Data split into {len(self.parts)} part(s)")
+        logger.info(f"Data split into {len(self.parts)} part(s)")
 
     def _submit_all_jobs(self) -> None:
         for idx, part in enumerate(self.parts):
             if self._result_exists(idx):
-                print(f"Skipping part {idx + 1}: result already exists.")
+                logger.info(f"Skipping part {idx + 1}: result already exists.")
                 continue
             part_job_name = (
                 f"{self.job_name}_part_{idx + 1}"
@@ -140,48 +145,52 @@ class BatchJobRunner:
             # If a job with this name already exists, register and skip submitting
             existing_job = self.manager._load_state(part_job_name)
             if existing_job:
-                print(f"Skipping part {idx + 1}: job already exists ({part_job_name}).")
+                logger.info(
+                    f"Skipping part {idx + 1}: job already exists ({part_job_name})."
+                )
                 self.part_idx_to_job_name[idx] = part_job_name
                 self.part_attempts.setdefault(idx, 0)
                 continue
 
             payload = part
-            print(
+            logger.info(
                 f"Submitting job for part {idx + 1}/{len(self.parts)}: {part_job_name}"
             )
             self.manager.start(payload, job_name=part_job_name)
             self.part_idx_to_job_name[idx] = part_job_name
             self.part_attempts.setdefault(idx, 0)
             # This is added for letting file get uploaded, before starting the next part.
-            print("uploading...")
+            logger.info("Uploading...")
             time.sleep(30)
 
     def run(self):
         # Submit all jobs up-front for concurrent execution
         self._submit_all_jobs()
         pending_parts: set[int] = set(self.part_idx_to_job_name.keys())
-        print(f"Pending parts: {sorted(pending_parts)}")
+        logger.info(f"Pending parts: {sorted(pending_parts)}")
         # Polling loop
         while pending_parts:
             finished_this_round: list[int] = []
             for part_idx in list(pending_parts):
                 job_name = self.part_idx_to_job_name[part_idx]
                 status = self.manager.check_status(job_name=job_name)
-                print(f"Status for {job_name}: {status}")
+                logger.info(f"Status for {job_name}: {status}")
                 if status == "completed":
-                    print(f"Job completed. Fetching results for part {part_idx + 1}...")
+                    logger.info(
+                        f"Job completed. Fetching results for part {part_idx + 1}..."
+                    )
                     output_data, log = self.manager.fetch_results(
                         job_name=job_name, remove_cache=False
                     )
                     output_data = self.config.import_function(output_data)
                     self._save_results(output_data, log, part_idx)
-                    print(f"Fetched and saved results for part {part_idx + 1}.")
+                    logger.info(f"Fetched and saved results for part {part_idx + 1}.")
                     finished_this_round.append(part_idx)
                 elif status == "failed":
                     attempt = self.part_attempts.get(part_idx, 0) + 1
                     self.part_attempts[part_idx] = attempt
                     if attempt <= self.config.max_retries:
-                        print(
+                        logger.info(
                             f"Job {job_name} failed (attempt {attempt}). Retrying after short backoff..."
                         )
                         self.manager._clear_state(job_name)
@@ -193,7 +202,7 @@ class BatchJobRunner:
                         self.manager.start(payload, job_name=new_job_name)
                         self.part_idx_to_job_name[part_idx] = new_job_name
                     else:
-                        print(
+                        logger.info(
                             f"Job {job_name} failed after {attempt - 1} retries. Marking as failed."
                         )
                         finished_this_round.append(part_idx)
@@ -204,7 +213,7 @@ class BatchJobRunner:
             for part_idx in finished_this_round:
                 pending_parts.discard(part_idx)
             if pending_parts:
-                print(
+                logger.info(
                     f"Waiting {self.config.poll_interval_seconds}s before next status check for parts: {sorted(pending_parts)}"
                 )
                 time.sleep(self.config.poll_interval_seconds)
@@ -220,24 +229,24 @@ class BatchJobRunner:
     ):
         # Deprecated in favor of concurrent run flow; keep for backward compatibility if needed
         while True:
-            print(f"Starting job for part: {part_job_name}")
+            logger.info(f"Starting job for part: {part_job_name}")
             payload = self._to_manager_payload(part)
             self.manager.start(payload, job_name=part_job_name)
-            print("Started batch job. Checking status...")
+            logger.info("Started batch job. Checking status...")
             while True:
                 status = self.manager.check_status(job_name=part_job_name)
-                print(f"Status: {status}")
+                logger.info(f"Status: {status}")
                 if status == "completed":
-                    print("Job completed. Fetching results...")
+                    logger.info("Job completed. Fetching results...")
                     output_data, log = self.manager.fetch_results(
                         job_name=part_job_name, remove_cache=False
                     )
                     output_data = self.config.import_function(output_data)
                     self._save_results(output_data, log, part_idx)
-                    print("Fetched and saved results for this part.")
+                    logger.info("Fetched and saved results for this part.")
                     return
                 elif status == "failed":
-                    print("Job failed. Clearing state, waiting, and retrying...")
+                    logger.info("Job failed. Clearing state, waiting, and retrying...")
                     self.manager._clear_state(part_job_name)
                     # Wait before retrying
                     time.sleep(10)
@@ -259,7 +268,7 @@ class BatchJobRunner:
             / f"{Path(self.output_data_filename).stem}{part_suffix}.json"
         )
         if not output_data:
-            print("No output data to save. Skipping this part.")
+            logger.info("No output data to save. Skipping this part.")
             return
         else:
             with open(result_path, "w", encoding="utf-8") as f:
@@ -282,7 +291,7 @@ class BatchJobRunner:
 
 
 if __name__ == "__main__":
-    print("=== Batch Job Runner ===")
+    logger.info("=== Batch Job Runner ===")
     config = BatchConfig(
         system_prompt="",
         job_name="job_name",

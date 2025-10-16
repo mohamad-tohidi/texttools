@@ -2,10 +2,15 @@ import json
 import uuid
 from pathlib import Path
 from typing import Any, Type
+import logging
 
 from pydantic import BaseModel
 from openai import OpenAI
 from openai.lib._pydantic import to_strict_json_schema
+
+# Configure logger
+logger = logging.getLogger("batch_runner")
+logger.setLevel(logging.INFO)
 
 
 class SimpleBatchManager:
@@ -159,7 +164,7 @@ class SimpleBatchManager:
         info = self.client.batches.retrieve(job["id"])
         job = info.to_dict()
         self._save_state(job_name, [job])
-        print("HERE is the job", job)
+        logger.info("Here is the job", job)
         return job["status"]
 
     def _parsed(self, result: dict) -> list:
@@ -198,7 +203,7 @@ class SimpleBatchManager:
                 err_content = (
                     self.client.files.content(error_file_id).read().decode("utf-8")
                 )
-                print("Error file content:", err_content)
+                logger.info("Error file content:", err_content)
             return {}
 
         content = self.client.files.content(out_file_id).read().decode("utf-8")
