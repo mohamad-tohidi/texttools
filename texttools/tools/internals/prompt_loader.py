@@ -1,4 +1,4 @@
-from typing import Optional
+from functools import lru_cache
 from pathlib import Path
 import yaml
 
@@ -25,6 +25,8 @@ class PromptLoader:
     MAIN_TEMPLATE: str = "main_template"
     ANALYZE_TEMPLATE: str = "analyze_template"
 
+    # Use lru_cache to load each file once
+    @lru_cache(maxsize=32)
     def _load_templates(
         self,
         prompts_dir: str,
