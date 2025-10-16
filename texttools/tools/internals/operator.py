@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 import re
-from typing import Any, TypeVar, Type, Literal, Optional
+from typing import Any, TypeVar, Type, Literal
 import json
 import logging
 

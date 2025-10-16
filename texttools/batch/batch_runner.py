@@ -17,7 +17,7 @@ class OutputModel(BaseModel):
     desired_output: str
 
 
-def exporting_data(data):
+def export_data(data):
     """
     Produces a structure of the following form from an initial data structure:
     [{"id": str, "text": str},...]
@@ -25,7 +25,7 @@ def exporting_data(data):
     return data
 
 
-def importing_data(data):
+def import_data(data):
     """
     Takes the output and adds and aggregates it to the original structure.
     """
@@ -48,8 +48,8 @@ class BatchConfig:
     CHARS_PER_TOKEN: float = 2.7
     PROMPT_TOKEN_MULTIPLIER: int = 1000
     BASE_OUTPUT_DIR: str = "Data/batch_entity_result"
-    import_function: Callable = importing_data
-    export_function: Callable = exporting_data
+    import_function: Callable = import_data
+    export_function: Callable = export_data
     poll_interval_seconds: int = 30
     max_retries: int = 3
 
@@ -95,7 +95,7 @@ class BatchJobRunner:
             data = json.load(f)
         data = self.config.export_function(data)
 
-        # Validation: ensure data is a list of dicts with 'id' and 'content' as strings
+        # Ensure data is a list of dicts with 'id' and 'content' as strings
         if not isinstance(data, list):
             raise ValueError(
                 'Exported data must be a list in this form:  [ {"id": str, "content": str},...]'
@@ -127,12 +127,6 @@ class BatchJobRunner:
             ]
         print(f"Data split into {len(self.parts)} part(s)")
 
-    # def _to_manager_payload(self, part: list[dict[str, Any]]) -> list[dict[str, str]]:
-    #     """
-    #     Transform a part from [{id, content}] to the manager expected format [{id, text}].
-    #     """
-    #     return [{"id": item["id"], "text": item["content"]} for item in part]
-
     def _submit_all_jobs(self) -> None:
         for idx, part in enumerate(self.parts):
             if self._result_exists(idx):
@@ -150,7 +144,7 @@ class BatchJobRunner:
                 self.part_idx_to_job_name[idx] = part_job_name
                 self.part_attempts.setdefault(idx, 0)
                 continue
-            # payload = self._to_manager_payload(part)
+
             payload = part
             print(
                 f"Submitting job for part {idx + 1}/{len(self.parts)}: {part_job_name}"
@@ -158,7 +152,7 @@ class BatchJobRunner:
             self.manager.start(payload, job_name=part_job_name)
             self.part_idx_to_job_name[idx] = part_job_name
             self.part_attempts.setdefault(idx, 0)
-            # this is added for letting file get uploaded, before starting the next part.
+            # This is added for letting file get uploaded, before starting the next part.
             print("uploading...")
             time.sleep(30)
 
@@ -204,7 +198,7 @@ class BatchJobRunner:
                         )
                         finished_this_round.append(part_idx)
                 else:
-                    # still running or queued
+                    # Still running or queued
                     continue
             # Remove finished parts
             for part_idx in finished_this_round:
@@ -245,10 +239,13 @@ class BatchJobRunner:
                 elif status == "failed":
                     print("Job failed. Clearing state, waiting, and retrying...")
                     self.manager._clear_state(part_job_name)
-                    time.sleep(10)  # Wait before retrying
-                    break  # Break inner loop to restart the job
+                    # Wait before retrying
+                    time.sleep(10)
+                    # Break inner loop to restart the job
+                    break
+                # Wait before checking again
                 else:
-                    time.sleep(5)  # Wait before checking again
+                    time.sleep(5)
 
     def _save_results(
         self,

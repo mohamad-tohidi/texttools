@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import math
 import re
-from typing import Any, Literal, Optional, TypeVar
+from typing import Any, Literal, TypeVar
 
 from openai import AsyncOpenAI
 from pydantic import BaseModel
