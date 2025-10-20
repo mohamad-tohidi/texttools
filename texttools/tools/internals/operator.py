@@ -291,5 +291,5 @@ class Operator:
             return results
 
         except Exception as e:
-            logger.error(f"Operation failed: {e}")
+            logger.error(f"TheTool failed: {e}")
             return {"Error": str(e), "result": ""}

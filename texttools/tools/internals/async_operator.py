@@ -4,6 +4,7 @@ import json
 import math
 import re
 from typing import Any, Literal, TypeVar
+import logging
 
 from openai import AsyncOpenAI
 from pydantic import BaseModel
@@ -15,6 +16,10 @@ from texttools.tools.internals.prompt_loader import PromptLoader
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
+
+# Configure logger
+logger = logging.getLogger("async_operator")
+logger.setLevel(logging.INFO)
 
 
 class AsyncOperator:
@@ -190,6 +195,7 @@ class AsyncOperator:
 
         for choice in completion.choices:
             if not getattr(choice, "logprobs", None):
+                logger.info("No logprobs found.")
                 continue
 
             for logprob_item in choice.logprobs.content:
@@ -237,11 +243,10 @@ class AsyncOperator:
         try:
             cleaned_text = input_text.strip()
 
-            # FIXED: Correct parameter order for load
             prompt_configs = prompt_loader.load(
-                prompt_file=prompt_file,  # prompt_file
-                text=cleaned_text,  # text
-                mode=mode if use_modes else "",  # mode
+                prompt_file=prompt_file,
+                text=cleaned_text,
+                mode=mode if use_modes else "",
                 **extra_kwargs,
             )
 
@@ -269,7 +274,7 @@ class AsyncOperator:
                     output_model,
                     logprobs,
                     top_logprobs,
-                    max_tokens,  # Pass max_tokens
+                    max_tokens,
                 )
             elif resp_format == "parse":
                 parsed, completion = await self._parse_completion(
@@ -277,10 +282,16 @@ class AsyncOperator:
                     output_model,
                     logprobs,
                     top_logprobs,
-                    max_tokens,  # Pass max_tokens
+                    max_tokens,
                 )
             else:
-                raise ValueError(f"Unknown resp_format: {resp_format}")
+                logger.error(f"Unknown resp_format: {resp_format}")
+
+            # Ensure output_model has a `result` field
+            if not hasattr(parsed, "result"):
+                logger.error(
+                    "The provided output_model must define a field named 'result'"
+                )
 
             results = {"result": parsed.result}
 
@@ -293,5 +304,5 @@ class AsyncOperator:
             return results
 
         except Exception as e:
-            print(f"[ERROR] Async operation failed: {e}")
-            raise
+            logger.error(f"Async TheTool failed: {e}")
+            return {"Error": str(e), "result": ""}
