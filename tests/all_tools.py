@@ -17,7 +17,7 @@ model = "google/gemma-3n-e4b-it"
 client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 
 # Create an instance of TheTool
-t = TheTool(client=client)
+t = TheTool(client=client, model=model)
 
 # Categorizer
 category = t.categorize("سلام حالت چطوره؟")

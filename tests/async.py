@@ -24,15 +24,12 @@ tool = AsyncTheTool(client=client, model=model)
 async def main():
     s = time.time()
     original = "چه کسی به عنوان اولین نفر وارد بهشت خواهد شد؟"
-    positive_task = tool.rewrite(original, mode="positive", with_analysis=True)
-    negative_task = tool.rewrite(original, mode="negative", with_analysis=True)
+    positive_task = tool.rewrite(original, mode="positive")
+    negative_task = tool.rewrite(original, mode="negative")
     hard_negative_task = tool.rewrite(
         original, mode="hard_negative", with_analysis=True
     )
-    translation_task = tool.translate(
-        original, target_language="English", with_analysis=True
-    )
-
+    translation_task = tool.translate(original, target_language="English")
     positive, negative, hard_negative, translation = await asyncio.gather(
         positive_task, negative_task, hard_negative_task, translation_task
     )

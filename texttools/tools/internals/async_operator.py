@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-import json
-import math
-import re
-from typing import Any, Literal, TypeVar
+from typing import Any, TypeVar, Type, Literal
 import logging
 
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
+from texttools.tools.internals.base_operator import BaseOperator
 from texttools.formatters.user_merge_formatter import (
     UserMergeFormatter,
 )
@@ -22,238 +20,128 @@ logger = logging.getLogger("async_operator")
 logger.setLevel(logging.INFO)
 
 
-class AsyncOperator:
+class AsyncOperator(BaseOperator):
     """
-    Async version of Operator.
+    Core engine for running text-processing operations with an LLM (Async).
 
-    Behaves like the synchronous Operator but uses AsyncOpenAI and async/await.
+    It wires together:
+    - `PromptLoader` → loads YAML prompt templates.
+    - `UserMergeFormatter` → applies formatting to messages (e.g., merging).
+    - AsyncOpenAI client → executes completions/parsed completions.
     """
 
-    def __init__(
-        self,
-        client: AsyncOpenAI,
-        *,
-        model: str,
-        temperature: float = 0.0,
-        **client_kwargs: Any,
-    ):
+    def __init__(self, client: AsyncOpenAI, model: str):
         self.client: AsyncOpenAI = client
         self.model = model
-        self.temperature = temperature
-        self.client_kwargs = client_kwargs
 
-    def _build_user_message(self, prompt: str) -> dict[str, str]:
-        return {"role": "user", "content": prompt}
+    async def _analysis_completion(
+        self,
+        analyze_message: list[dict[str, str]],
+        temperature: float,
+    ) -> str:
+        completion = await self.client.chat.completions.create(
+            model=self.model,
+            messages=analyze_message,
+            temperature=temperature,
+        )
+        analysis = completion.choices[0].message.content.strip()
+        return analysis
 
-    async def _analysis_completion(self, analyze_message: list[dict[str, str]]) -> str:
-        try:
-            completion = await self.client.chat.completions.create(
-                model=self.model,
-                messages=analyze_message,
-                temperature=self.temperature,
-                **self.client_kwargs,
-            )
-            analysis = completion.choices[0].message.content.strip()
-            return analysis
-
-        except Exception as e:
-            print(f"[ERROR] Analysis failed: {e}")
-            raise
-
-    async def _analyze(self, prompt_configs: dict[str, str]) -> str:
+    async def _analyze(self, prompt_configs: dict[str, str], temperature: float) -> str:
         analyze_prompt = prompt_configs["analyze_template"]
         analyze_message = [self._build_user_message(analyze_prompt)]
-        analysis = await self._analysis_completion(analyze_message)
-
+        analysis = await self._analysis_completion(analyze_message, temperature)
         return analysis
 
     async def _parse_completion(
         self,
         message: list[dict[str, str]],
-        output_model: T,
+        output_model: Type[T],
+        temperature: float,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: int | None = None,
-    ) -> tuple[T, Any]:
-        try:
-            request_kwargs = {
-                "model": self.model,
-                "messages": message,
-                "response_format": output_model,
-                "temperature": self.temperature,
-                **self.client_kwargs,
-            }
+    ) -> tuple[Type[T], Any]:
+        request_kwargs = {
+            "model": self.model,
+            "messages": message,
+            "response_format": output_model,
+            "temperature": temperature,
+        }
 
-            if max_tokens is not None:
-                request_kwargs["max_tokens"] = max_tokens
+        if logprobs:
+            request_kwargs["logprobs"] = True
+            request_kwargs["top_logprobs"] = top_logprobs
 
-            if logprobs:
-                request_kwargs["logprobs"] = True
-                request_kwargs["top_logprobs"] = top_logprobs
-
-            completion = await self.client.beta.chat.completions.parse(**request_kwargs)
-            parsed = completion.choices[0].message.parsed
-            return parsed, completion
-
-        except Exception as e:
-            print(f"[ERROR] Failed to parse completion: {e}")
-            raise
-
-    def _clean_json_response(self, response: str) -> str:
-        """
-        Clean JSON response by removing code block markers and whitespace.
-        Handles cases like:
-        - ```json{"result": "value"}```
-        """
-        cleaned = response.strip()
-
-        # Remove ```json marker
-        if cleaned.startswith("```json"):
-            cleaned = cleaned[7:]
-
-        # Remove trailing ```
-        if cleaned.endswith("```"):
-            cleaned = cleaned[:-3]
-
-        return cleaned.strip()
-
-    def _convert_to_output_model(self, response_string: str, output_model: T) -> T:
-        """
-        Convert a JSON response string to output model.
-
-        Args:
-            response_string: The JSON string (may contain code block markers)
-            output_model: Your Pydantic output model class (e.g., StrOutput, ListStrOutput)
-
-        Returns:
-            Instance of your output model
-        """
-        try:
-            # Clean the response string
-            cleaned_json = self._clean_json_response(response_string)
-
-            # Fix Python-style booleans
-            cleaned_json = cleaned_json.replace("False", "false").replace(
-                "True", "true"
-            )
-
-            # Convert string to Python dictionary
-            response_dict = json.loads(cleaned_json)
-
-            # Convert dictionary to output model
-            return output_model(**response_dict)
-
-        except json.JSONDecodeError as e:
-            raise ValueError(
-                f"Failed to parse JSON response: {e}\nResponse: {response_string}"
-            )
-        except Exception as e:
-            raise ValueError(f"Failed to convert to output model: {e}")
+        completion = await self.client.beta.chat.completions.parse(**request_kwargs)
+        parsed = completion.choices[0].message.parsed
+        return parsed, completion
 
     async def _vllm_completion(
         self,
         message: list[dict[str, str]],
-        output_model: T,
+        output_model: Type[T],
+        temperature: float,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: int | None = None,
-    ) -> tuple[T, Any]:
-        try:
-            json_schema = output_model.model_json_schema()
+    ) -> tuple[Type[T], Any]:
+        json_schema = output_model.model_json_schema()
 
-            # Build kwargs dynamically
-            request_kwargs = {
-                "model": self.model,
-                "messages": message,
-                "extra_body": {"guided_json": json_schema},
-                "temperature": self.temperature,
-                **self.client_kwargs,
-            }
+        # Build kwargs dynamically
+        request_kwargs = {
+            "model": self.model,
+            "messages": message,
+            "extra_body": {"guided_json": json_schema},
+            "temperature": temperature,
+        }
 
-            if max_tokens is not None:
-                request_kwargs["max_tokens"] = max_tokens
+        if logprobs:
+            request_kwargs["logprobs"] = True
+            request_kwargs["top_logprobs"] = top_logprobs
 
-            if logprobs:
-                request_kwargs["logprobs"] = True
-                request_kwargs["top_logprobs"] = top_logprobs
+        completion = await self.client.chat.completions.create(**request_kwargs)
+        response = completion.choices[0].message.content
 
-            completion = await self.client.chat.completions.create(**request_kwargs)
-            response = completion.choices[0].message.content
-
-            # Convert the string response to output model
-            parsed = self._convert_to_output_model(response, output_model)
-
-            return parsed, completion
-
-        except Exception as e:
-            print(f"[ERROR] Failed to get vLLM structured output: {e}")
-            raise
-
-    def _extract_logprobs(self, completion: dict):
-        logprobs_data = []
-        ignore_pattern = re.compile(r'^(result|[\s\[\]\{\}",:]+)$')
-
-        for choice in completion.choices:
-            if not getattr(choice, "logprobs", None):
-                logger.info("No logprobs found.")
-                continue
-
-            for logprob_item in choice.logprobs.content:
-                if ignore_pattern.match(logprob_item.token):
-                    continue
-                token_entry = {
-                    "token": logprob_item.token,
-                    "prob": round(math.exp(logprob_item.logprob), 8),
-                    "top_alternatives": [],
-                }
-                for alt in logprob_item.top_logprobs:
-                    if ignore_pattern.match(alt.token):
-                        continue
-                    token_entry["top_alternatives"].append(
-                        {
-                            "token": alt.token,
-                            "prob": round(math.exp(alt.logprob), 8),
-                        }
-                    )
-                logprobs_data.append(token_entry)
-
-        return logprobs_data
+        # Convert the string response to output model
+        parsed = self._convert_to_output_model(response, output_model)
+        return parsed, completion
 
     async def run(
         self,
-        input_text: str,
+        # User parameters
+        text: str,
+        with_analysis: bool,
+        output_lang: str | None,
+        user_prompt: str | None,
+        temperature: float,
+        logprobs: bool,
+        top_logprobs: int | None,
+        # Internal parameters
         prompt_file: str,
-        output_model: T,
-        with_analysis: bool = False,
-        use_modes: bool = False,
-        mode: str = "",
-        resp_format: Literal["vllm", "parse"] = "parse",
-        output_lang: str | None = None,
-        logprobs: bool = False,
-        top_logprobs: int = 3,
-        max_tokens: int | None = None,
+        output_model: Type[T],
+        resp_format: Literal["vllm", "parse"],
+        mode: str | None,
         **extra_kwargs,
     ) -> dict[str, Any]:
         """
-        Execute the async LLM pipeline with the given input text.
+        Execute the async LLM pipeline with the given input text. (Async)
         """
         prompt_loader = PromptLoader()
         formatter = UserMergeFormatter()
 
         try:
-            cleaned_text = input_text.strip()
+            cleaned_text = text.strip()
 
             prompt_configs = prompt_loader.load(
                 prompt_file=prompt_file,
                 text=cleaned_text,
-                mode=mode if use_modes else "",
+                mode=mode,
                 **extra_kwargs,
             )
 
             messages: list[dict[str, str]] = []
 
             if with_analysis:
-                analysis = await self._analyze(prompt_configs)
+                analysis = await self._analyze(prompt_configs, temperature)
                 messages.append(
                     self._build_user_message(f"Based on this analysis: {analysis}")
                 )
@@ -265,27 +153,22 @@ class AsyncOperator:
                     )
                 )
 
+            if user_prompt:
+                messages.append(
+                    self._build_user_message(f"Consider this instruction {user_prompt}")
+                )
+
             messages.append(self._build_user_message(prompt_configs["main_template"]))
             messages = formatter.format(messages)
 
             if resp_format == "vllm":
                 parsed, completion = await self._vllm_completion(
-                    messages,
-                    output_model,
-                    logprobs,
-                    top_logprobs,
-                    max_tokens,
+                    messages, output_model, temperature, logprobs, top_logprobs
                 )
             elif resp_format == "parse":
-                parsed, completion = await self._parse_completion(
-                    messages,
-                    output_model,
-                    logprobs,
-                    top_logprobs,
-                    max_tokens,
+                parsed, completion = await self._vllm_completion(
+                    messages, output_model, temperature, logprobs, top_logprobs
                 )
-            else:
-                logger.error(f"Unknown resp_format: {resp_format}")
 
             # Ensure output_model has a `result` field
             if not hasattr(parsed, "result"):

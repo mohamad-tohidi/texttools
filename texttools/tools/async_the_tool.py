@@ -1,9 +1,9 @@
-from typing import Literal
+from typing import Literal, Any
 
 from openai import AsyncOpenAI
 
-import texttools.tools.internals.output_models as OutputModels
 from texttools.tools.internals.async_operator import AsyncOperator
+import texttools.tools.internals.output_models as OutputModels
 
 
 class AsyncTheTool:
@@ -12,266 +12,327 @@ class AsyncTheTool:
 
     Usage:
         async_client = AsyncOpenAI(...)
-        tool = TheToolAsync(async_client, model="gemma-3")
-        result = await tool.categorize("متن ...", with_analysis=True)
+        tool = TheToolAsync(async_client, model="model-name")
+        result = await tool.categorize("text ...", with_analysis=True)
     """
 
     def __init__(
         self,
         client: AsyncOpenAI,
-        *,
         model: str,
-        temperature: float = 0.0,
     ):
-        self.operator = AsyncOperator(
-            client=client,
-            model=model,
-            temperature=temperature,
-        )
+        self.operator = AsyncOperator(client=client, model=model)
 
     async def categorize(
         self,
         text: str,
         with_analysis: bool = False,
-        user_prompt: str = "",
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int = 8,
-        max_tokens: int | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, str]:
-        results = await self.operator.run(
-            text,
-            prompt_file="categorizer.yaml",
-            output_model=OutputModels.CategorizerOutput,
+        """
+        Categorize a text into a single Islamic studies domain category.
+
+        Args:
+            text: Input string to categorize.
+            with_analysis: If True, first runs an LLM "analysis" step and
+                           conditions the main prompt on that analysis.
+
+        Returns:
+            {"result": <category string>}
+            Example: {"result": "باورهای دینی"}
+        """
+        return await self.operator.run(
+            # User parameters
+            text=text,
             with_analysis=with_analysis,
-            resp_format="parse",
+            output_lang=output_lang,
             user_prompt=user_prompt,
+            temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
-            max_tokens=max_tokens,
+            # Internal parameters
+            prompt_file="categorizer.yaml",
+            output_model=OutputModels.CategorizerOutput,
+            resp_format="parse",
+            mode=None,
         )
-        return results
 
     async def extract_keywords(
         self,
         text: str,
-        output_lang: str | None = None,
         with_analysis: bool = False,
-        user_prompt: str = "",
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int = 3,
-        max_tokens: int | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, list[str]]:
-        results = await self.operator.run(
-            text,
-            prompt_file="keyword_extractor.yaml",
-            output_model=OutputModels.ListStrOutput,
+        return await self.operator.run(
+            # User parameters
+            text=text,
             with_analysis=with_analysis,
-            resp_format="parse",
-            user_prompt=user_prompt,
             output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
-            max_tokens=max_tokens,
+            # Internal parameters
+            prompt_file="extract_keywords.yaml",
+            output_model=OutputModels.ListStrOutput,
+            resp_format="parse",
+            mode=None,
         )
-        return results
 
     async def extract_entities(
         self,
         text: str,
-        output_lang: str | None = None,
         with_analysis: bool = False,
-        user_prompt: str = "",
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int = 3,
-        max_tokens: int | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, list[dict[str, str]]]:
-        results = await self.operator.run(
-            text,
-            prompt_file="ner_extractor.yaml",
-            output_model=OutputModels.ListDictStrStrOutput,
+        return await self.operator.run(
+            # User parameters
+            text=text,
             with_analysis=with_analysis,
-            resp_format="parse",
-            user_prompt=user_prompt,
             output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
-            max_tokens=max_tokens,
+            # Internal parameters
+            prompt_file="extract_entities.yaml",
+            output_model=OutputModels.ListDictStrStrOutput,
+            resp_format="parse",
+            mode=None,
         )
-        return results
 
     async def is_question(
         self,
-        question: str,
-        output_lang: str | None = None,
+        text: str,
         with_analysis: bool = False,
-        user_prompt: str = "",
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int = 2,
-        max_tokens: int | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, bool]:
-        results = await self.operator.run(
-            question,
-            prompt_file="is_question.yaml",
-            output_model=OutputModels.BoolOutput,
+        return await self.operator.run(
+            # User parameters
+            text=text,
             with_analysis=with_analysis,
-            resp_format="parse",
             user_prompt=user_prompt,
-            output_lang=output_lang,
+            temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
-            max_tokens=max_tokens,
+            # Internal parameters
+            prompt_file="is_question.yaml",
+            output_model=OutputModels.BoolOutput,
+            resp_format="parse",
+            mode=None,
+            output_lang=None,
         )
-        return results
 
     async def text_to_question(
         self,
         text: str,
-        output_lang: str | None = None,
         with_analysis: bool = False,
-        user_prompt: str = "",
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int = 3,
-        max_tokens: int | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, str]:
-        results = await self.operator.run(
-            text,
-            prompt_file="text_to_question.yaml",
-            output_model=OutputModels.StrOutput,
+        return await self.operator.run(
+            # User parameters
+            text=text,
             with_analysis=with_analysis,
-            resp_format="parse",
-            user_prompt=user_prompt,
             output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
-            max_tokens=max_tokens,
+            # Internal parameters
+            prompt_file="text_to_question.yaml",
+            output_model=OutputModels.StrOutput,
+            resp_format="parse",
+            mode=None,
         )
-        return results
 
     async def merge_questions(
         self,
-        questions: list[str],
-        output_lang: str | None = None,
-        mode: Literal["default", "reason"] = "default",
+        text: list[str],
         with_analysis: bool = False,
-        user_prompt: str = "",
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int = 3,
-        max_tokens: int | None = None,
+        top_logprobs: int | None = None,
+        mode: Literal["default", "reason"] = "default",
     ) -> dict[str, str]:
-        question_str = ", ".join(questions)
-        results = await self.operator.run(
-            question_str,
-            prompt_file="question_merger.yaml",
-            output_model=OutputModels.StrOutput,
+        text = ", ".join(text)
+        return await self.operator.run(
+            # User parameters
+            text=text,
             with_analysis=with_analysis,
-            use_modes=True,
-            mode=mode,
-            resp_format="parse",
-            user_prompt=user_prompt,
             output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
-            max_tokens=max_tokens,
+            # Internal parameters
+            prompt_file="merge_questions.yaml",
+            output_model=OutputModels.StrOutput,
+            resp_format="parse",
+            mode=mode,
         )
-        return results
 
     async def rewrite(
         self,
-        question: str,
-        output_lang: str | None = None,
-        mode: Literal["positive", "negative", "hard_negative"] = "positive",
+        text: str,
         with_analysis: bool = False,
-        user_prompt: str = "",
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int = 3,
-        max_tokens: int | None = None,
+        top_logprobs: int | None = None,
+        mode: Literal["positive", "negative", "hard_negative"] = "positive",
     ) -> dict[str, str]:
-        results = await self.operator.run(
-            question,
-            prompt_file="rewriter.yaml",
-            output_model=OutputModels.StrOutput,
+        return await self.operator.run(
+            # User parameters
+            text=text,
             with_analysis=with_analysis,
-            use_modes=True,
-            mode=mode,
-            resp_format="parse",
-            user_prompt=user_prompt,
             output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
-            max_tokens=max_tokens,
+            # Internal parameters
+            prompt_file="rewrite.yaml",
+            output_model=OutputModels.StrOutput,
+            resp_format="parse",
+            mode=mode,
         )
-        return results
 
     async def subject_to_question(
         self,
-        subject: str,
+        text: str,
         number_of_questions: int,
-        output_lang: str | None = None,
         with_analysis: bool = False,
-        user_prompt: str = "",
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int = 3,
-        max_tokens: int | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, list[str]]:
-        results = await self.operator.run(
-            subject,
-            prompt_file="subject_to_question.yaml",
-            output_model=OutputModels.ReasonListStrOutput,
-            with_analysis=with_analysis,
-            resp_format="parse",
-            user_prompt=user_prompt,
+        return await self.operator.run(
+            # User parameters
+            text=text,
             number_of_questions=number_of_questions,
+            with_analysis=with_analysis,
             output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
-            max_tokens=max_tokens,
+            # Internal parameters
+            prompt_file="subject_to_question.yaml",
+            output_model=OutputModels.ReasonListStrOutput,
+            resp_format="parse",
+            mode=None,
         )
-        return results
 
     async def summarize(
         self,
         text: str,
-        output_lang: str | None = None,
         with_analysis: bool = False,
-        user_prompt: str = "",
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int = 3,
-        max_tokens: int | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, str]:
-        results = await self.operator.run(
-            text,
-            prompt_file="summarizer.yaml",
-            output_model=OutputModels.StrOutput,
+        return await self.operator.run(
+            # User parameters
+            text=text,
             with_analysis=with_analysis,
-            resp_format="parse",
-            user_prompt=user_prompt,
             output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
-            max_tokens=max_tokens,
+            # Internal parameters
+            prompt_file="summarize.yaml",
+            output_model=OutputModels.StrOutput,
+            resp_format="parse",
+            mode=None,
         )
-        return results
 
     async def translate(
         self,
         text: str,
         target_language: str,
         with_analysis: bool = False,
-        user_prompt: str = "",
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int = 3,
-        max_tokens: int | None = None,
+        top_logprobs: int | None = None,
     ) -> dict[str, str]:
-        results = await self.operator.run(
-            text,
-            prompt_file="translator.yaml",
-            output_model=OutputModels.StrOutput,
-            with_analysis=with_analysis,
-            resp_format="parse",
-            user_prompt=user_prompt,
+        return await self.operator.run(
+            # User parameters
+            text=text,
             target_language=target_language,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
-            max_tokens=max_tokens,
+            # Internal parameters
+            prompt_file="translate.yaml",
+            output_model=OutputModels.StrOutput,
+            resp_format="parse",
+            mode=None,
         )
-        return results
+
+    async def run_custom(
+        self,
+        prompt: str,
+        output_model: Any,
+        output_lang: str | None = None,
+        temperature: float | None = None,
+        logprobs: bool | None = None,
+        top_logprobs: int | None = None,
+    ) -> dict[str, Any]:
+        """
+        Custom tool that can do almost anything!
+
+        Args:
+            prompt: Custom prompt.
+            output_model: Custom BaseModel output model.
+
+        Returns:
+            {"result": <Any>}
+        """
+        return await self.operator.run(
+            # User paramaeters
+            text=prompt,
+            output_model=output_model,
+            output_model_str=output_model.model_json_schema(),
+            output_lang=output_lang,
+            temperature=temperature,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            # Internal parameters
+            prompt_file="run_custom.yaml",
+            resp_format="parse",
+            user_prompt=None,
+            with_analysis=False,
+            mode=None,
+        )
