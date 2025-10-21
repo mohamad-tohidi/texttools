@@ -10,6 +10,9 @@ class AsyncTheTool:
     """
     Async counterpart to TheTool.
 
+    Each method configures the async operator with a specific YAML prompt,
+    output schema, and flags, then delegates execution to `operator.run()`.
+
     Usage:
         async_client = AsyncOpenAI(...)
         tool = TheToolAsync(async_client, model="model-name")
