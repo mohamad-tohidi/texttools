@@ -71,7 +71,6 @@ class Operator(BaseOperator):
         temperature: float,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        max_tokens: int | None = None,
     ) -> tuple[Type[T], Any]:
         json_schema = output_model.model_json_schema()
 
