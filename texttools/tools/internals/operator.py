@@ -174,4 +174,4 @@ class Operator(BaseOperator):
 
         except Exception as e:
             logger.error(f"TheTool failed: {e}")
-            return {"Error": str(e), "result": ""}
+            return {"error": str(e), "result": ""}
