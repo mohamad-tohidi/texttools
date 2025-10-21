@@ -1,13 +1,13 @@
-class UserMergeFormatter:
-    """
-    Merges consecutive user messages into a single message, separated by newlines.
+class Formatter:
+    @staticmethod
+    def user_merge_format(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+        """
+        Merges consecutive user messages into a single message, separated by newlines.
 
-    This is useful for condensing a multi-turn user input into a single
-    message for the LLM. Assistant and system messages are left unchanged and
-    act as separators between user message groups.
-    """
-
-    def format(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
+        This is useful for condensing a multi-turn user input into a single
+        message for the LLM. Assistant and system messages are left unchanged and
+        act as separators between user message groups.
+        """
         merged: list[dict[str, str]] = []
 
         for message in messages:
