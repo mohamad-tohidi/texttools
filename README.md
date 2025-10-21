@@ -8,8 +8,6 @@ It provides both **sync (`TheTool`)** and **async (`AsyncTheTool`)** APIs for ma
 
 It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER extractor, and more** — designed to help you integrate AI-powered text processing into your applications with minimal effort.
 
-**Thread Safety:** All methods in AsyncTheTool are thread-safe, allowing concurrent usage across multiple threads without conflicts.
-
 ---
 
 ## ✨ Features
@@ -44,7 +42,11 @@ Note: This doubles token usage per call because it triggers an additional LLM re
 
 - **`user_prompt="..."`** → Allows you to inject a custom instruction or prompt into the model alongside the main template. This gives you fine-grained control over how the model interprets or modifies the input text.
 
-All these flags can be used individually or together to tailor the behavior of any tool in **TextTools**.
+- **`temperature=0.0`** → Determines how creative the model should respond. Takes a float number from `0.0` to `1.0`.
+
+All these parameters can be used individually or together to tailor the behavior of any tool in **TextTools**.
+
+**Note:** There might be some tools that don't support some of the parameters above.
 
 ---
 
@@ -70,7 +72,6 @@ pip install -U hamtaa-texttools
 
 ```python
 from openai import OpenAI
-from pydantic import BaseModel
 from texttools import TheTool
 
 # Create your OpenAI client
@@ -80,29 +81,19 @@ client = OpenAI(base_url = "your_url", API_KEY = "your_api_key")
 model = "gpt-4o-mini"
 
 # Create an instance of TheTool
-# Note: You can give parameters to TheTool so that you don't need to give them to each tool
 the_tool = TheTool(client=client, model=model)
 
 # Example: Question Detection
 detection = the_tool.is_question("Is this project open source?", logprobs=True, top_logprobs=2)
 print(detection["result"])
 print(detection["logprobs"])
-# Output: True
+# Output: True \n --logprobs
 
 # Example: Translation
-# Note: You can overwrite with_analysis if defined at TheTool
-print(the_tool.translate("سلام، حالت چطوره؟", target_language="English", with_analysis=False)["result"])
-# Output: "Hi! How are you?"
-
-# Example: Custom Tool
-# Note: Output model should only contain result key
-# Everything else will be ignored
-class Custom(BaseModel):
-  result: list[list[dict[str, int]]]
-
-custom_prompt = "Something"
-custom_result = the_tool.run_custom(custom_prompt, Custom)
-print(custom_result)
+translation = the_tool.translate("سلام، حالت چطوره؟" target_language="English", with_analysis=True)
+print(translation["result"])
+print(translation["analysis"])
+# Output: "Hi! How are you?" \n --analysis
 ```
 
 ---
@@ -115,7 +106,7 @@ from openai import AsyncOpenAI
 from texttools import AsyncTheTool
 
 async def main():
-    # Create your async OpenAI client
+    # Create your AsyncOpenAI client
     async_client = AsyncOpenAI(base_url="your_url", api_key="your_api_key")
 
     # Specify the model
