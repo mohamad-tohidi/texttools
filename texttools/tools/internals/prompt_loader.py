@@ -18,24 +18,15 @@ class PromptLoader:
         }
     """
 
-    def __init__(self):
-        self.base_dir = Path(__file__).parent.parent.parent / Path("prompts")
-
     MAIN_TEMPLATE: str = "main_template"
     ANALYZE_TEMPLATE: str = "analyze_template"
 
     # Use lru_cache to load each file once
     @lru_cache(maxsize=32)
     def _load_templates(self, prompt_file: str, mode: str | None) -> dict[str, str]:
-        prompt_path = self.base_dir / prompt_file
-
-        if not prompt_path.exists():
-            raise FileNotFoundError(f"Prompt file not found: {prompt_path}")
-
-        try:
-            data = yaml.safe_load(prompt_path.read_text(encoding="utf-8"))
-        except yaml.YAMLError as e:
-            raise ValueError(f"Invalid YAML in {prompt_path}: {e}")
+        base_dir = Path(__file__).parent.parent.parent / Path("prompts")
+        prompt_path = base_dir / prompt_file
+        data = yaml.safe_load(prompt_path.read_text(encoding="utf-8"))
 
         return {
             self.MAIN_TEMPLATE: data[self.MAIN_TEMPLATE][mode]
