@@ -11,14 +11,13 @@ from texttools import AsyncTheTool
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY")
 BASE_URL = os.getenv("BASE_URL")
-
-model = "gpt-4o-mini"
+MODEL = os.getenv("MODEL")
 
 # Create AsyncOpenAI client
 client = AsyncOpenAI(base_url=BASE_URL, api_key=API_KEY)
 
 # Create an instance of TheTool
-tool = AsyncTheTool(client=client, model=model)
+tool = AsyncTheTool(client=client, model=MODEL)
 
 
 async def main():

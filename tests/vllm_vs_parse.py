@@ -9,18 +9,17 @@ from texttools import TheTool
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY")
 BASE_URL = os.getenv("BASE_URL")
-
-model = "google/gemma-3n-e4b-it"
+MODEL = os.getenv("MODEL")
 
 # Create OpenAI client
 client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 
 # Create a parser instance of TheTool
-parse_tool = TheTool(client=client, model=model)
+parse_tool = TheTool(client=client, model=MODEL)
 parse_tool.operator.RESP_FORMAT = "parse"
 
 # Create a vllm structured output instance of TheTool
-vllm_tool = TheTool(client=client, model=model)
+vllm_tool = TheTool(client=client, model=MODEL)
 vllm_tool.operator.RESP_FORMAT = "vllm"
 
 # Define test inputs

@@ -10,14 +10,13 @@ from texttools import TheTool
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY")
 BASE_URL = os.getenv("BASE_URL")
-
-model = "google/gemma-3n-e4b-it"
+MODEL = os.getenv("MODEL")
 
 # Create OpenAI client
 client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 
 # Create an instance of TheTool
-t = TheTool(client=client, model=model)
+t = TheTool(client=client, model=MODEL)
 
 # Categorizer
 category = t.categorize("سلام حالت چطوره؟")
