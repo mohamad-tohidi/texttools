@@ -34,23 +34,15 @@ class AsyncOperator(BaseOperator):
         self.client: AsyncOpenAI = client
         self.model = model
 
-    async def _analysis_completion(
-        self,
-        analyze_message: list[dict[str, str]],
-        temperature: float,
-    ) -> str:
+    async def _analyze(self, prompt_configs: dict[str, str], temperature: float) -> str:
+        analyze_prompt = prompt_configs["analyze_template"]
+        analyze_message = [self._build_user_message(analyze_prompt)]
         completion = await self.client.chat.completions.create(
             model=self.model,
             messages=analyze_message,
             temperature=temperature,
         )
         analysis = completion.choices[0].message.content.strip()
-        return analysis
-
-    async def _analyze(self, prompt_configs: dict[str, str], temperature: float) -> str:
-        analyze_prompt = prompt_configs["analyze_template"]
-        analyze_message = [self._build_user_message(analyze_prompt)]
-        analysis = await self._analysis_completion(analyze_message, temperature)
         return analysis
 
     async def _parse_completion(
