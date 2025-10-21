@@ -81,7 +81,7 @@ model = "gpt-4o-mini"
 
 # Create an instance of TheTool
 # Note: You can give parameters to TheTool so that you don't need to give them to each tool
-the_tool = TheTool(client=client, model=model, with_analysis=True, output_lang="English")
+the_tool = TheTool(client=client, model=model)
 
 # Example: Question Detection
 detection = the_tool.is_question("Is this project open source?", logprobs=True, top_logprobs=2)
