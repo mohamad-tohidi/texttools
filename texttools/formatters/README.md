@@ -7,19 +7,9 @@ Each formatter is responsible for transforming raw messages or text into a stand
 ---
 
 ## Structure
-- **base_formatter.py**: Defines the abstract `BaseFormatter` class. All custom formatters should inherit from this.
 - **user_merge_formatter.py**: Implements the `UserMergeFormatter`, which merges consecutive user messages and replaces system roles with user roles.
 
-### BaseFormatter
-- Defines a common interface for all formatters.
-- Abstract method:
-  ```python
-  def format(self, text: str, analysis: str | None, schema_instr: str, prompt_template: str | None) -> Any
-  ```
-- Implementations decide the final shape (string, list of role/content dicts, or provider-specific JSON).
-
 ### UserMergeFormatter
-- Inherits from `BaseFormatter`.
 - Features:
   - Merges consecutive `user` messages into a single block separated by newlines.
   - Converts `system` role to `user` role.
@@ -43,11 +33,3 @@ formatted = formatter.format(messages)
 #   {"role": "assistant", "content": "I'm fine, thanks."}
 # ]
 ```
-
----
-
-## Guidelines
-1. **Inheritance**: New formatters must inherit from `BaseFormatter`.
-2. **Validation**: Each formatter should validate inputs before transforming them.
-3. **Consistency**: Ensure that role and content fields remain consistent across all implementations.
-4. **Extensibility**: New formatters can be added to handle other providers or formatting needs.
