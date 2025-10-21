@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Any, TypeVar, Type, Literal
 import logging
 
@@ -22,7 +20,7 @@ logger.setLevel(logging.INFO)
 
 class Operator(BaseOperator):
     """
-    Core engine for running text-processing operations with an LLM.
+    Core engine for running text-processing operations with an LLM (Sync).
 
     It wires together:
     - `PromptLoader` → loads YAML prompt templates.
@@ -122,11 +120,9 @@ class Operator(BaseOperator):
         formatter = UserMergeFormatter()
 
         try:
-            cleaned_text = text.strip()
-
             prompt_configs = prompt_loader.load(
                 prompt_file=prompt_file,
-                text=cleaned_text,
+                text=text.strip(),
                 mode=mode,
                 **extra_kwargs,
             )
