@@ -27,7 +27,6 @@ class AsyncTheTool:
         self,
         text: str,
         with_analysis: bool = False,
-        output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
@@ -36,20 +35,13 @@ class AsyncTheTool:
         """
         Categorize a text into a single Islamic studies domain category.
 
-        Args:
-            text: Input string to categorize.
-            with_analysis: If True, first runs an LLM "analysis" step and
-                           conditions the main prompt on that analysis.
-
         Returns:
-            {"result": <category string>}
-            Example: {"result": "باورهای دینی"}
+            {"result": <category string>} + ("logprobs" and "analysis" if enabled)
         """
         return await self.operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
-            output_lang=output_lang,
             user_prompt=user_prompt,
             temperature=temperature,
             logprobs=logprobs,
@@ -59,6 +51,7 @@ class AsyncTheTool:
             output_model=OutputModels.CategorizerOutput,
             resp_format="parse",
             mode=None,
+            output_lang=None,
         )
 
     async def extract_keywords(
@@ -71,6 +64,12 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
     ) -> dict[str, list[str]]:
+        """
+        Extract salient keywords from text.
+
+        Returns:
+            {"result": [<keyword1>, <keyword2>, ...]} + ("logprobs" and "analysis" if enabled)
+        """
         return await self.operator.run(
             # User parameters
             text=text,
@@ -97,6 +96,12 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
     ) -> dict[str, list[dict[str, str]]]:
+        """
+        Perform Named Entity Recognition (NER) over the input text.
+
+        Returns:
+            {"result": [{"text": <entity>, "type": <entity_type>}, ...]} + ("logprobs" and "analysis" if enabled)
+        """
         return await self.operator.run(
             # User parameters
             text=text,
@@ -122,6 +127,12 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
     ) -> dict[str, bool]:
+        """
+        Detect if the input is phrased as a question.
+
+        Returns:
+            {"result": True} or {"result": False} + ("logprobs" and "analysis" if enabled)
+        """
         return await self.operator.run(
             # User parameters
             text=text,
@@ -148,6 +159,12 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
     ) -> dict[str, str]:
+        """
+        Generate a single question from the given text.
+
+        Returns:
+            {"result": <generated_question>} + ("logprobs" and "analysis" if enabled)
+        """
         return await self.operator.run(
             # User parameters
             text=text,
@@ -175,6 +192,12 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         mode: Literal["default", "reason"] = "default",
     ) -> dict[str, str]:
+        """
+        Merge multiple questions into a single unified question.
+
+        Returns:
+            {"result": <merged_question>} + ("logprobs" and "analysis" if enabled)
+        """
         text = ", ".join(text)
         return await self.operator.run(
             # User parameters
@@ -203,6 +226,12 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
     ) -> dict[str, str]:
+        """
+        Rewrite a text with different modes.
+
+        Returns:
+            {"result": <rewritten_text>} + ("logprobs" and "analysis" if enabled)
+        """
         return await self.operator.run(
             # User parameters
             text=text,
@@ -230,6 +259,12 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
     ) -> dict[str, list[str]]:
+        """
+        Generate a list of questions about a subject.
+
+        Returns:
+            {"result": [<question1>, <question2>, ...]} + ("logprobs" and "analysis" if enabled)
+        """
         return await self.operator.run(
             # User parameters
             text=text,
@@ -257,6 +292,12 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
     ) -> dict[str, str]:
+        """
+        Summarize the given subject text.
+
+        Returns:
+            {"result": <summary>} + ("logprobs" and "analysis" if enabled)
+        """
         return await self.operator.run(
             # User parameters
             text=text,
@@ -278,18 +319,22 @@ class AsyncTheTool:
         text: str,
         target_language: str,
         with_analysis: bool = False,
-        output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
     ) -> dict[str, str]:
+        """
+        Translate text between languages.
+
+        Returns:
+            {"result": <translated_text>} + ("logprobs" and "analysis" if enabled)
+        """
         return await self.operator.run(
             # User parameters
             text=text,
             target_language=target_language,
             with_analysis=with_analysis,
-            output_lang=output_lang,
             user_prompt=user_prompt,
             temperature=temperature,
             logprobs=logprobs,
@@ -299,6 +344,7 @@ class AsyncTheTool:
             output_model=OutputModels.StrOutput,
             resp_format="parse",
             mode=None,
+            output_lang=None,
         )
 
     async def run_custom(
@@ -312,10 +358,6 @@ class AsyncTheTool:
     ) -> dict[str, Any]:
         """
         Custom tool that can do almost anything!
-
-        Args:
-            prompt: Custom prompt.
-            output_model: Custom BaseModel output model.
 
         Returns:
             {"result": <Any>}

@@ -28,7 +28,6 @@ class TheTool:
         self,
         text: str,
         with_analysis: bool = False,
-        output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
@@ -37,20 +36,13 @@ class TheTool:
         """
         Categorize a text into a single Islamic studies domain category.
 
-        Args:
-            text: Input string to categorize.
-            with_analysis: If True, first runs an LLM "analysis" step and
-                           conditions the main prompt on that analysis.
-
         Returns:
-            {"result": <category string>}
-            Example: {"result": "باورهای دینی"}
+            {"result": <category string>} + ("logprobs" and "analysis" if enabled)
         """
         return self.operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
-            output_lang=output_lang,
             user_prompt=user_prompt,
             temperature=temperature,
             logprobs=logprobs,
@@ -60,6 +52,7 @@ class TheTool:
             output_model=OutputModels.CategorizerOutput,
             resp_format="parse",
             mode=None,
+            output_lang=None,
         )
 
     def extract_keywords(
@@ -75,12 +68,8 @@ class TheTool:
         """
         Extract salient keywords from text.
 
-        Args:
-            text: Input string to analyze.
-            with_analysis: Whether to run an extra LLM reasoning step.
-
         Returns:
-            {"result": [<keyword1>, <keyword2>, ...]}
+            {"result": [<keyword1>, <keyword2>, ...]} + ("logprobs" and "analysis" if enabled)
         """
         return self.operator.run(
             # User parameters
@@ -111,12 +100,8 @@ class TheTool:
         """
         Perform Named Entity Recognition (NER) over the input text.
 
-        Args:
-            text: Input string.
-            with_analysis: Whether to run an extra LLM reasoning step.
-
         Returns:
-            {"result": [{"text": <entity>, "type": <entity_type>}, ...]}
+            {"result": [{"text": <entity>, "type": <entity_type>}, ...]} + ("logprobs" and "analysis" if enabled)
         """
         return self.operator.run(
             # User parameters
@@ -146,12 +131,8 @@ class TheTool:
         """
         Detect if the input is phrased as a question.
 
-        Args:
-            question: Input string to evaluate.
-            with_analysis: Whether to include an analysis step.
-
         Returns:
-            {"result": "true"} or {"result": "false"}
+            {"result": True} or {"result": False} + ("logprobs" and "analysis" if enabled)
         """
         return self.operator.run(
             # User parameters
@@ -182,12 +163,8 @@ class TheTool:
         """
         Generate a single question from the given text.
 
-        Args:
-            text: Source text to derive a question from.
-            with_analysis: Whether to use analysis before generation.
-
         Returns:
-            {"result": <generated_question>}
+            {"result": <generated_question>} + ("logprobs" and "analysis" if enabled)
         """
         return self.operator.run(
             # User parameters
@@ -219,15 +196,8 @@ class TheTool:
         """
         Merge multiple questions into a single unified question.
 
-        Args:
-            questions: List of question strings.
-            mode: Merge strategy:
-                - "default": simple merging.
-                - "reason": merging with reasoning explanation.
-            with_analysis: Whether to use an analysis step.
-
         Returns:
-            {"result": <merged_question>}
+            {"result": <merged_question>} + ("logprobs" and "analysis" if enabled)
         """
         text = ", ".join(text)
         return self.operator.run(
@@ -258,17 +228,10 @@ class TheTool:
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
     ) -> dict[str, str]:
         """
-        Rewrite a question with different wording or meaning.
-
-        Args:
-            question: Input question to rewrite.
-            mode: Rewrite strategy:
-                - "positive": keep meaning, change words.
-                - "negative": alter meaning, preserve wording style.
-            with_analysis: Whether to include an analysis step.
+        Rewrite a text with different modes.
 
         Returns:
-            {"result": <rewritten_question>}
+            {"result": <rewritten_text>} + ("logprobs" and "analysis" if enabled)
         """
         return self.operator.run(
             # User parameters
@@ -300,14 +263,8 @@ class TheTool:
         """
         Generate a list of questions about a subject.
 
-        Args:
-            subject: Topic of interest.
-            number_of_questions: Number of questions to produce.
-            language: Target language for generated questions.
-            with_analysis: Whether to include an analysis step.
-
         Returns:
-            {"result": [<question1>, <question2>, ...]}
+            {"result": [<question1>, <question2>, ...]} + ("logprobs" and "analysis" if enabled)
         """
         return self.operator.run(
             # User parameters
@@ -339,12 +296,8 @@ class TheTool:
         """
         Summarize the given subject text.
 
-        Args:
-            subject: Input text to summarize.
-            with_analysis: Whether to include an analysis step.
-
         Returns:
-            {"result": <summary>}
+            {"result": <summary>} + ("logprobs" and "analysis" if enabled)
         """
         return self.operator.run(
             # User parameters
@@ -367,7 +320,6 @@ class TheTool:
         text: str,
         target_language: str,
         with_analysis: bool = False,
-        output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
@@ -376,20 +328,14 @@ class TheTool:
         """
         Translate text between languages.
 
-        Args:
-            text: Input string to translate.
-            target_language: Language code or name to translate into.
-            with_analysis: Whether to include an analysis step.
-
         Returns:
-            {"result": <translated_text>}
+            {"result": <translated_text>} + ("logprobs" and "analysis" if enabled)
         """
         return self.operator.run(
             # User parameters
             text=text,
             target_language=target_language,
             with_analysis=with_analysis,
-            output_lang=output_lang,
             user_prompt=user_prompt,
             temperature=temperature,
             logprobs=logprobs,
@@ -399,6 +345,7 @@ class TheTool:
             output_model=OutputModels.StrOutput,
             resp_format="parse",
             mode=None,
+            output_lang=None,
         )
 
     def run_custom(
@@ -412,10 +359,6 @@ class TheTool:
     ) -> dict[str, Any]:
         """
         Custom tool that can do almost anything!
-
-        Args:
-            prompt: Custom prompt.
-            output_model: Custom BaseModel output model.
 
         Returns:
             {"result": <Any>}
