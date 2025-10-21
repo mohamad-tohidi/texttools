@@ -1,4 +1,4 @@
-from typing import TypeVar, Type
+from typing import TypeVar, Type, Any
 import json
 import re
 import math
@@ -55,7 +55,7 @@ class BaseOperator:
         # Convert dictionary to output model
         return output_model(**response_dict)
 
-    def _extract_logprobs(self, completion: dict):
+    def _extract_logprobs(self, completion: dict) -> list[dict[str, Any]]:
         logprobs_data = []
         ignore_pattern = re.compile(r'^(result|[\s\[\]\{\}",:]+)$')
 
