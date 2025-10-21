@@ -27,7 +27,7 @@ class AsyncOperator(BaseOperator):
     """
 
     def __init__(self, client: AsyncOpenAI, model: str):
-        self.client: AsyncOpenAI = client
+        self.client = client
         self.model = model
 
     async def _analyze(self, prompt_configs: dict[str, str], temperature: float) -> str:

@@ -27,7 +27,7 @@ class Operator(BaseOperator):
     """
 
     def __init__(self, client: OpenAI, model: str):
-        self.client: OpenAI = client
+        self.client = client
         self.model = model
 
     def _analyze(self, prompt_configs: dict[str, str], temperature: float) -> str:
