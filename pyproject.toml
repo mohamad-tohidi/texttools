@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hamtaa-texttools"
-version = "1.0.8"
+version = "1.0.9"
 authors = [
   { name = "Tohidi", email = "the.mohammad.tohidi@gmail.com" },
   { name = "Montazer", email = "montazerh82@gmail.com" },
   { name = "Givechi", email = "mohamad.m.givechi@gmail.com" },
   { name = "MoosaviNejad", email = "erfanmoosavi84@gmail.com" },
 ]
-description = "TextTools is a high-level NLP toolkit built on top of modern LLMs."
+description = "A high-level NLP toolkit built on top of modern LLMs."
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.8"
