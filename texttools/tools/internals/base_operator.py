@@ -2,12 +2,17 @@ from typing import TypeVar, Type, Any
 import json
 import re
 import math
+import logging
 
 from pydantic import BaseModel
 from openai import OpenAI, AsyncOpenAI
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
+
+# Configure logger
+logger = logging.getLogger("base_operator")
+logger.setLevel(logging.INFO)
 
 
 class BaseOperator:
@@ -61,7 +66,8 @@ class BaseOperator:
 
         for choice in completion.choices:
             if not getattr(choice, "logprobs", None):
-                continue
+                logger.error("logprobs is not avalible in the chosen model.")
+                return []
 
             for logprob_item in choice.logprobs.content:
                 if ignore_pattern.match(logprob_item.token):
