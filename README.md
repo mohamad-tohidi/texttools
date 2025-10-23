@@ -29,7 +29,7 @@ Each tool is designed to work out-of-the-box with structured outputs (JSON / Pyd
 
 ---
 
-## ⚙️ `with_analysis`, `logprobs`, `output_lang`, and `user_prompt` parameters
+## ⚙️ `with_analysis`, `logprobs`, `output_lang`, `user_prompt` and `temperature` parameters
 
 TextTools provides several optional flags to customize LLM behavior:
 
