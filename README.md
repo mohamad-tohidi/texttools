@@ -85,14 +85,14 @@ the_tool = TheTool(client=client, model=model)
 
 # Example: Question Detection
 detection = the_tool.is_question("Is this project open source?", logprobs=True, top_logprobs=2)
-print(detection["result"])
-print(detection["logprobs"])
+print(detection.result)
+print(detection.logprobs)
 # Output: True \n --logprobs
 
 # Example: Translation
 translation = the_tool.translate("سلام، حالت چطوره؟" target_language="English", with_analysis=True)
-print(translation["result"])
-print(translation["analysis"])
+print(translation.result)
+print(translation.analysis)
 # Output: "Hi! How are you?" \n --analysis
 ```
 
@@ -116,8 +116,8 @@ async def main():
     the_tool = AsyncTheTool(client=async_client, model=model)
 
     # Example: Async Translation
-    result = await the_tool.translate("سلام، حالت چطوره؟", target_language="English")
-    print(result["result"])
+    translation = await the_tool.translate("سلام، حالت چطوره؟", target_language="English")
+    print(translation.result)
     # Output: "Hi! How are you?"
 
 asyncio.run(main())
