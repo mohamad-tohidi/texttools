@@ -20,7 +20,7 @@ t = TheTool(client=client, model=MODEL)
 
 # Categorizer
 category = t.categorize("سلام حالت چطوره؟")
-print(category)
+print(category.errors)
 
 # Keyword Extractor
 keywords = t.extract_keywords("Tomorrow, we will be dead by the car crash")

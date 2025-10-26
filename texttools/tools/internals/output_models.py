@@ -7,6 +7,7 @@ class ToolOutput(BaseModel):
     result: str
     analysis: str
     logprobs: list[dict[str, Any]]
+    errors: list[str]
 
 
 class StrOutput(BaseModel):

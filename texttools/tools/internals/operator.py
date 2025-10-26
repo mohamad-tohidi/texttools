@@ -163,7 +163,7 @@ class Operator(BaseOperator):
                     "The provided output_model must define a field named 'result'"
                 )
 
-            output = ToolOutput(result="", analysis="", logprobs=[])
+            output = ToolOutput(result="", analysis="", logprobs=[], errors=[])
 
             output.result = parsed.result
 
@@ -176,4 +176,4 @@ class Operator(BaseOperator):
             return output
         except Exception as e:
             logger.error(f"TheTool failed: {e}")
-            return {"error": str(e), "result": ""}
+            return ToolOutput(result="", analysis="", logprobs=[], errors=[str(e)])

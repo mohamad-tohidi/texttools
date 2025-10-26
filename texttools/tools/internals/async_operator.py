@@ -153,7 +153,7 @@ class AsyncOperator(BaseOperator):
                     messages, output_model, temperature, logprobs, top_logprobs
                 )
             elif resp_format == "parse":
-                parsed, completion = await self._vllm_completion(
+                parsed, completion = await self._parse_completion(
                     messages, output_model, temperature, logprobs, top_logprobs
                 )
 
@@ -163,7 +163,7 @@ class AsyncOperator(BaseOperator):
                     "The provided output_model must define a field named 'result'"
                 )
 
-            output = ToolOutput(result="", analysis="", logprobs=[])
+            output = ToolOutput(result="", analysis="", logprobs=[], errors=[])
 
             output.result = parsed.result
 
@@ -173,6 +173,7 @@ class AsyncOperator(BaseOperator):
             if with_analysis:
                 output.analysis = analysis
 
+            return output
         except Exception as e:
-            logger.error(f"Async TheTool failed: {e}")
-            return {"error": str(e), "result": ""}
+            logger.error(f"AsyncTheTool failed: {e}")
+            return ToolOutput(result="", analysis="", logprobs=[], errors=[str(e)])
