@@ -4,6 +4,7 @@ import logging
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
+from texttools.tools.internals.output_models import ToolOutput
 from texttools.tools.internals.base_operator import BaseOperator
 from texttools.tools.internals.formatters import Formatter
 from texttools.tools.internals.prompt_loader import PromptLoader
@@ -162,15 +163,15 @@ class AsyncOperator(BaseOperator):
                     "The provided output_model must define a field named 'result'"
                 )
 
-            results = {"result": parsed.result}
+            output = ToolOutput(result="", analysis="", logprobs=[])
+
+            output.result = parsed.result
 
             if logprobs:
-                results["logprobs"] = self._extract_logprobs(completion)
+                output.logprobs = self._extract_logprobs(completion)
 
             if with_analysis:
-                results["analysis"] = analysis
-
-            return results
+                output.analysis = analysis
 
         except Exception as e:
             logger.error(f"Async TheTool failed: {e}")

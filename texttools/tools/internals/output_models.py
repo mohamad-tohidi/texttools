@@ -1,6 +1,12 @@
-from typing import Literal
+from typing import Literal, Any
 
 from pydantic import BaseModel, Field
+
+
+class ToolOutput(BaseModel):
+    result: str
+    analysis: str
+    logprobs: list[dict[str, Any]]
 
 
 class StrOutput(BaseModel):

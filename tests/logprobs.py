@@ -22,7 +22,7 @@ print("\n\nKEYWORD EXTRACTOR\n")
 keywords = t.extract_keywords(
     "Tomorrow, we will be dead by the car crash", logprobs=True
 )
-logprobs = keywords["logprobs"]
+logprobs = keywords.logprobs
 for d in logprobs:
     print(d)
     print("-" * 40)
@@ -32,7 +32,7 @@ print("\n\nQUESTION DETECTOR\n")
 detection = t.is_question(
     "What is the capital of France?", logprobs=True, top_logprobs=3
 )
-logprobs = detection["logprobs"]
+logprobs = detection.logprobs
 for d in logprobs:
     print(d)
     print("-" * 40)

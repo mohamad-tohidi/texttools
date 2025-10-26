@@ -4,6 +4,7 @@ import logging
 from openai import OpenAI
 from pydantic import BaseModel
 
+from texttools.tools.internals.output_models import ToolOutput
 from texttools.tools.internals.base_operator import BaseOperator
 from texttools.tools.internals.formatters import Formatter
 from texttools.tools.internals.prompt_loader import PromptLoader
@@ -162,16 +163,17 @@ class Operator(BaseOperator):
                     "The provided output_model must define a field named 'result'"
                 )
 
-            result = {"result": parsed.result}
+            output = ToolOutput(result="", analysis="", logprobs=[])
+
+            output.result = parsed.result
 
             if logprobs:
-                result["logprobs"] = self._extract_logprobs(completion)
+                output.logprobs = self._extract_logprobs(completion)
 
             if with_analysis:
-                result["analysis"] = analysis
+                output.analysis = analysis
 
-            return result
-
+            return output
         except Exception as e:
             logger.error(f"TheTool failed: {e}")
             return {"error": str(e), "result": ""}

@@ -35,10 +35,10 @@ async def main():
     e = time.time()
 
     print("Original:", original)
-    print("Positive:", positive["result"])
-    print("Negative:", negative["result"])
-    print("Hard negative:", hard_negative["result"])
-    print("Translation:", translation["result"])
+    print("Positive:", positive.result)
+    print("Negative:", negative.result)
+    print("Hard negative:", hard_negative.result)
+    print("Translation:", translation.result)
     print(e - s)
 
 
