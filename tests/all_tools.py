@@ -39,18 +39,18 @@ question = t.text_to_question("We will be dead by the car crash")
 print(question)
 
 # Question Merger
-question = t.merge_questions(
+merged = t.merge_questions(
     ["چرا ما انسان ها، موجوداتی اجتماعی هستیم؟", "چرا ما باید در کنار هم زندگی کنیم؟"],
     mode="default",
 )
-print(question)
+print(merged)
 
 # Rewriter
-question = t.rewrite(
+rewritten = t.rewrite(
     "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
     mode="positive",
 )
-print(question)
+print(rewritten)
 
 # Question Generator from Subject
 questions = t.subject_to_question("Friendship", 3)
