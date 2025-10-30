@@ -37,7 +37,10 @@ class TheTool:
         Categorize a text into a single Islamic studies domain category.
 
         Returns:
-            {"result": <category string>} + ("logprobs" and "analysis" if enabled)
+            ToolOutput: Object containing:
+                - result (str): The assigned Islamic studies category
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         return self.operator.run(
             # User parameters
@@ -69,7 +72,10 @@ class TheTool:
         Extract salient keywords from text.
 
         Returns:
-            {"result": [<keyword1>, <keyword2>, ...]} + ("logprobs" and "analysis" if enabled)
+            ToolOutput: Object containing:
+                - result (list[str]): List of extracted keywords
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         return self.operator.run(
             # User parameters
@@ -101,7 +107,10 @@ class TheTool:
         Perform Named Entity Recognition (NER) over the input text.
 
         Returns:
-            {"result": [{"text": <entity>, "type": <entity_type>}, ...]} + ("logprobs" and "analysis" if enabled)
+            ToolOutput: Object containing:
+                - result (list[dict]): List of entities with 'text' and 'type' keys
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         return self.operator.run(
             # User parameters
@@ -132,7 +141,10 @@ class TheTool:
         Detect if the input is phrased as a question.
 
         Returns:
-            {"result": True} or {"result": False} + ("logprobs" and "analysis" if enabled)
+            ToolOutput: Object containing:
+                - result (bool): True if text is a question, False otherwise
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         return self.operator.run(
             # User parameters
@@ -164,7 +176,10 @@ class TheTool:
         Generate a single question from the given text.
 
         Returns:
-            {"result": <generated_question>} + ("logprobs" and "analysis" if enabled)
+            ToolOutput: Object containing:
+                - result (str): The generated question
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         return self.operator.run(
             # User parameters
@@ -197,7 +212,10 @@ class TheTool:
         Merge multiple questions into a single unified question.
 
         Returns:
-            {"result": <merged_question>} + ("logprobs" and "analysis" if enabled)
+            ToolOutput: Object containing:
+                - result (str): The merged question
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         text = ", ".join(text)
         return self.operator.run(
@@ -231,7 +249,10 @@ class TheTool:
         Rewrite a text with different modes.
 
         Returns:
-            {"result": <rewritten_text>} + ("logprobs" and "analysis" if enabled)
+            ToolOutput: Object containing:
+                - result (str): The rewritten text
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         return self.operator.run(
             # User parameters
@@ -264,7 +285,10 @@ class TheTool:
         Generate a list of questions about a subject.
 
         Returns:
-            {"result": [<question1>, <question2>, ...]} + ("logprobs" and "analysis" if enabled)
+            ToolOutput: Object containing:
+                - result (list[str]): List of generated questions
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         return self.operator.run(
             # User parameters
@@ -297,7 +321,10 @@ class TheTool:
         Summarize the given subject text.
 
         Returns:
-            {"result": <summary>} + ("logprobs" and "analysis" if enabled)
+            ToolOutput: Object containing:
+                - result (str): The summary text
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         return self.operator.run(
             # User parameters
@@ -329,7 +356,10 @@ class TheTool:
         Translate text between languages.
 
         Returns:
-            {"result": <translated_text>} + ("logprobs" and "analysis" if enabled)
+            ToolOutput: Object containing:
+                - result (str): The translated text
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         return self.operator.run(
             # User parameters
@@ -361,7 +391,8 @@ class TheTool:
         Custom tool that can do almost anything!
 
         Returns:
-            {"result": <Any>}
+            ToolOutput: Object with fields:
+                - result (str): The output result
         """
         return self.operator.run(
             # User paramaeters
