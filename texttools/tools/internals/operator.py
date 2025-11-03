@@ -32,6 +32,10 @@ class Operator(BaseOperator):
         self.model = model
 
     def _analyze(self, prompt_configs: dict[str, str], temperature: float) -> str:
+        """
+        Calls OpenAI API for analysis using the configured prompt template.
+        Returns the analyzed content as a string.
+        """
         analyze_prompt = prompt_configs["analyze_template"]
         analyze_message = [self._build_user_message(analyze_prompt)]
         completion = self.client.chat.completions.create(
@@ -50,6 +54,10 @@ class Operator(BaseOperator):
         logprobs: bool = False,
         top_logprobs: int = 3,
     ) -> tuple[Type[T], Any]:
+        """
+        Parses a chat completion using OpenAI's structured output format.
+        Returns both the parsed object and the raw completion for logging.
+        """
         request_kwargs = {
             "model": self.model,
             "messages": message,
@@ -73,6 +81,10 @@ class Operator(BaseOperator):
         logprobs: bool = False,
         top_logprobs: int = 3,
     ) -> tuple[Type[T], Any]:
+        """
+        Generates a completion using vLLM with JSON schema guidance.
+        Returns the parsed output model and raw completion.
+        """
         json_schema = output_model.model_json_schema()
 
         # Build kwargs dynamically

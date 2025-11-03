@@ -40,13 +40,6 @@ class BaseOperator:
     ) -> Type[T]:
         """
         Convert a JSON response string to output model.
-
-        Args:
-            response_string: The JSON string (may contain code block markers)
-            output_model: Your Pydantic output model class (e.g., StrOutput, ListStrOutput)
-
-        Returns:
-            Instance of your output model
         """
         # Clean the response string
         cleaned_json = self._clean_json_response(response_string)
@@ -61,7 +54,12 @@ class BaseOperator:
         return output_model(**response_dict)
 
     def _extract_logprobs(self, completion: dict) -> list[dict[str, Any]]:
+        """
+        Extracts and filters token probabilities from completion logprobs.
+        Skips punctuation and structural tokens, returns cleaned probability data.
+        """
         logprobs_data = []
+
         ignore_pattern = re.compile(r'^(result|[\s\[\]\{\}",:]+)$')
 
         for choice in completion.choices:
