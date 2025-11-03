@@ -10,7 +10,6 @@ from openai import OpenAI, AsyncOpenAI
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
 
-# Configure logger
 logger = logging.getLogger("base_operator")
 logger.setLevel(logging.INFO)
 

@@ -12,7 +12,6 @@ from pydantic import BaseModel
 
 from texttools.batch import SimpleBatchManager
 
-# Configure logger
 logger = logging.getLogger("batch_runner")
 logger.setLevel(logging.INFO)
 

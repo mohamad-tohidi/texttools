@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from openai import OpenAI
 from openai.lib._pydantic import to_strict_json_schema
 
-# Configure logger
 logger = logging.getLogger("batch_runner")
 logger.setLevel(logging.INFO)
 

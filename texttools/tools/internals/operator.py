@@ -12,7 +12,6 @@ from texttools.tools.internals.prompt_loader import PromptLoader
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
 
-# Configure logger
 logger = logging.getLogger("operator")
 logger.setLevel(logging.INFO)
 
@@ -128,8 +127,10 @@ class Operator(BaseOperator):
         """
         prompt_loader = PromptLoader()
         formatter = Formatter()
+        output = ToolOutput(result="", analysis="", logprobs=[], errors=[])
 
         try:
+            # Prompt configs contain two keys: main_template and analyze template, both are string
             prompt_configs = prompt_loader.load(
                 prompt_file=prompt_file,
                 text=text.strip(),
@@ -171,11 +172,10 @@ class Operator(BaseOperator):
 
             # Ensure output_model has a `result` field
             if not hasattr(parsed, "result"):
-                logger.error(
-                    "The provided output_model must define a field named 'result'"
-                )
-
-            output = ToolOutput(result="", analysis="", logprobs=[], errors=[])
+                error = "The provided output_model must define a field named 'result'"
+                logger.error(error)
+                output.errors.append(error)
+                return output
 
             output.result = parsed.result
 
@@ -186,6 +186,7 @@ class Operator(BaseOperator):
                 output.analysis = analysis
 
             return output
+
         except Exception as e:
-            logger.error(f"TheTool failed: {e}")
-            return ToolOutput(result="", analysis="", logprobs=[], errors=[str(e)])
+            logger.error(f"AsyncTheTool failed: {e}")
+            return output.errors.append(str(e))
