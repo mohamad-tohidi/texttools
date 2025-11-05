@@ -34,7 +34,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-    ) -> dict[str, str]:
+    ) -> OutputModels.ToolOutput:
         """
         Categorize a text into a single Islamic studies domain category.
 
@@ -69,7 +69,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-    ) -> dict[str, list[str]]:
+    ) -> OutputModels.ToolOutput:
         """
         Extract salient keywords from text.
 
@@ -104,7 +104,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-    ) -> dict[str, list[dict[str, str]]]:
+    ) -> OutputModels.ToolOutput:
         """
         Perform Named Entity Recognition (NER) over the input text.
 
@@ -138,7 +138,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-    ) -> dict[str, bool]:
+    ) -> OutputModels.ToolOutput:
         """
         Detect if the input is phrased as a question.
 
@@ -173,7 +173,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-    ) -> dict[str, str]:
+    ) -> OutputModels.ToolOutput:
         """
         Generate a single question from the given text.
 
@@ -209,7 +209,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         mode: Literal["default", "reason"] = "default",
-    ) -> dict[str, str]:
+    ) -> OutputModels.ToolOutput:
         """
         Merge multiple questions into a single unified question.
 
@@ -246,7 +246,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
-    ) -> dict[str, str]:
+    ) -> OutputModels.ToolOutput:
         """
         Rewrite a text with different modes.
 
@@ -282,7 +282,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-    ) -> dict[str, list[str]]:
+    ) -> OutputModels.ToolOutput:
         """
         Generate a list of questions about a subject.
 
@@ -318,7 +318,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-    ) -> dict[str, str]:
+    ) -> OutputModels.ToolOutput:
         """
         Summarize the given subject text.
 
@@ -353,7 +353,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-    ) -> dict[str, str]:
+    ) -> OutputModels.ToolOutput:
         """
         Translate text between languages.
 
@@ -388,7 +388,7 @@ class AsyncTheTool:
         temperature: float | None = None,
         logprobs: bool | None = None,
         top_logprobs: int | None = None,
-    ) -> dict[str, Any]:
+    ) -> OutputModels.ToolOutput:
         """
         Custom tool that can do almost anything!
 
