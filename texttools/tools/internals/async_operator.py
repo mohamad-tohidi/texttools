@@ -121,7 +121,7 @@ class AsyncOperator(BaseOperator):
         resp_format: Literal["vllm", "parse"],
         mode: str | None,
         **extra_kwargs,
-    ) -> dict[str, Any]:
+    ) -> ToolOutput:
         """
         Execute the async LLM pipeline with the given input text. (Async)
         """

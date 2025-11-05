@@ -121,7 +121,7 @@ class Operator(BaseOperator):
         resp_format: Literal["vllm", "parse"],
         mode: str | None,
         **extra_kwargs,
-    ) -> dict[str, Any]:
+    ) -> ToolOutput:
         """
         Execute the LLM pipeline with the given input text.
         """
