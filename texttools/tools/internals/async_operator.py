@@ -189,7 +189,7 @@ class AsyncOperator(BaseOperator):
                     )
 
                     # Generate new temperature for retry
-                    retry_temperature = self._get_retry_temperature(temperature)
+                    retry_temperature = self._get_retry_temp(temperature)
                     try:
                         if resp_format == "vllm":
                             parsed, completion = await self._vllm_completion(
