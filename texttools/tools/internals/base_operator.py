@@ -3,6 +3,7 @@ import json
 import re
 import math
 import logging
+import random
 
 from pydantic import BaseModel
 from openai import OpenAI, AsyncOpenAI
@@ -86,3 +87,12 @@ class BaseOperator:
                 logprobs_data.append(token_entry)
 
         return logprobs_data
+
+    def _get_retry_temperature(self, base_temp: float) -> float:
+        """
+        Calculate temperature for retry attempts.
+        """
+        delta_temp = random.choice([-1, 1]) * random.uniform(0.01, 0.09)
+        new_temp = base_temp + delta_temp
+
+        return max(0.0, min(new_temp, 1.0))

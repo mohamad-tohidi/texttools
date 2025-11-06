@@ -115,6 +115,7 @@ class AsyncOperator(BaseOperator):
         temperature: float,
         logprobs: bool,
         top_logprobs: int | None,
+        validator: Any | None,
         # Internal parameters
         prompt_file: str,
         output_model: Type[T],
@@ -178,6 +179,55 @@ class AsyncOperator(BaseOperator):
                 return output
 
             output.result = parsed.result
+
+            # Retry logic if validation fails
+            if validator and not validator(output.result):
+                max_retries = 3
+                for attempt in range(max_retries):
+                    logger.warning(
+                        f"Validation failed, retrying for the {attempt + 1} time."
+                    )
+
+                    # Generate new temperature for retry
+                    retry_temperature = self._get_retry_temperature(temperature)
+                    try:
+                        if resp_format == "vllm":
+                            parsed, completion = await self._vllm_completion(
+                                messages,
+                                output_model,
+                                retry_temperature,
+                                logprobs,
+                                top_logprobs,
+                            )
+                        elif resp_format == "parse":
+                            parsed, completion = await self._parse_completion(
+                                messages,
+                                output_model,
+                                retry_temperature,
+                                logprobs,
+                                top_logprobs,
+                            )
+
+                        output.result = parsed.result
+
+                        # Check if retry was successful
+                        if validator(output.result):
+                            logger.info(
+                                f"Validation passed on retry attempt {attempt + 1}"
+                            )
+                            break
+                        else:
+                            logger.warning(
+                                f"Validation still failing after retry attempt {attempt + 1}"
+                            )
+
+                    except Exception as e:
+                        logger.error(f"Retry attempt {attempt + 1} failed: {e}")
+                        # Continue to next retry attempt if this one fails
+
+            # Final check after all retries
+            if validator and not validator(output.result):
+                output.errors.append("Validation failed after all retry attempts")
 
             if logprobs:
                 output.logprobs = self._extract_logprobs(completion)
