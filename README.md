@@ -29,7 +29,7 @@ Each tool is designed to work out-of-the-box with structured outputs (JSON / Pyd
 
 ---
 
-## ⚙️ `with_analysis`, `logprobs`, `output_lang`, `user_prompt` and `temperature` parameters
+## ⚙️ `with_analysis`, `logprobs`, `output_lang`, `user_prompt`, `temperature` and `validator` parameters
 
 TextTools provides several optional flags to customize LLM behavior:
 
@@ -43,6 +43,8 @@ Note: This doubles token usage per call because it triggers an additional LLM re
 - **`user_prompt="..."`** → Allows you to inject a custom instruction or prompt into the model alongside the main template. This gives you fine-grained control over how the model interprets or modifies the input text.
 
 - **`temperature=0.0`** → Determines how creative the model should respond. Takes a float number from `0.0` to `1.0`.
+
+- **`validator=validation_function`** → Forces TheTool to validate the output result based on your custom validator. Validator should return bool (True if there were no problem, False if the validation failed.) If validator failed, TheTool will retry to get another output by modifying `temperature`.
 
 All these parameters can be used individually or together to tailor the behavior of any tool in **TextTools**.
 
