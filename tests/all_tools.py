@@ -34,7 +34,7 @@ print(entities)
 detection = t.is_question("We will be dead by the car crash")
 print(detection)
 
-# Question from Answer Generator
+# Question from Text Generator
 question = t.text_to_question("We will be dead by the car crash")
 print(question)
 
