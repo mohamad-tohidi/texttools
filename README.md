@@ -6,14 +6,14 @@
 
 It provides both **sync (`TheTool`)** and **async (`AsyncTheTool`)** APIs for maximum flexibility.
 
-It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER extractor, and more** — designed to help you integrate AI-powered text processing into your applications with minimal effort.
+It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER extraction, and more** — designed to help you integrate AI-powered text processing into your applications with minimal effort.
 
 ---
 
 ## ✨ Features
 
 TextTools provides a rich collection of high-level NLP utilities built on top of LLMs.  
-Each tool is designed to work out-of-the-box with structured outputs (JSON / Pydantic).
+Each tool is designed to work with structured outputs (JSON / Pydantic).
 
 - **`categorize()`** - Classifies text into Islamic studies categories 
 - **`is_question()`** - Binary detection of whether input is a question
