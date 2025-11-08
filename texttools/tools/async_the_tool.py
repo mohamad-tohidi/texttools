@@ -34,7 +34,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-        validator: Any | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> OutputModels.ToolOutput:
         """
         Categorize a text into a single Islamic studies domain category.
@@ -71,7 +71,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-        validator: Any | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> OutputModels.ToolOutput:
         """
         Extract salient keywords from text.
@@ -108,7 +108,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-        validator: Any | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> OutputModels.ToolOutput:
         """
         Perform Named Entity Recognition (NER) over the input text.
@@ -144,7 +144,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-        validator: Any | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> OutputModels.ToolOutput:
         """
         Detect if the input is phrased as a question.
@@ -181,7 +181,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-        validator: Any | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> OutputModels.ToolOutput:
         """
         Generate a single question from the given text.
@@ -219,7 +219,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         mode: Literal["default", "reason"] = "default",
-        validator: Any | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> OutputModels.ToolOutput:
         """
         Merge multiple questions into a single unified question.
@@ -258,7 +258,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
-        validator: Any | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> OutputModels.ToolOutput:
         """
         Rewrite a text with different modes.
@@ -296,7 +296,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-        validator: Any | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> OutputModels.ToolOutput:
         """
         Generate a list of questions about a subject.
@@ -334,7 +334,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-        validator: Any | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> OutputModels.ToolOutput:
         """
         Summarize the given subject text.
@@ -371,7 +371,7 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
-        validator: Any | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> OutputModels.ToolOutput:
         """
         Translate text between languages.
