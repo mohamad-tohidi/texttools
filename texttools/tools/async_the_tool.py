@@ -1,4 +1,4 @@
-from typing import Literal, Any
+from typing import Literal, Any, Callable
 
 from openai import AsyncOpenAI
 

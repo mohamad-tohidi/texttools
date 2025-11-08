@@ -1,4 +1,4 @@
-from typing import Any, TypeVar, Type, Literal
+from typing import Any, TypeVar, Type, Literal, Callable
 import logging
 
 from openai import AsyncOpenAI
@@ -115,7 +115,7 @@ class AsyncOperator(BaseOperator):
         temperature: float,
         logprobs: bool,
         top_logprobs: int | None,
-        validator: Any | None,
+        validator: Callable[[Any], bool] | None,
         # Internal parameters
         prompt_file: str,
         output_model: Type[T],
