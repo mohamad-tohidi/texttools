@@ -128,7 +128,7 @@ class Operator(BaseOperator):
         """
         prompt_loader = PromptLoader()
         formatter = Formatter()
-        output = ToolOutput(result="", analysis="", logprobs=[], errors=[])
+        output = ToolOutput()
 
         try:
             # Prompt configs contain two keys: main_template and analyze template, both are string
