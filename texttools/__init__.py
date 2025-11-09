@@ -1,9 +1,8 @@
-from .batch import BatchJobRunner, BatchManager
+from .batch import BatchJobRunner
 from .tools import AsyncTheTool, TheTool
 
 __all__ = [
     "TheTool",
     "AsyncTheTool",
-    "BatchManager",
     "BatchJobRunner",
 ]
