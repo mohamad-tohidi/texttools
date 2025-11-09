@@ -1,3 +1,3 @@
-from .batch_runner import BatchJobRunner
+from .batch_runner import BatchJobRunner, BatchConfig
 
-__all__ = ["BatchJobRunner"]
+__all__ = ["BatchJobRunner", "BatchConfig"]
