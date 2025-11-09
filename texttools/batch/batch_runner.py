@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.batch import BatchManager
+from texttools.batch.batch_manager import BatchManager
 from texttools.tools.internals.output_models import StrOutput
 
 # Base Model type for output models
