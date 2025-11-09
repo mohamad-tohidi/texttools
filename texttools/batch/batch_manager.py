@@ -29,7 +29,6 @@ class SimpleBatchManager:
         model: str,
         output_model: Type[T],
         prompt_template: str,
-        handlers: list[Any] | None = None,
         state_dir: Path = Path(".batch_jobs"),
         custom_json_schema_obj_str: dict | None = None,
         **client_kwargs: Any,
@@ -38,7 +37,6 @@ class SimpleBatchManager:
         self.model = model
         self.output_model = output_model
         self.prompt_template = prompt_template
-        self.handlers = handlers or []
         self.state_dir = state_dir
         self.state_dir.mkdir(parents=True, exist_ok=True)
         self.custom_json_schema_obj_str = custom_json_schema_obj_str
@@ -222,8 +220,6 @@ class SimpleBatchManager:
                 error_d = {custom_id: results[custom_id]}
                 log.append(error_d)
 
-        for handler in self.handlers:
-            handler.handle(results)
         if remove_cache:
             self._clear_state(job_name)
 
