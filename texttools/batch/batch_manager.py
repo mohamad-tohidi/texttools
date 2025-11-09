@@ -9,7 +9,6 @@ from openai import OpenAI
 from openai.lib._pydantic import to_strict_json_schema
 
 logger = logging.getLogger("batch_runner")
-logger.setLevel(logging.INFO)
 
 
 class SimpleBatchManager:
