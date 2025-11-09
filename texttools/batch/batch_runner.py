@@ -19,7 +19,7 @@ T = TypeVar("T", bound=BaseModel)
 logger = logging.getLogger("texttools.batch_runner")
 
 
-def export_data(data):
+def export_data(data) -> list[dict[str, str]]:
     """
     Produces a structure of the following form from an initial data structure:
     [{"id": str, "text": str},...]
@@ -27,7 +27,7 @@ def export_data(data):
     return data
 
 
-def import_data(data):
+def import_data(data) -> Any:
     """
     Takes the output and adds and aggregates it to the original structure.
     """
@@ -100,12 +100,12 @@ class BatchJobRunner:
         # Ensure data is a list of dicts with 'id' and 'content' as strings
         if not isinstance(data, list):
             raise ValueError(
-                'Exported data must be a list in this form:  [ {"id": str, "content": str},...]'
+                "Exported data must be a list of dicts with 'id' and 'content' keys"
             )
         for item in data:
             if not (isinstance(item, dict) and "id" in item and "content" in item):
                 raise ValueError(
-                    "Each item must be a dict with 'id' and 'content' keys."
+                    f"Item must be a dict with 'id' and 'content' keys. Got: {type(item)}"
                 )
             if not (isinstance(item["id"], str) and isinstance(item["content"], str)):
                 raise ValueError("'id' and 'content' must be strings.")
@@ -194,6 +194,11 @@ class BatchJobRunner:
         return result_path.exists()
 
     def run(self):
+        """
+        Execute the batch job processing pipeline.
+
+        Submits jobs, monitors progress, handles retries, and saves results.
+        """
         # Submit all jobs up-front for concurrent execution
         self._submit_all_jobs()
         pending_parts: set[int] = set(self.part_idx_to_job_name.keys())
