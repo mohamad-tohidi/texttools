@@ -239,4 +239,5 @@ class AsyncOperator(BaseOperator):
 
         except Exception as e:
             logger.error(f"AsyncTheTool failed: {e}")
-            return output.errors.append(str(e))
+            output.errors.append(str(e))
+            return output
