@@ -10,7 +10,7 @@ class ToolOutput(BaseModel):
     errors: list[str] = []
 
     def __repr__(self):
-        return f"ToolOutput(Result Type = {type(self.result)}, Result Value = {self.result}, Analysis = {self.analysis}, Logprobs = {self.logprobs}, Errors = {self.errors}"
+        return f"ToolOutput(result_type='{type(self.result)}', result='{self.result}', analysis='{self.analysis}', logprobs='{self.logprobs}', errors='{self.errors}'"
 
 
 class StrOutput(BaseModel):
