@@ -101,13 +101,13 @@ the_tool = TheTool(client=client, model=model)
 detection = the_tool.is_question("Is this project open source?", logprobs=True, top_logprobs=2)
 print(detection.result)
 print(detection.logprobs)
-# Output: True \n --logprobs
+# Output: True + logprobs
 
 # Example: Translation
 translation = the_tool.translate("سلام، حالت چطوره؟" target_language="English", with_analysis=True)
 print(translation.result)
 print(translation.analysis)
-# Output: "Hi! How are you?" \n --analysis
+# Output: "Hi! How are you?"  + analysis
 ```
 
 ---
@@ -127,12 +127,15 @@ async def main():
     model = "gpt-4o-mini"
 
     # Create an instance of AsyncTheTool
-    the_tool = AsyncTheTool(client=async_client, model=model)
+    async_the_tool = AsyncTheTool(client=async_client, model=model)
 
-    # Example: Async Translation
-    translation = await the_tool.translate("سلام، حالت چطوره؟", target_language="English")
+    # Example: Async Translation and Keyword Extraction
+    translation_task = async_the_tool.translate("سلام، حالت چطوره؟", target_language="English")
+    keywords_task = async_the_tool.extract_keywords("Tomorrow, we will be dead by the car crash")
+
+    (translation, keywords) = await asyncio.gather(translation_task, keywords_task)
     print(translation.result)
-    # Output: "Hi! How are you?"
+    print(keywords.result)
 
 asyncio.run(main())
 ```
