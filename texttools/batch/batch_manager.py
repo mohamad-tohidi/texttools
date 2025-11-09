@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from openai import OpenAI
 from openai.lib._pydantic import to_strict_json_schema
 
-logger = logging.getLogger("batch_runner")
+logger = logging.getLogger("texttools.batch_runner")
 
 
 class SimpleBatchManager:

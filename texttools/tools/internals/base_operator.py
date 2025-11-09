@@ -11,7 +11,7 @@ from openai import OpenAI, AsyncOpenAI
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
 
-logger = logging.getLogger("base_operator")
+logger = logging.getLogger("texttools.base_operator")
 
 
 class BaseOperator:

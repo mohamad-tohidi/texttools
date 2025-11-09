@@ -12,7 +12,7 @@ from texttools.tools.internals.prompt_loader import PromptLoader
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
 
-logger = logging.getLogger("operator")
+logger = logging.getLogger("texttools.operator")
 
 
 class Operator(BaseOperator):

@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 from texttools.batch import SimpleBatchManager
 
-logger = logging.getLogger("batch_runner")
+logger = logging.getLogger("texttools.batch_runner")
 
 
 class OutputModel(BaseModel):
