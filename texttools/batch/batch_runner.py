@@ -3,7 +3,7 @@ import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Type, TypeVar
 import logging
 
 from dotenv import load_dotenv
@@ -11,6 +11,9 @@ from openai import OpenAI
 from pydantic import BaseModel
 
 from texttools.batch import BatchManager
+
+# Base Model type for output models
+T = TypeVar("T", bound=BaseModel)
 
 logger = logging.getLogger("texttools.batch_runner")
 
@@ -62,7 +65,7 @@ class BatchJobRunner:
     """
 
     def __init__(
-        self, config: BatchConfig = BatchConfig(), output_model: type = OutputModel
+        self, config: BatchConfig = BatchConfig(), output_model: Type[T] = OutputModel
     ):
         self.config = config
         self.system_prompt = config.system_prompt
