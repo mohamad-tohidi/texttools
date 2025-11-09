@@ -20,49 +20,49 @@ t = TheTool(client=client, model=MODEL)
 
 # Categorizer
 category = t.categorize("سلام حالت چطوره؟")
-print(category)
+print(repr(category))
 
 # Keyword Extractor
 keywords = t.extract_keywords("Tomorrow, we will be dead by the car crash")
-print(keywords)
+print(repr(keywords))
 
 # NER Extractor
 entities = t.extract_entities("We will be dead by the car crash")
-print(entities)
+print(repr(entities))
 
 # Question Detector
 detection = t.is_question("We will be dead by the car crash")
-print(detection)
+print(repr(detection))
 
 # Question from Text Generator
 question = t.text_to_question("We will be dead by the car crash")
-print(question)
+print(repr(question))
 
 # Question Merger
 merged = t.merge_questions(
     ["چرا ما انسان ها، موجوداتی اجتماعی هستیم؟", "چرا ما باید در کنار هم زندگی کنیم؟"],
     mode="default",
 )
-print(merged)
+print(repr(merged))
 
 # Rewriter
 rewritten = t.rewrite(
     "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
     mode="positive",
 )
-print(rewritten)
+print(repr(rewritten))
 
 # Question Generator from Subject
 questions = t.subject_to_question("Friendship", 3)
-print(questions)
+print(repr(questions))
 
 # Summarizer
 summary = t.summarize("Tomorrow, we will be dead by the car crash")
-print(summary)
+print(repr(summary))
 
 # Translator
 translation = t.translate("سلام حالت چطوره؟", target_language="English")
-print(translation)
+print(repr(translation))
 
 
 # Custom tool
@@ -77,4 +77,4 @@ custom_prompt = """You are a random student information generator.
                    [{"name": str}, {"age": int}, {"std_id": int}]"""
 
 student_info = t.run_custom(custom_prompt, Student)
-print(student_info)
+print(repr(student_info))

@@ -9,6 +9,9 @@ class ToolOutput(BaseModel):
     logprobs: list[dict[str, Any]] = []
     errors: list[str] = []
 
+    def __repr__(self):
+        return f"ToolOutput(Result Type = {type(self.result)}, Result Value = {self.result}, Analysis = {self.analysis}, Logprobs = {self.logprobs}, Errors = {self.errors}"
+
 
 class StrOutput(BaseModel):
     result: str = Field(..., description="The output string")

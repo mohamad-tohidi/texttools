@@ -71,7 +71,7 @@ async def main():
         summary,
         translation,
     ):
-        print(tool_output.result)
+        print(repr(tool_output))
 
 
 if __name__ == "__main__":
