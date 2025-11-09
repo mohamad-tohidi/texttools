@@ -45,7 +45,7 @@ class BatchManager:
 
         if self.custom_json_schema_obj_str:
             if self.custom_json_schema_obj_str is not dict:
-                raise ValueError("schema should be a dict")
+                raise ValueError("Schema should be a dict")
 
     def _state_file(self, job_name: str) -> Path:
         return self.state_dir / f"{job_name}.json"
@@ -126,7 +126,7 @@ class BatchManager:
 
         else:
             raise TypeError(
-                "The input must be either a list of texts or a dictionary in the form {'id': str, 'text': str}."
+                "The input must be either a list of texts or a dictionary in the form {'id': str, 'text': str}"
             )
 
         file_path = self.state_dir / f"batch_{uuid.uuid4().hex}.jsonl"

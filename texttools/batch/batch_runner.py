@@ -11,15 +11,12 @@ from openai import OpenAI
 from pydantic import BaseModel
 
 from texttools.batch import BatchManager
+from texttools.tools.internals.output_models import StrOutput
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
 
 logger = logging.getLogger("texttools.batch_runner")
-
-
-class OutputModel(BaseModel):
-    desired_output: str
 
 
 def export_data(data):
@@ -65,7 +62,7 @@ class BatchJobRunner:
     """
 
     def __init__(
-        self, config: BatchConfig = BatchConfig(), output_model: Type[T] = OutputModel
+        self, config: BatchConfig = BatchConfig(), output_model: Type[T] = StrOutput
     ):
         self.config = config
         self.system_prompt = config.system_prompt
@@ -163,6 +160,39 @@ class BatchJobRunner:
             logger.info("Uploading...")
             time.sleep(30)
 
+    def _save_results(
+        self,
+        output_data: list[dict[str, Any]] | dict[str, Any],
+        log: list[Any],
+        part_idx: int,
+    ):
+        part_suffix = f"_part_{part_idx + 1}" if len(self.parts) > 1 else ""
+        result_path = (
+            Path(self.config.BASE_OUTPUT_DIR)
+            / f"{Path(self.output_data_filename).stem}{part_suffix}.json"
+        )
+        if not output_data:
+            logger.info("No output data to save. Skipping this part.")
+            return
+        else:
+            with open(result_path, "w", encoding="utf-8") as f:
+                json.dump(output_data, f, ensure_ascii=False, indent=4)
+        if log:
+            log_path = (
+                Path(self.config.BASE_OUTPUT_DIR)
+                / f"{Path(self.output_data_filename).stem}{part_suffix}_log.json"
+            )
+            with open(log_path, "w", encoding="utf-8") as f:
+                json.dump(log, f, ensure_ascii=False, indent=4)
+
+    def _result_exists(self, part_idx: int) -> bool:
+        part_suffix = f"_part_{part_idx + 1}" if len(self.parts) > 1 else ""
+        result_path = (
+            Path(self.config.BASE_OUTPUT_DIR)
+            / f"{Path(self.output_data_filename).stem}{part_suffix}.json"
+        )
+        return result_path.exists()
+
     def run(self):
         # Submit all jobs up-front for concurrent execution
         self._submit_all_jobs()
@@ -217,48 +247,3 @@ class BatchJobRunner:
                     f"Waiting {self.config.poll_interval_seconds}s before next status check for parts: {sorted(pending_parts)}"
                 )
                 time.sleep(self.config.poll_interval_seconds)
-
-    def _save_results(
-        self,
-        output_data: list[dict[str, Any]] | dict[str, Any],
-        log: list[Any],
-        part_idx: int,
-    ):
-        part_suffix = f"_part_{part_idx + 1}" if len(self.parts) > 1 else ""
-        result_path = (
-            Path(self.config.BASE_OUTPUT_DIR)
-            / f"{Path(self.output_data_filename).stem}{part_suffix}.json"
-        )
-        if not output_data:
-            logger.info("No output data to save. Skipping this part.")
-            return
-        else:
-            with open(result_path, "w", encoding="utf-8") as f:
-                json.dump(output_data, f, ensure_ascii=False, indent=4)
-        if log:
-            log_path = (
-                Path(self.config.BASE_OUTPUT_DIR)
-                / f"{Path(self.output_data_filename).stem}{part_suffix}_log.json"
-            )
-            with open(log_path, "w", encoding="utf-8") as f:
-                json.dump(log, f, ensure_ascii=False, indent=4)
-
-    def _result_exists(self, part_idx: int) -> bool:
-        part_suffix = f"_part_{part_idx + 1}" if len(self.parts) > 1 else ""
-        result_path = (
-            Path(self.config.BASE_OUTPUT_DIR)
-            / f"{Path(self.output_data_filename).stem}{part_suffix}.json"
-        )
-        return result_path.exists()
-
-
-if __name__ == "__main__":
-    logger.info("=== Batch Job Runner ===")
-    config = BatchConfig(
-        system_prompt="",
-        job_name="job_name",
-        input_data_path="Data.json",
-        output_data_filename="output",
-    )
-    runner = BatchJobRunner(config)
-    runner.run()
