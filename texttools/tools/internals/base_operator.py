@@ -12,7 +12,6 @@ from openai import OpenAI, AsyncOpenAI
 T = TypeVar("T", bound=BaseModel)
 
 logger = logging.getLogger("base_operator")
-logger.setLevel(logging.INFO)
 
 
 class BaseOperator:

@@ -13,7 +13,6 @@ from texttools.tools.internals.prompt_loader import PromptLoader
 T = TypeVar("T", bound=BaseModel)
 
 logger = logging.getLogger("async_operator")
-logger.setLevel(logging.INFO)
 
 
 class AsyncOperator(BaseOperator):
