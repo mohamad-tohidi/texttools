@@ -52,6 +52,16 @@ All these parameters can be used individually or together to tailor the behavior
 
 ---
 
+## 🧩 ToolOutput
+
+Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel with attributes:
+- **`result`** → The output of LLM (`type=Any`)
+- **`analysis`** → The reasoning step before generating the final output (`type=str`)
+- **`logprobs`** → Token-level probabilities for the generated output (`type=list`)
+- **`errors`** → Any error that have occured during calling LLM (`type=str`)
+
+**None:** You can use `repr(ToolOutput)` to see details of an output.
+
 ## 🚀 Installation
 
 Install the latest release via PyPI:
