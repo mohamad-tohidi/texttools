@@ -142,7 +142,7 @@ asyncio.run(main())
 
 ---
 
-## 📚 Use Cases
+## 👍 Use Cases
 
 Use **TextTools** when you need to:
 
@@ -150,7 +150,35 @@ Use **TextTools** when you need to:
 - 🌍 **Translate** and process multilingual corpora with ease  
 - 🧩 **Integrate** LLMs into production pipelines (structured outputs)  
 - 📊 **Analyze** large text collections using embeddings and categorization  
-- 👍 **Automate** common text-processing tasks without reinventing the wheel  
+
+---
+
+## 📚 Batch Processing
+
+Process large datasets efficiently using OpenAI's batch API.
+
+## Quick Start
+
+```python
+from texttools import BatchJobRunner, BatchConfig
+
+# Configure your batch job
+config = BatchConfig(
+    system_prompt="Extract entities from the text",
+    job_name="entity_extraction",
+    input_data_path="data.json",
+    output_data_filename="results.json",
+    model="gpt-4o-mini"
+)
+
+# Define your output schema
+class Output(BaseModel):
+    entities: list[str]
+
+# Run the batch job
+runner = BatchJobRunner(config, output_model=Output)
+runner.run()
+```
 
 ---
 
