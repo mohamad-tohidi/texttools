@@ -1,12 +1,15 @@
 import json
 import uuid
 from pathlib import Path
-from typing import Any, Type
+from typing import Any, Type, TypeVar
 import logging
 
 from pydantic import BaseModel
 from openai import OpenAI
 from openai.lib._pydantic import to_strict_json_schema
+
+# Base Model type for output models
+T = TypeVar("T", bound=BaseModel)
 
 logger = logging.getLogger("texttools.batch_runner")
 
@@ -24,7 +27,7 @@ class SimpleBatchManager:
         self,
         client: OpenAI,
         model: str,
-        output_model: Type[BaseModel],
+        output_model: Type[T],
         prompt_template: str,
         handlers: list[Any] | None = None,
         state_dir: Path = Path(".batch_jobs"),
