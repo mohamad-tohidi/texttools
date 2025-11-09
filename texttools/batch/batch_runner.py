@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.batch import SimpleBatchManager
+from texttools.batch import BatchManager
 
 logger = logging.getLogger("texttools.batch_runner")
 
@@ -81,11 +81,11 @@ class BatchJobRunner:
         # Track retry attempts per part
         self.part_attempts: dict[int, int] = {}
 
-    def _init_manager(self) -> SimpleBatchManager:
+    def _init_manager(self) -> BatchManager:
         load_dotenv()
         api_key = os.getenv("OPENAI_API_KEY")
         client = OpenAI(api_key=api_key)
-        return SimpleBatchManager(
+        return BatchManager(
             client=client,
             model=self.model,
             prompt_template=self.system_prompt,

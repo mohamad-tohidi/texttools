@@ -1,7 +1,7 @@
 # Batch
 
 ## Overview
-`SimpleBatchManager` is a lightweight Python utility that simplifies working with the [OpenAI Batch API](https://platform.openai.com/docs/guides/batch). It allows you to:
+`BatchManager` is a lightweight Python utility that simplifies working with the [OpenAI Batch API](https://platform.openai.com/docs/guides/batch). It allows you to:
 
 - Efficiently submit **large volumes of prompts** for processing.  
 - Automatically manage **job state** (saving, resuming, clearing).  
@@ -18,7 +18,7 @@ This tool is especially useful if you need to process thousands of inputs (NER, 
 ```python
 from openai import OpenAI
 
-from texttools import SimpleBatchManager
+from texttools import BatchManager
 ```
 
 ### 2. Define output model
@@ -37,7 +37,7 @@ prompt_template = "You are a binary classifier. Answer only with `true` or `fals
 
 model = "gpt-4o-mini"
 
-manager = SimpleBatchManager(
+manager = BatchManager(
     client=client,
     model=model,
     prompt_template=prompt_template,

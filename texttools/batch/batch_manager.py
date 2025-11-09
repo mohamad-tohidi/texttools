@@ -14,7 +14,7 @@ T = TypeVar("T", bound=BaseModel)
 logger = logging.getLogger("texttools.batch_runner")
 
 
-class SimpleBatchManager:
+class BatchManager:
     """
     Manages batch processing jobs for OpenAI's chat completions with structured outputs.
 
