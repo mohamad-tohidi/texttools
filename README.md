@@ -62,6 +62,8 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
 
 **None:** You can use `repr(ToolOutput)` to see details of an output.
 
+---
+
 ## 🚀 Installation
 
 Install the latest release via PyPI:
