@@ -119,16 +119,16 @@ import asyncio
 from openai import AsyncOpenAI
 from texttools import AsyncTheTool
 
-# Create your AsyncOpenAI client
-async_client = AsyncOpenAI(base_url="your_url", api_key="your_api_key")
-
-# Specify the model
-model = "gpt-4o-mini"
-
-# Create an instance of AsyncTheTool
-async_the_tool = AsyncTheTool(client=async_client, model=model)
-
 async def main():
+    # Create your AsyncOpenAI client
+    async_client = AsyncOpenAI(base_url="your_url", api_key="your_api_key")
+
+    # Specify the model
+    model = "gpt-4o-mini"
+
+    # Create an instance of AsyncTheTool
+    async_the_tool = AsyncTheTool(client=async_client, model=model)
+    
     # Example: Async Translation and Keyword Extraction
     translation_task = async_the_tool.translate("سلام، حالت چطوره؟", target_language="English")
     keywords_task = async_the_tool.extract_keywords("Tomorrow, we will be dead by the car crash")
