@@ -9,7 +9,7 @@ Tools are modular, easy to extend, and ready to use for common NLP tasks.
 
 ## Core Components
 
-### Operator/AsyncOperator Class
+### BaseOperator, Operator/AsyncOperator Class
 The base `Operator` class provides:
 - LLM client integration (OpenAI)
 - Prompt loading and formatting
@@ -19,6 +19,7 @@ The base `Operator` class provides:
 
 ### Output Models
 Structured output models defined in `output_models.py`:
+- `ToolOutput` - Output model of each tool
 - `StrOutput` - Simple string output
 - `ListStrOutput` - List of strings
 - `ListDictStrStrOutput` - List of dictionaries
@@ -29,8 +30,14 @@ Structured output models defined in `output_models.py`:
 The `PromptLoader` class:
 - Loads YAML prompt templates from the `prompts/` folder
 - Supports mode-based template selection
+- Uses lru cache for efficiency
 - Handles variable injection into templates
 - Manages both main and analysis templates
+
+### Formatter
+The `Fromatter` class:
+- Gathers diffrent formatters to format chats
+- New formatters can be added easily by defining new static methods
 
 ---
 
