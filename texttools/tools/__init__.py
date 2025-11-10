@@ -1,4 +1,4 @@
-from .async_the_tool import AsyncTheTool
-from .the_tool import TheTool
+from .sync_tools import TheTool
+from .async_tools import AsyncTheTool
 
 __all__ = ["TheTool", "AsyncTheTool"]
