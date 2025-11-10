@@ -143,6 +143,7 @@ class BatchManager:
         """
         if self._load_state(job_name):
             return
+
         path = self._prepare_file(payload)
         upload = self.client.files.create(file=open(path, "rb"), purpose="batch")
         job = self.client.batches.create(
@@ -187,7 +188,7 @@ class BatchManager:
                 err_content = (
                     self.client.files.content(error_file_id).read().decode("utf-8")
                 )
-                logger.info("Error file content:", err_content)
+                logger.error("Error file content:", err_content)
             return {}
 
         content = self.client.files.content(out_file_id).read().decode("utf-8")
