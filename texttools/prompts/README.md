@@ -14,15 +14,15 @@ This folder contains YAML files for all prompts used in the project. Each file r
 ### Example YAML Structure
 ```yaml
 main_template:
-  default: |
+  mode_1: |
     Your main instructions here with placeholders like {input}.
-  reason: |
+  mode_2: |
     Optional reasoning instructions here.
 
 analyze_template:
-  default: |
+  mode_1: |
     Analyze and summarize the input.
-  reason: |
+  mode_2: |
     Optional detailed analysis template.
 ```
 
