@@ -11,7 +11,7 @@ from openai.lib._pydantic import to_strict_json_schema
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
 
-logger = logging.getLogger("texttools.batch_runner")
+logger = logging.getLogger("texttools.batch_manager")
 
 
 class BatchManager:
