@@ -43,9 +43,10 @@ class BatchManager:
         self.client_kwargs = client_kwargs
         self.dict_input = False
 
-        if self.custom_json_schema_obj_str:
-            if self.custom_json_schema_obj_str is not dict:
-                raise ValueError("Schema should be a dict")
+        if custom_json_schema_obj_str and not isinstance(
+            custom_json_schema_obj_str, dict
+        ):
+            raise ValueError("Schema should be a dict")
 
     def _state_file(self, job_name: str) -> Path:
         return self.state_dir / f"{job_name}.json"
