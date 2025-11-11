@@ -40,16 +40,10 @@ class BaseOperator:
         """
         Convert a JSON response string to output model.
         """
-        # Clean the response string
         cleaned_json = self._clean_json_response(response_string)
-
-        # Fix Python-style booleans
         cleaned_json = cleaned_json.replace("False", "false").replace("True", "true")
-
-        # Convert string to Python dictionary
         response_dict = json.loads(cleaned_json)
 
-        # Convert dictionary to output model
         return output_model(**response_dict)
 
     def _extract_logprobs(self, completion: dict) -> list[dict[str, Any]]:

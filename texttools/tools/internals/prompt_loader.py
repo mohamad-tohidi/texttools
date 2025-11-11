@@ -11,15 +11,10 @@ class PromptLoader:
     - Load and parse YAML prompt definitions.
     - Select the right template (by mode, if applicable).
     - Inject variables (`{input}`, plus any extra kwargs) into the templates.
-    - Return a dict with:
-        {
-            "main_template": "...",
-            "analyze_template": "..." | None
-        }
     """
 
-    MAIN_TEMPLATE: str = "main_template"
-    ANALYZE_TEMPLATE: str = "analyze_template"
+    MAIN_TEMPLATE = "main_template"
+    ANALYZE_TEMPLATE = "analyze_template"
 
     # Use lru_cache to load each file once
     @lru_cache(maxsize=32)
