@@ -51,7 +51,7 @@ class Operator(BaseOperator):
         temperature: float,
         logprobs: bool = False,
         top_logprobs: int = 3,
-    ) -> tuple[Type[T], Any]:
+    ) -> tuple[T, Any]:
         """
         Parses a chat completion using OpenAI's structured output format.
         Returns both the parsed object and the raw completion for logging.
@@ -78,7 +78,7 @@ class Operator(BaseOperator):
         temperature: float,
         logprobs: bool = False,
         top_logprobs: int = 3,
-    ) -> tuple[Type[T], Any]:
+    ) -> tuple[T, Any]:
         """
         Generates a completion using vLLM with JSON schema guidance.
         Returns the parsed output model and raw completion.
