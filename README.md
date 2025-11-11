@@ -153,6 +153,26 @@ Use **TextTools** when you need to:
 
 ---
 
+## 🔍 Logging
+
+TextTools uses Python's standard `logging` module. The library's default logger level is `WARNING`, so if you want to modify it, follow instructions:
+
+
+```python
+import logging
+
+# Default: warnings and errors only
+logging.basicConfig(level=logging.WARNING)
+
+# Debug everything (verbose)
+logging.basicConfig(level=logging.DEBUG)
+
+# Complete silence
+logging.basicConfig(level=logging.CRITICAL)
+```
+
+---
+
 ## 📚 Batch Processing
 
 Process large datasets efficiently using OpenAI's batch API.
