@@ -1,4 +1,4 @@
-from typing import TypeVar, Type, Any
+from typing import TypeVar, Type, Any, Union
 import json
 import re
 import math
@@ -11,11 +11,13 @@ from openai import OpenAI, AsyncOpenAI
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
 
+ClientType = Union[OpenAI, AsyncOpenAI]
+
 logger = logging.getLogger("texttools.base_operator")
 
 
 class BaseOperator:
-    def __init__(self, client: OpenAI | AsyncOpenAI, model: str):
+    def __init__(self, client: ClientType, model: str):
         self.client = client
         self.model = model
 
@@ -57,7 +59,7 @@ class BaseOperator:
 
         for choice in completion.choices:
             if not getattr(choice, "logprobs", None):
-                logger.error("logprobs is not avalible in the chosen model.")
+                logger.error("logprobs is not available for the chosen model.")
                 return []
 
             for logprob_item in choice.logprobs.content:
@@ -87,8 +89,5 @@ class BaseOperator:
         """
         delta_temp = random.choice([-1, 1]) * random.uniform(0.1, 0.9)
         new_temp = base_temp + delta_temp
-        print(f"Base Temp: {base_temp}")
-        print(f"Delta Temp: {delta_temp}")
-        print(f"New Temp: {new_temp}")
 
         return max(0.0, min(new_temp, 1.5))
