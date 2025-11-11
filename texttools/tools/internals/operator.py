@@ -181,8 +181,7 @@ class Operator(BaseOperator):
 
             # Retry logic if validation fails
             if validator and not validator(output.result):
-                max_retries = 3
-                for attempt in range(max_retries):
+                for attempt in range(self.MAX_RETRIES):
                     logger.warning(
                         f"Validation failed, retrying for the {attempt + 1} time."
                     )

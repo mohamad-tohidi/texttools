@@ -17,6 +17,9 @@ logger = logging.getLogger("texttools.base_operator")
 
 
 class BaseOperator:
+    # Max retry in case of failed output validation
+    MAX_RETRIES = 3
+
     def __init__(self, client: ClientType, model: str):
         self.client = client
         self.model = model
