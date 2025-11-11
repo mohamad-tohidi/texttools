@@ -138,7 +138,7 @@ class AsyncOperator(BaseOperator):
                 **extra_kwargs,
             )
 
-            messages: list[dict[str, str]] = []
+            messages = []
 
             if with_analysis:
                 analysis = await self._analyze(prompt_configs, temperature)

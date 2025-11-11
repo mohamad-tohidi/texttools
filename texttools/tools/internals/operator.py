@@ -6,7 +6,6 @@ from pydantic import BaseModel
 
 from texttools.tools.internals.output_models import ToolOutput
 from texttools.tools.internals.base_operator import BaseOperator
-from texttools.tools.internals.formatters import Formatter
 from texttools.tools.internals.prompt_loader import PromptLoader
 
 # Base Model type for output models
@@ -126,7 +125,6 @@ class Operator(BaseOperator):
         Execute the LLM pipeline with the given input text.
         """
         prompt_loader = PromptLoader()
-        formatter = Formatter()
         output = ToolOutput()
 
         try:
@@ -138,7 +136,7 @@ class Operator(BaseOperator):
                 **extra_kwargs,
             )
 
-            messages: list[dict[str, str]] = []
+            messages = []
 
             if with_analysis:
                 analysis = self._analyze(prompt_configs, temperature)
@@ -159,7 +157,7 @@ class Operator(BaseOperator):
                 )
 
             messages.append(self._build_user_message(prompt_configs["main_template"]))
-            messages = formatter.user_merge_format(messages)
+            messages
 
             if resp_format == "vllm":
                 parsed, completion = self._vllm_completion(
