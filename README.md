@@ -6,26 +6,26 @@
 
 It provides both **sync (`TheTool`)** and **async (`AsyncTheTool`)** APIs for maximum flexibility.
 
-It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER extraction, and more** — designed to help you integrate AI-powered text processing into your applications with minimal effort.
+It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER extraction, and more** - designed to help you integrate AI-powered text processing into your applications with minimal effort.
 
 ---
 
 ## ✨ Features
 
-TextTools provides a rich collection of high-level NLP utilities built on top of LLMs.  
+TextTools provides a rich collection of high-level NLP utilities,
 Each tool is designed to work with structured outputs (JSON / Pydantic).
 
 - **`categorize()`** - Classifies text into Islamic studies categories 
-- **`is_question()`** - Binary detection of whether input is a question
 - **`extract_keywords()`** - Extracts keywords from text
 - **`extract_entities()`** - Named Entity Recognition (NER) system
-- **`summarize()`** - Text summarization
+- **`is_question()`** - Binary detection of whether input is a question
 - **`text_to_question()`** - Generates questions from text
 - **`merge_questions()`** - Merges multiple questions with different modes
 - **`rewrite()`** - Rewrites text with different wording/meaning
 - **`subject_to_question()`** - Generates questions about a specific subject
+- **`summarize()`** - Text summarization
 - **`translate()`** - Text translation between languages
-- **`run_custom()`** - Allows users to define a custom tool with arbitrary BaseModel
+- **`run_custom()`** - Allows users to define a custom tool with an arbitrary BaseModel
 
 ---
 
@@ -33,18 +33,18 @@ Each tool is designed to work with structured outputs (JSON / Pydantic).
 
 TextTools provides several optional flags to customize LLM behavior:
 
-- **`with_analysis=True`** → Adds a reasoning step before generating the final output. Useful for debugging, improving prompts, or understanding model behavior.  
-Note: This doubles token usage per call because it triggers an additional LLM request.
+- **`with_analysis (bool)`** → Adds a reasoning step before generating the final output.
+**Note:** This doubles token usage per call because it triggers an additional LLM request.
 
-- **`logprobs=True`** → Returns token-level probabilities for the generated output. You can also specify `top_logprobs=<N>` to get the top N alternative tokens and their probabilities.  
+- **`logprobs (bool)`** → Returns token-level probabilities for the generated output. You can also specify `top_logprobs=<N>` to get the top N alternative tokens and their probabilities.  
 
-- **`output_lang="en"`** → Forces the model to respond in a specific language. The model will ignore other instructions about language and respond strictly in the requested language.
+- **`output_lang (str)`** → Forces the model to respond in a specific language. The model will ignore other instructions about language and respond strictly in the requested language.
 
-- **`user_prompt="..."`** → Allows you to inject a custom instruction or prompt into the model alongside the main template. This gives you fine-grained control over how the model interprets or modifies the input text.
+- **`user_prompt (str)`** → Allows you to inject a custom instruction or prompt into the model alongside the main template. This gives you fine-grained control over how the model interprets or modifies the input text.
 
-- **`temperature=0.0`** → Determines how creative the model should respond. Takes a float number from `0.0` to `1.0`.
+- **`temperature (float)`** → Determines how creative the model should respond. Takes a float number from `0.0` to `2.0`.
 
-- **`validator=validation_function`** → Forces TheTool to validate the output result based on your custom validator. Validator should return bool (True if there were no problem, False if the validation failed.) If validator failed, TheTool will retry to get another output by modifying `temperature`.
+- **`validator (Callable)`** → Forces TheTool to validate the output result based on your custom validator. Validator should return bool (True if there were no problem, False if the validation failed.) If validator failed, TheTool will retry to get another output by modifying `temperature`.
 
 All these parameters can be used individually or together to tailor the behavior of any tool in **TextTools**.
 
@@ -55,10 +55,10 @@ All these parameters can be used individually or together to tailor the behavior
 ## 🧩 ToolOutput
 
 Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel with attributes:
-- **`result`** → The output of LLM (`type=Any`)
-- **`analysis`** → The reasoning step before generating the final output (`type=str`)
-- **`logprobs`** → Token-level probabilities for the generated output (`type=list`)
-- **`errors`** → Any error that have occured during calling LLM (`type=str`)
+- **`result (Any)`** → The output of LLM
+- **`analysis (str)`** → The reasoning step before generating the final output
+- **`logprobs (list)`** → Token-level probabilities for the generated output 
+- **`errors (list[str])`** → Any error that have occured during calling LLM
 
 **None:** You can use `repr(ToolOutput)` to see details of an output.
 
@@ -74,7 +74,7 @@ pip install -U hamtaa-texttools
 
 ---
 
-## Sync vs Async
+## 🧨 Sync vs Async
 | Tool         | Style   | Use case                                    |
 |--------------|---------|---------------------------------------------|
 | `TheTool`    | Sync    | Simple scripts, sequential workflows        |
@@ -177,7 +177,7 @@ logging.basicConfig(level=logging.CRITICAL)
 
 Process large datasets efficiently using OpenAI's batch API.
 
-## Quick Start
+## ⚡ Quick Start (Batch)
 
 ```python
 from texttools import BatchJobRunner, BatchConfig
@@ -209,6 +209,6 @@ Feel free to **open issues, suggest new features, or submit pull requests**.
 
 ---
 
-## License
+## 🌿 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
