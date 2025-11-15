@@ -1,59 +1,22 @@
 import json
 import os
 import time
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Type, TypeVar
+from typing import Any, Type, TypeVar
 import logging
 
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.batch.batch_manager import BatchManager
+from texttools.batch.internals.batch_manager import BatchManager
+from texttools.batch.batch_config import BatchConfig
 from texttools.tools.internals.output_models import StrOutput
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
 
 logger = logging.getLogger("texttools.batch_runner")
-
-
-def export_data(data) -> list[dict[str, str]]:
-    """
-    Produces a structure of the following form from an initial data structure:
-    [{"id": str, "text": str},...]
-    """
-    return data
-
-
-def import_data(data) -> Any:
-    """
-    Takes the output and adds and aggregates it to the original structure.
-    """
-    return data
-
-
-@dataclass
-class BatchConfig:
-    """
-    Configuration for batch job runner.
-    """
-
-    system_prompt: str = ""
-    job_name: str = ""
-    input_data_path: str = ""
-    output_data_filename: str = ""
-    model: str = "gpt-4.1-mini"
-    MAX_BATCH_SIZE: int = 100
-    MAX_TOTAL_TOKENS: int = 2_000_000
-    CHARS_PER_TOKEN: float = 2.7
-    PROMPT_TOKEN_MULTIPLIER: int = 1_000
-    BASE_OUTPUT_DIR: str = "Data/batch_entity_result"
-    import_function: Callable = import_data
-    export_function: Callable = export_data
-    poll_interval_seconds: int = 30
-    max_retries: int = 3
 
 
 class BatchJobRunner:
