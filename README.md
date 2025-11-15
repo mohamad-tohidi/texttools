@@ -180,6 +180,7 @@ Process large datasets efficiently using OpenAI's batch API.
 ## ⚡ Quick Start (Batch)
 
 ```python
+from pydantic import BaseModel
 from texttools import BatchJobRunner, BatchConfig
 
 # Configure your batch job
