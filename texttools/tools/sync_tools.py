@@ -22,7 +22,7 @@ class TheTool:
         client: OpenAI,
         model: str,
     ):
-        self.operator = Operator(client=client, model=model)
+        self._operator = Operator(client=client, model=model)
 
     def categorize(
         self,
@@ -43,7 +43,7 @@ class TheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return self.operator.run(
+        return self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -80,7 +80,7 @@ class TheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return self.operator.run(
+        return self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -117,7 +117,7 @@ class TheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return self.operator.run(
+        return self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -153,7 +153,7 @@ class TheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return self.operator.run(
+        return self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -190,7 +190,7 @@ class TheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return self.operator.run(
+        return self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -229,7 +229,7 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         text = ", ".join(text)
-        return self.operator.run(
+        return self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -267,7 +267,7 @@ class TheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return self.operator.run(
+        return self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -305,7 +305,7 @@ class TheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return self.operator.run(
+        return self._operator.run(
             # User parameters
             text=text,
             number_of_questions=number_of_questions,
@@ -343,7 +343,7 @@ class TheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return self.operator.run(
+        return self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -380,7 +380,7 @@ class TheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return self.operator.run(
+        return self._operator.run(
             # User parameters
             text=text,
             target_language=target_language,
@@ -414,7 +414,7 @@ class TheTool:
             ToolOutput: Object with fields:
                 - result (str): The output result
         """
-        return self.operator.run(
+        return self._operator.run(
             # User paramaeters
             text=prompt,
             output_model=output_model,

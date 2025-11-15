@@ -24,7 +24,7 @@ class AsyncTheTool:
         client: AsyncOpenAI,
         model: str,
     ):
-        self.operator = AsyncOperator(client=client, model=model)
+        self._operator = AsyncOperator(client=client, model=model)
 
     async def categorize(
         self,
@@ -45,7 +45,7 @@ class AsyncTheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return await self.operator.run(
+        return await self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -82,7 +82,7 @@ class AsyncTheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return await self.operator.run(
+        return await self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -119,7 +119,7 @@ class AsyncTheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return await self.operator.run(
+        return await self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -155,7 +155,7 @@ class AsyncTheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return await self.operator.run(
+        return await self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -192,7 +192,7 @@ class AsyncTheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return await self.operator.run(
+        return await self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -231,7 +231,7 @@ class AsyncTheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
         text = ", ".join(text)
-        return await self.operator.run(
+        return await self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -269,7 +269,7 @@ class AsyncTheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return await self.operator.run(
+        return await self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -307,7 +307,7 @@ class AsyncTheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return await self.operator.run(
+        return await self._operator.run(
             # User parameters
             text=text,
             number_of_questions=number_of_questions,
@@ -345,7 +345,7 @@ class AsyncTheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return await self.operator.run(
+        return await self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -382,7 +382,7 @@ class AsyncTheTool:
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
         """
-        return await self.operator.run(
+        return await self._operator.run(
             # User parameters
             text=text,
             target_language=target_language,
@@ -416,7 +416,7 @@ class AsyncTheTool:
             ToolOutput: Object with fields:
                 - result (str): The output result
         """
-        return await self.operator.run(
+        return await self._operator.run(
             # User paramaeters
             text=prompt,
             output_model=output_model,

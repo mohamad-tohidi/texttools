@@ -26,8 +26,7 @@ class AsyncOperator(BaseOperator):
     """
 
     def __init__(self, client: AsyncOpenAI, model: str):
-        self.client = client
-        self.model = model
+        super().__init__(client, model)
 
     async def _analyze(self, prompt_configs: dict[str, str], temperature: float) -> str:
         """
@@ -36,8 +35,8 @@ class AsyncOperator(BaseOperator):
         """
         analyze_prompt = prompt_configs["analyze_template"]
         analyze_message = [self._build_user_message(analyze_prompt)]
-        completion = await self.client.chat.completions.create(
-            model=self.model,
+        completion = await self._client.chat.completions.create(
+            model=self._model,
             messages=analyze_message,
             temperature=temperature,
         )
@@ -57,7 +56,7 @@ class AsyncOperator(BaseOperator):
         Returns both the parsed object and the raw completion for logging.
         """
         request_kwargs = {
-            "model": self.model,
+            "model": self._model,
             "messages": message,
             "response_format": output_model,
             "temperature": temperature,
@@ -67,7 +66,7 @@ class AsyncOperator(BaseOperator):
             request_kwargs["logprobs"] = True
             request_kwargs["top_logprobs"] = top_logprobs
 
-        completion = await self.client.beta.chat.completions.parse(**request_kwargs)
+        completion = await self._client.beta.chat.completions.parse(**request_kwargs)
         parsed = completion.choices[0].message.parsed
         return parsed, completion
 
@@ -87,7 +86,7 @@ class AsyncOperator(BaseOperator):
 
         # Build kwargs dynamically
         request_kwargs = {
-            "model": self.model,
+            "model": self._model,
             "messages": message,
             "extra_body": {"guided_json": json_schema},
             "temperature": temperature,
@@ -97,7 +96,7 @@ class AsyncOperator(BaseOperator):
             request_kwargs["logprobs"] = True
             request_kwargs["top_logprobs"] = top_logprobs
 
-        completion = await self.client.chat.completions.create(**request_kwargs)
+        completion = await self._client.chat.completions.create(**request_kwargs)
         response = completion.choices[0].message.content
 
         # Convert the string response to output model

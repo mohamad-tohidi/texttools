@@ -21,8 +21,8 @@ class BaseOperator:
     MAX_RETRIES = 3
 
     def __init__(self, client: ClientType, model: str):
-        self.client = client
-        self.model = model
+        self._client = client
+        self._model = model
 
     def _build_user_message(self, prompt: str) -> dict[str, str]:
         return {"role": "user", "content": prompt}
