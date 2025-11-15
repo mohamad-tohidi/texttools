@@ -16,6 +16,14 @@ class PromptLoader:
     MAIN_TEMPLATE = "main_template"
     ANALYZE_TEMPLATE = "analyze_template"
 
+    @staticmethod
+    def _build_format_args(text: str, **extra_kwargs) -> dict[str, str]:
+        # Base formatting args
+        format_args = {"input": text}
+        # Merge extras
+        format_args.update(extra_kwargs)
+        return format_args
+
     # Use lru_cache to load each file once
     @lru_cache(maxsize=32)
     def _load_templates(self, prompt_file: str, mode: str | None) -> dict[str, str]:
@@ -34,13 +42,6 @@ class PromptLoader:
             if mode
             else data.get(self.ANALYZE_TEMPLATE),
         }
-
-    def _build_format_args(self, text: str, **extra_kwargs) -> dict[str, str]:
-        # Base formatting args
-        format_args = {"input": text}
-        # Merge extras
-        format_args.update(extra_kwargs)
-        return format_args
 
     def load(
         self, prompt_file: str, text: str, mode: str, **extra_kwargs
