@@ -33,15 +33,15 @@ class BatchManager:
         custom_json_schema_obj_str: dict | None = None,
         **client_kwargs: Any,
     ):
-        self.client = client
-        self.model = model
-        self.output_model = output_model
-        self.prompt_template = prompt_template
-        self.state_dir = state_dir
-        self.state_dir.mkdir(parents=True, exist_ok=True)
-        self.custom_json_schema_obj_str = custom_json_schema_obj_str
-        self.client_kwargs = client_kwargs
-        self.dict_input = False
+        self._client = client
+        self._model = model
+        self._output_model = output_model
+        self._prompt_template = prompt_template
+        self._state_dir = state_dir
+        self._custom_json_schema_obj_str = custom_json_schema_obj_str
+        self._client_kwargs = client_kwargs
+        self._dict_input = False
+        self._state_dir.mkdir(parents=True, exist_ok=True)
 
         if custom_json_schema_obj_str and not isinstance(
             custom_json_schema_obj_str, dict
@@ -49,7 +49,7 @@ class BatchManager:
             raise ValueError("Schema should be a dict")
 
     def _state_file(self, job_name: str) -> Path:
-        return self.state_dir / f"{job_name}.json"
+        return self._state_dir / f"{job_name}.json"
 
     def _load_state(self, job_name: str) -> list[dict[str, Any]]:
         """
@@ -83,17 +83,17 @@ class BatchManager:
         """
         response_format_config: dict[str, Any]
 
-        if self.custom_json_schema_obj_str:
+        if self._custom_json_schema_obj_str:
             response_format_config = {
                 "type": "json_schema",
-                "json_schema": self.custom_json_schema_obj_str,
+                "json_schema": self._custom_json_schema_obj_str,
             }
         else:
-            raw_schema = to_strict_json_schema(self.output_model)
+            raw_schema = to_strict_json_schema(self._output_model)
             response_format_config = {
                 "type": "json_schema",
                 "json_schema": {
-                    "name": self.output_model.__name__,
+                    "name": self._output_model.__name__,
                     "schema": raw_schema,
                 },
             }
@@ -105,11 +105,11 @@ class BatchManager:
             "body": {
                 "model": self.model,
                 "messages": [
-                    {"role": "system", "content": self.prompt_template},
+                    {"role": "system", "content": self._prompt_template},
                     {"role": "user", "content": text},
                 ],
                 "response_format": response_format_config,
-                **self.client_kwargs,
+                **self._client_kwargs,
             },
         }
 
@@ -130,7 +130,7 @@ class BatchManager:
                 "The input must be either a list of texts or a dictionary in the form {'id': str, 'text': str}"
             )
 
-        file_path = self.state_dir / f"batch_{uuid.uuid4().hex}.jsonl"
+        file_path = self._state_dir / f"batch_{uuid.uuid4().hex}.jsonl"
         with open(file_path, "w", encoding="utf-8") as f:
             for task in tasks:
                 f.write(json.dumps(task) + "\n")
@@ -145,8 +145,8 @@ class BatchManager:
             return
 
         path = self._prepare_file(payload)
-        upload = self.client.files.create(file=open(path, "rb"), purpose="batch")
-        job = self.client.batches.create(
+        upload = self._client.files.create(file=open(path, "rb"), purpose="batch")
+        job = self._client.batches.create(
             input_file_id=upload.id,
             endpoint="/v1/chat/completions",
             completion_window="24h",
@@ -162,7 +162,7 @@ class BatchManager:
         if not job:
             return "completed"
 
-        info = self.client.batches.retrieve(job["id"])
+        info = self._client.batches.retrieve(job["id"])
         job = info.to_dict()
         self._save_state(job_name, [job])
         logger.info("Batch job status: %s", job)
@@ -180,18 +180,18 @@ class BatchManager:
             return {}
         batch_id = job["id"]
 
-        info = self.client.batches.retrieve(batch_id)
+        info = self._client.batches.retrieve(batch_id)
         out_file_id = info.output_file_id
         if not out_file_id:
             error_file_id = info.error_file_id
             if error_file_id:
                 err_content = (
-                    self.client.files.content(error_file_id).read().decode("utf-8")
+                    self._client.files.content(error_file_id).read().decode("utf-8")
                 )
                 logger.error("Error file content:", err_content)
             return {}
 
-        content = self.client.files.content(out_file_id).read().decode("utf-8")
+        content = self._client.files.content(out_file_id).read().decode("utf-8")
         lines = content.splitlines()
         results = {}
         log = []
@@ -202,7 +202,7 @@ class BatchManager:
                 content = result["response"]["body"]["choices"][0]["message"]["content"]
                 try:
                     parsed_content = json.loads(content)
-                    model_instance = self.output_model(**parsed_content)
+                    model_instance = self._output_model(**parsed_content)
                     results[custom_id] = model_instance.model_dump(mode="json")
                 except json.JSONDecodeError:
                     results[custom_id] = {"error": "Failed to parse content as JSON"}
