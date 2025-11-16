@@ -1,7 +1,6 @@
 from typing import TypeVar, Any, Union
 import re
 import math
-import logging
 import random
 
 from pydantic import BaseModel
@@ -11,8 +10,6 @@ from openai import OpenAI, AsyncOpenAI
 T = TypeVar("T", bound=BaseModel)
 
 ClientType = Union[OpenAI, AsyncOpenAI]
-
-logger = logging.getLogger("texttools.base_operator")
 
 
 class BaseOperator:
@@ -37,7 +34,6 @@ class BaseOperator:
 
         for choice in completion.choices:
             if not getattr(choice, "logprobs", None):
-                logger.error("logprobs is not available for the chosen model.")
                 return []
 
             for logprob_item in choice.logprobs.content:
