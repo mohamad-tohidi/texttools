@@ -3,7 +3,7 @@ from typing import Literal, Any, Callable
 from openai import AsyncOpenAI
 
 from texttools.tools.internals.async_operator import AsyncOperator
-import texttools.tools.internals.output_models as OutputModels
+import texttools.tools.internals.output_models as OM
 
 
 class AsyncTheTool:
@@ -35,7 +35,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
-    ) -> OutputModels.ToolOutput:
+    ) -> OM.ToolOutput:
         """
         Categorize a text into a single Islamic studies domain category.
 
@@ -56,7 +56,7 @@ class AsyncTheTool:
             validator=validator,
             # Internal parameters
             prompt_file="categorizer.yaml",
-            output_model=OutputModels.CategorizerOutput,
+            output_model=OM.CategorizerOutput,
             mode=None,
             output_lang=None,
         )
@@ -71,7 +71,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
-    ) -> OutputModels.ToolOutput:
+    ) -> OM.ToolOutput:
         """
         Extract salient keywords from text.
 
@@ -93,7 +93,7 @@ class AsyncTheTool:
             validator=validator,
             # Internal parameters
             prompt_file="extract_keywords.yaml",
-            output_model=OutputModels.ListStrOutput,
+            output_model=OM.ListStrOutput,
             mode=None,
         )
 
@@ -107,7 +107,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
-    ) -> OutputModels.ToolOutput:
+    ) -> OM.ToolOutput:
         """
         Perform Named Entity Recognition (NER) over the input text.
 
@@ -129,7 +129,7 @@ class AsyncTheTool:
             validator=validator,
             # Internal parameters
             prompt_file="extract_entities.yaml",
-            output_model=OutputModels.ListDictStrStrOutput,
+            output_model=OM.ListDictStrStrOutput,
             mode=None,
         )
 
@@ -142,7 +142,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
-    ) -> OutputModels.ToolOutput:
+    ) -> OM.ToolOutput:
         """
         Detect if the input is phrased as a question.
 
@@ -163,7 +163,7 @@ class AsyncTheTool:
             validator=validator,
             # Internal parameters
             prompt_file="is_question.yaml",
-            output_model=OutputModels.BoolOutput,
+            output_model=OM.BoolOutput,
             mode=None,
             output_lang=None,
         )
@@ -178,7 +178,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
-    ) -> OutputModels.ToolOutput:
+    ) -> OM.ToolOutput:
         """
         Generate a single question from the given text.
 
@@ -200,7 +200,7 @@ class AsyncTheTool:
             validator=validator,
             # Internal parameters
             prompt_file="text_to_question.yaml",
-            output_model=OutputModels.StrOutput,
+            output_model=OM.StrOutput,
             mode=None,
         )
 
@@ -215,7 +215,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         mode: Literal["default", "reason"] = "default",
         validator: Callable[[Any], bool] | None = None,
-    ) -> OutputModels.ToolOutput:
+    ) -> OM.ToolOutput:
         """
         Merge multiple questions into a single unified question.
 
@@ -238,7 +238,7 @@ class AsyncTheTool:
             validator=validator,
             # Internal parameters
             prompt_file="merge_questions.yaml",
-            output_model=OutputModels.StrOutput,
+            output_model=OM.StrOutput,
             mode=mode,
         )
 
@@ -253,7 +253,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
         validator: Callable[[Any], bool] | None = None,
-    ) -> OutputModels.ToolOutput:
+    ) -> OM.ToolOutput:
         """
         Rewrite a text with different modes.
 
@@ -275,7 +275,7 @@ class AsyncTheTool:
             validator=validator,
             # Internal parameters
             prompt_file="rewrite.yaml",
-            output_model=OutputModels.StrOutput,
+            output_model=OM.StrOutput,
             mode=mode,
         )
 
@@ -290,7 +290,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
-    ) -> OutputModels.ToolOutput:
+    ) -> OM.ToolOutput:
         """
         Generate a list of questions about a subject.
 
@@ -313,7 +313,7 @@ class AsyncTheTool:
             validator=validator,
             # Internal parameters
             prompt_file="subject_to_question.yaml",
-            output_model=OutputModels.ReasonListStrOutput,
+            output_model=OM.ReasonListStrOutput,
             mode=None,
         )
 
@@ -327,7 +327,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
-    ) -> OutputModels.ToolOutput:
+    ) -> OM.ToolOutput:
         """
         Summarize the given subject text.
 
@@ -349,7 +349,7 @@ class AsyncTheTool:
             validator=validator,
             # Internal parameters
             prompt_file="summarize.yaml",
-            output_model=OutputModels.StrOutput,
+            output_model=OM.StrOutput,
             mode=None,
         )
 
@@ -363,7 +363,7 @@ class AsyncTheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
-    ) -> OutputModels.ToolOutput:
+    ) -> OM.ToolOutput:
         """
         Translate text between languages.
 
@@ -385,7 +385,7 @@ class AsyncTheTool:
             validator=validator,
             # Internal parameters
             prompt_file="translate.yaml",
-            output_model=OutputModels.StrOutput,
+            output_model=OM.StrOutput,
             mode=None,
             output_lang=None,
         )
@@ -398,7 +398,7 @@ class AsyncTheTool:
         temperature: float | None = None,
         logprobs: bool | None = None,
         top_logprobs: int | None = None,
-    ) -> OutputModels.ToolOutput:
+    ) -> OM.ToolOutput:
         """
         Custom tool that can do almost anything!
 
