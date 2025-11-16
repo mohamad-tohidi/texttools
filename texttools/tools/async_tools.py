@@ -57,7 +57,6 @@ class AsyncTheTool:
             # Internal parameters
             prompt_file="categorizer.yaml",
             output_model=OutputModels.CategorizerOutput,
-            resp_format="parse",
             mode=None,
             output_lang=None,
         )
@@ -95,7 +94,6 @@ class AsyncTheTool:
             # Internal parameters
             prompt_file="extract_keywords.yaml",
             output_model=OutputModels.ListStrOutput,
-            resp_format="parse",
             mode=None,
         )
 
@@ -132,7 +130,6 @@ class AsyncTheTool:
             # Internal parameters
             prompt_file="extract_entities.yaml",
             output_model=OutputModels.ListDictStrStrOutput,
-            resp_format="parse",
             mode=None,
         )
 
@@ -167,7 +164,6 @@ class AsyncTheTool:
             # Internal parameters
             prompt_file="is_question.yaml",
             output_model=OutputModels.BoolOutput,
-            resp_format="parse",
             mode=None,
             output_lang=None,
         )
@@ -205,7 +201,6 @@ class AsyncTheTool:
             # Internal parameters
             prompt_file="text_to_question.yaml",
             output_model=OutputModels.StrOutput,
-            resp_format="parse",
             mode=None,
         )
 
@@ -244,7 +239,6 @@ class AsyncTheTool:
             # Internal parameters
             prompt_file="merge_questions.yaml",
             output_model=OutputModels.StrOutput,
-            resp_format="parse",
             mode=mode,
         )
 
@@ -282,7 +276,6 @@ class AsyncTheTool:
             # Internal parameters
             prompt_file="rewrite.yaml",
             output_model=OutputModels.StrOutput,
-            resp_format="parse",
             mode=mode,
         )
 
@@ -321,7 +314,6 @@ class AsyncTheTool:
             # Internal parameters
             prompt_file="subject_to_question.yaml",
             output_model=OutputModels.ReasonListStrOutput,
-            resp_format="parse",
             mode=None,
         )
 
@@ -358,7 +350,6 @@ class AsyncTheTool:
             # Internal parameters
             prompt_file="summarize.yaml",
             output_model=OutputModels.StrOutput,
-            resp_format="parse",
             mode=None,
         )
 
@@ -395,7 +386,6 @@ class AsyncTheTool:
             # Internal parameters
             prompt_file="translate.yaml",
             output_model=OutputModels.StrOutput,
-            resp_format="parse",
             mode=None,
             output_lang=None,
         )
@@ -427,7 +417,6 @@ class AsyncTheTool:
             top_logprobs=top_logprobs,
             # Internal parameters
             prompt_file="run_custom.yaml",
-            resp_format="parse",
             user_prompt=None,
             with_analysis=False,
             mode=None,

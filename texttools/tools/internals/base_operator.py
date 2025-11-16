@@ -1,5 +1,4 @@
-from typing import TypeVar, Type, Any, Union
-import json
+from typing import TypeVar, Any, Union
 import re
 import math
 import logging
@@ -26,30 +25,6 @@ class BaseOperator:
 
     def _build_user_message(self, prompt: str) -> dict[str, str]:
         return {"role": "user", "content": prompt}
-
-    def _clean_json_response(self, response: str) -> str:
-        """
-        Clean JSON response by removing code block markers and whitespace.
-        Handles cases like:
-        - ```json{"result": "value"}```
-        """
-        stripped = response.strip()
-        cleaned = re.sub(r"^```(?:json)?\s*", "", stripped)
-        cleaned = re.sub(r"\s*```$", "", cleaned)
-
-        return cleaned.strip()
-
-    def _convert_to_output_model(
-        self, response_string: str, output_model: Type[T]
-    ) -> Type[T]:
-        """
-        Convert a JSON response string to output model.
-        """
-        cleaned_json = self._clean_json_response(response_string)
-        cleaned_json = cleaned_json.replace("False", "false").replace("True", "true")
-        response_dict = json.loads(cleaned_json)
-
-        return output_model(**response_dict)
 
     def _extract_logprobs(self, completion: dict) -> list[dict[str, Any]]:
         """

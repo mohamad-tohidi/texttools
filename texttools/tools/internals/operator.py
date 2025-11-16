@@ -1,4 +1,4 @@
-from typing import Any, TypeVar, Type, Literal, Callable
+from typing import Any, TypeVar, Type, Callable
 import logging
 
 from openai import OpenAI
@@ -69,39 +69,6 @@ class Operator(BaseOperator):
         parsed = completion.choices[0].message.parsed
         return parsed, completion
 
-    def _vllm_completion(
-        self,
-        message: list[dict[str, str]],
-        output_model: Type[T],
-        temperature: float,
-        logprobs: bool = False,
-        top_logprobs: int = 3,
-    ) -> tuple[T, Any]:
-        """
-        Generates a completion using vLLM with JSON schema guidance.
-        Returns the parsed output model and raw completion.
-        """
-        json_schema = output_model.model_json_schema()
-
-        # Build kwargs dynamically
-        request_kwargs = {
-            "model": self._model,
-            "messages": message,
-            "extra_body": {"guided_json": json_schema},
-            "temperature": temperature,
-        }
-
-        if logprobs:
-            request_kwargs["logprobs"] = True
-            request_kwargs["top_logprobs"] = top_logprobs
-
-        completion = self._client.chat.completions.create(**request_kwargs)
-        response = completion.choices[0].message.content
-
-        # Convert the string response to output model
-        parsed = self._convert_to_output_model(response, output_model)
-        return parsed, completion
-
     def run(
         self,
         # User parameters
@@ -116,7 +83,6 @@ class Operator(BaseOperator):
         # Internal parameters
         prompt_file: str,
         output_model: Type[T],
-        resp_format: Literal["vllm", "parse"],
         mode: str | None,
         **extra_kwargs,
     ) -> ToolOutput:
@@ -158,14 +124,9 @@ class Operator(BaseOperator):
             messages.append(self._build_user_message(prompt_configs["main_template"]))
             messages
 
-            if resp_format == "vllm":
-                parsed, completion = self._vllm_completion(
-                    messages, output_model, temperature, logprobs, top_logprobs
-                )
-            elif resp_format == "parse":
-                parsed, completion = self._parse_completion(
-                    messages, output_model, temperature, logprobs, top_logprobs
-                )
+            parsed, completion = self._parse_completion(
+                messages, output_model, temperature, logprobs, top_logprobs
+            )
 
             # Ensure output_model has a `result` field
             if not hasattr(parsed, "result"):
@@ -186,22 +147,13 @@ class Operator(BaseOperator):
                     # Generate new temperature for retry
                     retry_temperature = self._get_retry_temp(temperature)
                     try:
-                        if resp_format == "vllm":
-                            parsed, completion = self._vllm_completion(
-                                messages,
-                                output_model,
-                                retry_temperature,
-                                logprobs,
-                                top_logprobs,
-                            )
-                        elif resp_format == "parse":
-                            parsed, completion = self._parse_completion(
-                                messages,
-                                output_model,
-                                retry_temperature,
-                                logprobs,
-                                top_logprobs,
-                            )
+                        parsed, completion = self._parse_completion(
+                            messages,
+                            output_model,
+                            retry_temperature,
+                            logprobs,
+                            top_logprobs,
+                        )
 
                         output.result = parsed.result
 
