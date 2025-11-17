@@ -26,6 +26,10 @@ def validate(result: Any) -> bool:
 
 # Question from Text Generator
 question = t.text_to_question(
-    "زندگی", output_lang="Persian", validator=validate, temperature=1.0
+    "زندگی",
+    output_lang="Persian",
+    validator=validate,
+    max_validation_retries=5,
+    temperature=1.0,
 )
 print(question)

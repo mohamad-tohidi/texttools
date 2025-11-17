@@ -13,9 +13,6 @@ ClientType = Union[OpenAI, AsyncOpenAI]
 
 
 class BaseOperator:
-    # Max retry in case of failed output validation
-    MAX_RETRIES = 3
-
     def __init__(self, client: ClientType, model: str):
         self._client = client
         self._model = model

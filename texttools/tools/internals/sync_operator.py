@@ -80,6 +80,7 @@ class Operator(BaseOperator):
         logprobs: bool,
         top_logprobs: int | None,
         validator: Callable[[Any], bool] | None,
+        max_validation_retries: int | None,
         # Internal parameters
         prompt_file: str,
         output_model: Type[T],
@@ -139,7 +140,7 @@ class Operator(BaseOperator):
 
             # Retry logic if validation fails
             if validator and not validator(output.result):
-                for attempt in range(self.MAX_RETRIES):
+                for attempt in range(max_validation_retries):
                     logger.warning(
                         f"Validation failed, retrying for the {attempt + 1} time."
                     )

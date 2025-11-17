@@ -2,7 +2,7 @@ from typing import Literal, Any, Callable
 
 from openai import OpenAI
 
-from texttools.tools.internals.operator import Operator
+from texttools.tools.internals.sync_operator import Operator
 import texttools.tools.internals.output_models as OM
 
 
@@ -33,6 +33,7 @@ class TheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
     ) -> OM.ToolOutput:
         """
         Categorize a text into a single Islamic studies domain category.
@@ -52,6 +53,7 @@ class TheTool:
             logprobs=logprobs,
             top_logprobs=top_logprobs,
             validator=validator,
+            max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="categorizer.yaml",
             output_model=OM.CategorizerOutput,
@@ -69,6 +71,7 @@ class TheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
     ) -> OM.ToolOutput:
         """
         Extract salient keywords from text.
@@ -89,6 +92,7 @@ class TheTool:
             logprobs=logprobs,
             top_logprobs=top_logprobs,
             validator=validator,
+            max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="extract_keywords.yaml",
             output_model=OM.ListStrOutput,
@@ -105,6 +109,7 @@ class TheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
     ) -> OM.ToolOutput:
         """
         Perform Named Entity Recognition (NER) over the input text.
@@ -125,6 +130,7 @@ class TheTool:
             logprobs=logprobs,
             top_logprobs=top_logprobs,
             validator=validator,
+            max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="extract_entities.yaml",
             output_model=OM.ListDictStrStrOutput,
@@ -140,6 +146,7 @@ class TheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
     ) -> OM.ToolOutput:
         """
         Detect if the input is phrased as a question.
@@ -159,6 +166,7 @@ class TheTool:
             logprobs=logprobs,
             top_logprobs=top_logprobs,
             validator=validator,
+            max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="is_question.yaml",
             output_model=OM.BoolOutput,
@@ -176,6 +184,7 @@ class TheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
     ) -> OM.ToolOutput:
         """
         Generate a single question from the given text.
@@ -196,6 +205,7 @@ class TheTool:
             logprobs=logprobs,
             top_logprobs=top_logprobs,
             validator=validator,
+            max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="text_to_question.yaml",
             output_model=OM.StrOutput,
@@ -213,6 +223,7 @@ class TheTool:
         top_logprobs: int | None = None,
         mode: Literal["default", "reason"] = "default",
         validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
     ) -> OM.ToolOutput:
         """
         Merge multiple questions into a single unified question.
@@ -234,6 +245,7 @@ class TheTool:
             logprobs=logprobs,
             top_logprobs=top_logprobs,
             validator=validator,
+            max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="merge_questions.yaml",
             output_model=OM.StrOutput,
@@ -251,6 +263,7 @@ class TheTool:
         top_logprobs: int | None = None,
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
         validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
     ) -> OM.ToolOutput:
         """
         Rewrite a text with different modes.
@@ -271,6 +284,7 @@ class TheTool:
             logprobs=logprobs,
             top_logprobs=top_logprobs,
             validator=validator,
+            max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="rewrite.yaml",
             output_model=OM.StrOutput,
@@ -288,6 +302,7 @@ class TheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
     ) -> OM.ToolOutput:
         """
         Generate a list of questions about a subject.
@@ -309,6 +324,7 @@ class TheTool:
             logprobs=logprobs,
             top_logprobs=top_logprobs,
             validator=validator,
+            max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="subject_to_question.yaml",
             output_model=OM.ReasonListStrOutput,
@@ -325,6 +341,7 @@ class TheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
     ) -> OM.ToolOutput:
         """
         Summarize the given subject text.
@@ -345,6 +362,7 @@ class TheTool:
             logprobs=logprobs,
             top_logprobs=top_logprobs,
             validator=validator,
+            max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="summarize.yaml",
             output_model=OM.StrOutput,
@@ -361,6 +379,7 @@ class TheTool:
         logprobs: bool = False,
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
     ) -> OM.ToolOutput:
         """
         Translate text between languages.
@@ -381,6 +400,7 @@ class TheTool:
             logprobs=logprobs,
             top_logprobs=top_logprobs,
             validator=validator,
+            max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="translate.yaml",
             output_model=OM.StrOutput,
