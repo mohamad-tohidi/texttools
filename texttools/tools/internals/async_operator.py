@@ -135,13 +135,6 @@ class AsyncOperator:
                 messages, output_model, temperature, logprobs, top_logprobs
             )
 
-            # Ensure output_model has a `result` field
-            if not hasattr(parsed, "result"):
-                error = "The provided output_model must define a field named 'result'"
-                logger.error(error)
-                output.errors.append(error)
-                return output
-
             output.result = parsed.result
 
             # Retry logic if validation fails
