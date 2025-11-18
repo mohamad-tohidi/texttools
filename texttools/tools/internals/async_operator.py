@@ -6,7 +6,6 @@ from pydantic import BaseModel
 
 from texttools.tools.internals.output_models import ToolOutput
 from texttools.tools.internals.operator_utils import OperatorUtils
-from texttools.tools.internals.formatters import Formatter
 from texttools.tools.internals.prompt_loader import PromptLoader
 
 # Base Model type for output models
@@ -93,7 +92,6 @@ class AsyncOperator:
         Execute the async LLM pipeline with the given input text. (Async)
         """
         prompt_loader = PromptLoader()
-        formatter = Formatter()
         output = ToolOutput()
 
         try:
@@ -132,7 +130,6 @@ class AsyncOperator:
             messages.append(
                 OperatorUtils.build_user_message(prompt_configs["main_template"])
             )
-            messages = formatter.user_merge_format(messages)
 
             parsed, completion = await self._parse_completion(
                 messages, output_model, temperature, logprobs, top_logprobs

@@ -34,11 +34,6 @@ The `PromptLoader` class:
 - Handles variable injection into templates
 - Manages both main and analysis templates
 
-### Formatter
-The `Fromatter` class:
-- Gathers diffrent formatters to format chats
-- New formatters can be added easily by defining new static methods
-
 ---
 
 ## Sync vs Async

@@ -28,9 +28,12 @@ async def main():
     merged_task = t.merge_questions(
         ["چرا ما موجوداتی اجتماعی هستیم؟", "چرا باید در کنار هم زندگی کنیم؟"],
         mode="default",
+        with_analysis=True,
     )
     rewritten_task = t.rewrite(
-        "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟", mode="positive"
+        "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
+        mode="positive",
+        user_prompt="Be carefull",
     )
     questions_task = t.subject_to_question("Friendship", 3)
     summary_task = t.summarize("Tomorrow, we will be dead by the car crash")
