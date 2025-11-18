@@ -53,7 +53,7 @@ class Operator:
     ) -> tuple[T, Any]:
         """
         Parses a chat completion using OpenAI's structured output format.
-        Returns both the parsed object and the raw completion for logging.
+        Returns both the parsed object and the raw completion for logprobs.
         """
         request_kwargs = {
             "model": self._model,
