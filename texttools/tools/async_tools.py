@@ -441,4 +441,5 @@ class AsyncTheTool:
             with_analysis=False,
             mode=None,
             validator=None,
+            max_validation_retries=None,
         )

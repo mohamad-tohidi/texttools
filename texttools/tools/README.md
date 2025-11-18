@@ -9,8 +9,8 @@ Tools are modular, easy to extend, and ready to use for common NLP tasks.
 
 ## Core Components
 
-### BaseOperator, Operator/AsyncOperator Class
-The base `Operator` class provides:
+### OperatorUtils, Operator/AsyncOperator Class
+The `Operator` class provides:
 - LLM client integration (OpenAI)
 - Prompt loading and formatting
 - Structured output parsing using Pydantic models

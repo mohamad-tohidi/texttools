@@ -5,7 +5,7 @@ from openai import AsyncOpenAI
 from pydantic import BaseModel
 
 from texttools.tools.internals.output_models import ToolOutput
-from texttools.tools.internals.base_operator import BaseOperator
+from texttools.tools.internals.operator_utils import OperatorUtils
 from texttools.tools.internals.formatters import Formatter
 from texttools.tools.internals.prompt_loader import PromptLoader
 
@@ -15,7 +15,7 @@ T = TypeVar("T", bound=BaseModel)
 logger = logging.getLogger("texttools.async_operator")
 
 
-class AsyncOperator(BaseOperator):
+class AsyncOperator:
     """
     Core engine for running text-processing operations with an LLM (Async).
 
@@ -26,7 +26,8 @@ class AsyncOperator(BaseOperator):
     """
 
     def __init__(self, client: AsyncOpenAI, model: str):
-        super().__init__(client, model)
+        self._client = client
+        self._model = model
 
     async def _analyze(self, prompt_configs: dict[str, str], temperature: float) -> str:
         """
@@ -34,7 +35,7 @@ class AsyncOperator(BaseOperator):
         Returns the analyzed content as a string.
         """
         analyze_prompt = prompt_configs["analyze_template"]
-        analyze_message = [self._build_user_message(analyze_prompt)]
+        analyze_message = [OperatorUtils.build_user_message(analyze_prompt)]
         completion = await self._client.chat.completions.create(
             model=self._model,
             messages=analyze_message,
@@ -109,22 +110,28 @@ class AsyncOperator(BaseOperator):
             if with_analysis:
                 analysis = await self._analyze(prompt_configs, temperature)
                 messages.append(
-                    self._build_user_message(f"Based on this analysis: {analysis}")
+                    OperatorUtils.build_user_message(
+                        f"Based on this analysis: {analysis}"
+                    )
                 )
 
             if output_lang:
                 messages.append(
-                    self._build_user_message(
+                    OperatorUtils.build_user_message(
                         f"Respond only in the {output_lang} language."
                     )
                 )
 
             if user_prompt:
                 messages.append(
-                    self._build_user_message(f"Consider this instruction {user_prompt}")
+                    OperatorUtils.build_user_message(
+                        f"Consider this instruction {user_prompt}"
+                    )
                 )
 
-            messages.append(self._build_user_message(prompt_configs["main_template"]))
+            messages.append(
+                OperatorUtils.build_user_message(prompt_configs["main_template"])
+            )
             messages = formatter.user_merge_format(messages)
 
             parsed, completion = await self._parse_completion(
@@ -148,7 +155,7 @@ class AsyncOperator(BaseOperator):
                     )
 
                     # Generate new temperature for retry
-                    retry_temperature = self._get_retry_temp(temperature)
+                    retry_temperature = OperatorUtils.get_retry_temp(temperature)
                     try:
                         parsed, completion = await self._parse_completion(
                             messages,
@@ -180,7 +187,7 @@ class AsyncOperator(BaseOperator):
                 output.errors.append("Validation failed after all retry attempts")
 
             if logprobs:
-                output.logprobs = self._extract_logprobs(completion)
+                output.logprobs = OperatorUtils.extract_logprobs(completion)
 
             if with_analysis:
                 output.analysis = analysis

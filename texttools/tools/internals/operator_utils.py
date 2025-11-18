@@ -1,26 +1,15 @@
-from typing import TypeVar, Any, Union
 import re
 import math
 import random
 
-from pydantic import BaseModel
-from openai import OpenAI, AsyncOpenAI
 
-# Base Model type for output models
-T = TypeVar("T", bound=BaseModel)
-
-ClientType = Union[OpenAI, AsyncOpenAI]
-
-
-class BaseOperator:
-    def __init__(self, client: ClientType, model: str):
-        self._client = client
-        self._model = model
-
-    def _build_user_message(self, prompt: str) -> dict[str, str]:
+class OperatorUtils:
+    @staticmethod
+    def build_user_message(prompt: str) -> dict[str, str]:
         return {"role": "user", "content": prompt}
 
-    def _extract_logprobs(self, completion: dict) -> list[dict[str, Any]]:
+    @staticmethod
+    def extract_logprobs(completion: dict) -> list[dict]:
         """
         Extracts and filters token probabilities from completion logprobs.
         Skips punctuation and structural tokens, returns cleaned probability data.
@@ -54,7 +43,8 @@ class BaseOperator:
 
         return logprobs_data
 
-    def _get_retry_temp(self, base_temp: float) -> float:
+    @staticmethod
+    def get_retry_temp(base_temp: float) -> float:
         """
         Calculate temperature for retry attempts.
         """
