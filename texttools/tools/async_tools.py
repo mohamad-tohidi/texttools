@@ -418,6 +418,8 @@ class AsyncTheTool:
         temperature: float | None = None,
         logprobs: bool | None = None,
         top_logprobs: int | None = None,
+        validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
     ) -> OM.ToolOutput:
         """
         Custom tool that can do almost anything!
@@ -435,11 +437,11 @@ class AsyncTheTool:
             temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="run_custom.yaml",
             user_prompt=None,
             with_analysis=False,
             mode=None,
-            validator=None,
-            max_validation_retries=None,
         )
