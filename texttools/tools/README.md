@@ -16,6 +16,8 @@ The `Operator` class provides:
 - Structured output parsing using Pydantic models
 - Optional analysis step capability
 - Mode-based prompt selection
+- Inject user prompts
+- Extract logprobs
 
 ### Output Models
 Structured output models defined in `output_models.py`:
@@ -33,11 +35,3 @@ The `PromptLoader` class:
 - Uses lru cache for efficiency
 - Handles variable injection into templates
 - Manages both main and analysis templates
-
----
-
-## Sync vs Async
-| Tool         | Style   | Use case                                    |
-|--------------|---------|---------------------------------------------|
-| `TheTool`    | Sync    | Simple scripts, sequential workflows        |
-| `AsyncTheTool` | Async | High-throughput apps, APIs, concurrent tasks |
