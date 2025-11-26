@@ -28,6 +28,11 @@ Structured output models defined in `output_models.py`:
 - `ReasonListStrOutput` - Output with reasoning
 - `CategorizerOutput` - Specialized categorization output
 
+### Formatter
+The `Fromatter` class:
+- Gathers diffrent formatters to format chats
+- New formatters can be added easily by defining new static methods
+
 ### Prompt Loader
 The `PromptLoader` class:
 - Loads YAML prompt templates from the `prompts/` folder
