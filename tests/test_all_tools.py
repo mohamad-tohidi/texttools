@@ -49,6 +49,7 @@ print(repr(merged))
 rewritten = t.rewrite(
     "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
     mode="positive",
+    with_analysis=True,
 )
 print(repr(rewritten))
 
