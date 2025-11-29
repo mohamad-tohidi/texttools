@@ -44,7 +44,7 @@ TextTools provides several optional flags to customize LLM behavior:
 
 - **`temperature (float)`** → Determines how creative the model should respond. Takes a float number from `0.0` to `2.0`.
 
-- **`validator (Callable)`** → Forces TheTool to validate the output result based on your custom validator. Validator should return bool (True if there were no problem, False if the validation failed.) If validator failed, TheTool will retry to get another output by modifying `temperature`. You can specify `max_validation_retries=<N>` to change the number of retries.
+- **`validator (Callable)`** → Forces TheTool to validate the output result based on your custom validator. Validator should return a bool (True if there were no problem, False if the validation fails.) If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can specify `max_validation_retries=<N>` to change the number of retries.
 
 All these parameters can be used individually or together to tailor the behavior of any tool in **TextTools**.
 
@@ -60,7 +60,7 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
 - **`logprobs (list)`** → Token-level probabilities for the generated output 
 - **`errors (list[str])`** → Any error that have occured during calling LLM
 
-**None:** You can use `repr(ToolOutput)` to see details of an output.
+**Note:** You can use `repr(ToolOutput)` to see details of an output.
 
 ---
 
