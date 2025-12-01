@@ -576,3 +576,35 @@ class TheTool:
             with_analysis=False,
             mode=None,
         )
+    
+
+    def entity_detector(
+        self,
+        text: str,
+        with_analysis: bool = False,
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
+        logprobs: bool = False,
+        top_logprobs: int | None = None,
+        validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
+    ) -> OM.ToolOutput:
+        """
+        Detects entities in a given text based on the entity_detector.yaml prompt.
+        """
+        return self._operator.run(
+            text=text,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            
+            prompt_file="entity_detector.yaml", 
+            output_model=OM.EntityDetectorOutput, 
+            mode=None,
+        )
