@@ -27,6 +27,7 @@ class TheTool:
     def categorize(
         self,
         text: str,
+        category: OM.CategoryTree,
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
@@ -576,7 +577,6 @@ class TheTool:
             with_analysis=False,
             mode=None,
         )
-    
 
     def entity_detector(
         self,
@@ -603,8 +603,7 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
-            
-            prompt_file="entity_detector.yaml", 
-            output_model=OM.EntityDetectorOutput, 
+            prompt_file="entity_detector.yaml",
+            output_model=OM.EntityDetectorOutput,
             mode=None,
         )
