@@ -4,6 +4,7 @@ from openai import AsyncOpenAI
 
 from texttools.tools.internals.async_operator import AsyncOperator
 import texttools.tools.internals.output_models as OM
+from texttools.tools.internals.text_splitting import recursive_splitting
 
 
 class AsyncTheTool:
@@ -513,23 +514,50 @@ class AsyncTheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return await self._operator.run(
-            # User parameters
-            text=text,
-            target_language=target_language,
-            with_analysis=with_analysis,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            # Internal parameters
-            prompt_file="translate.yaml",
-            output_model=OM.StrOutput,
-            mode=None,
-            output_lang=None,
-        )
+        if len(text.split(" ")) < 1500:
+            return await self._operator.run(
+                # User parameters
+                text=text,
+                target_language=target_language,
+                with_analysis=with_analysis,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                # Internal parameters
+                prompt_file="translate.yaml",
+                output_model=OM.StrOutput,
+                mode=None,
+                output_lang=None,
+            )
+        else:
+            # chunking without overlap
+            list_text = recursive_splitting(text, 1200, 0)
+            # running translation for each chunk
+            output_str = ""
+            for text in list_text:
+                translation = await self._operator.run(
+                    # User parameters
+                    text=text,
+                    target_language=target_language,
+                    with_analysis=with_analysis,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    # Internal parameters
+                    prompt_file="translate.yaml",
+                    output_model=OM.StrOutput,
+                    mode=None,
+                    output_lang=None,
+                )
+                output_str += translation + "\n"
+            # cancat the outputs and return
+            return output_str
 
     async def run_custom(
         self,
@@ -578,29 +606,30 @@ class AsyncTheTool:
             with_analysis=False,
             mode=None,
         )
+
     async def entity_detector(
         self,
-        text : str ,
-        with_analysis: bool = False ,
-        output_lang : str | None = None,
-        user_prompt : str | None = None,
-        temperature : float | None = 0.0,
-        logprobs : bool = False ,
-        top_logprobs : int | None = None,
-        validator : Callable[[any], bool] | None = None,
-        max_validation_retries : int | None = None,
-    )-> OM.ToolOutput:        
+        text: str,
+        with_analysis: bool = False,
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
+        logprobs: bool = False,
+        top_logprobs: int | None = None,
+        validator: Callable[[any], bool] | None = None,
+        max_validation_retries: int | None = None,
+    ) -> OM.ToolOutput:
         return await self._operator.run(
-            text=text ,
-            with_analysis=with_analysis ,
-            output_lang= output_lang ,
-            user_prompt= user_prompt ,
-            temperature=temperature ,
-            logprobs=logprobs ,
-            top_logprobs=top_logprobs ,
-            validator=validator ,
-            max_validation_retries= max_validation_retries ,
-            prompt_file= "entity_detector.yaml" ,
+            text=text,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            prompt_file="entity_detector.yaml",
             output_model=OM.EntityDetectorOutput,
-            mode=None ,
-            )
+            mode=None,
+        )

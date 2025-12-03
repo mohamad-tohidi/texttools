@@ -4,6 +4,7 @@ from openai import OpenAI
 
 from texttools.tools.internals.sync_operator import Operator
 import texttools.tools.internals.output_models as OM
+from texttools.tools.internals.text_splitting import recursive_splitting
 
 
 class TheTool:
@@ -511,23 +512,50 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
-            # User parameters
-            text=text,
-            target_language=target_language,
-            with_analysis=with_analysis,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            # Internal parameters
-            prompt_file="translate.yaml",
-            output_model=OM.StrOutput,
-            mode=None,
-            output_lang=None,
-        )
+        if len(text.split(" ")) < 1500:
+            return self._operator.run(
+                # User parameters
+                text=text,
+                target_language=target_language,
+                with_analysis=with_analysis,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                # Internal parameters
+                prompt_file="translate.yaml",
+                output_model=OM.StrOutput,
+                mode=None,
+                output_lang=None,
+            )
+        else:
+            # chunking without overlap
+            list_text = recursive_splitting(text, 1200, 0)
+            # running translation for each chunk
+            output_str = ""
+            for text in list_text:
+                translation = self._operator.run(
+                    # User parameters
+                    text=text,
+                    target_language=target_language,
+                    with_analysis=with_analysis,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    # Internal parameters
+                    prompt_file="translate.yaml",
+                    output_model=OM.StrOutput,
+                    mode=None,
+                    output_lang=None,
+                )
+                output_str += translation + "\n"
+            # cancat the outputs and return
+            return output_str
 
     def run_custom(
         self,
@@ -576,7 +604,6 @@ class TheTool:
             with_analysis=False,
             mode=None,
         )
-    
 
     def entity_detector(
         self,
@@ -603,8 +630,7 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
-            
-            prompt_file="entity_detector.yaml", 
-            output_model=OM.EntityDetectorOutput, 
+            prompt_file="entity_detector.yaml",
+            output_model=OM.EntityDetectorOutput,
             mode=None,
         )
