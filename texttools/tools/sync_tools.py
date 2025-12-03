@@ -3,7 +3,7 @@ from typing import Literal, Any, Callable
 from openai import OpenAI
 
 from texttools.tools.internals.sync_operator import Operator
-import texttools.tools.internals.output_models as OM
+import texttools.tools.internals.output_models as OutputModels
 
 
 class TheTool:
@@ -34,7 +34,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Categorize a text into a single Islamic studies domain category.
 
@@ -66,8 +66,8 @@ class TheTool:
             validator=validator,
             max_validation_retries=max_validation_retries,
             # Internal parameters
-            prompt_file="categorizer.yaml",
-            output_model=OM.CategorizerOutput,
+            prompt_file="categorize.yaml",
+            output_model=OutputModels.CategorizerOutput,
             mode=None,
             output_lang=None,
         )
@@ -83,7 +83,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Extract salient keywords from text.
 
@@ -118,7 +118,7 @@ class TheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="extract_keywords.yaml",
-            output_model=OM.ListStrOutput,
+            output_model=OutputModels.ListStrOutput,
             mode=None,
         )
 
@@ -133,7 +133,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Perform Named Entity Recognition (NER) over the input text.
 
@@ -168,7 +168,7 @@ class TheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="extract_entities.yaml",
-            output_model=OM.ListDictStrStrOutput,
+            output_model=OutputModels.ListDictStrStrOutput,
             mode=None,
         )
 
@@ -182,7 +182,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Detect if the input is phrased as a question.
 
@@ -215,7 +215,7 @@ class TheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="is_question.yaml",
-            output_model=OM.BoolOutput,
+            output_model=OutputModels.BoolOutput,
             mode=None,
             output_lang=None,
         )
@@ -231,7 +231,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Generate a single question from the given text.
 
@@ -266,7 +266,7 @@ class TheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="text_to_question.yaml",
-            output_model=OM.StrOutput,
+            output_model=OutputModels.StrOutput,
             mode=None,
         )
 
@@ -282,7 +282,7 @@ class TheTool:
         mode: Literal["default", "reason"] = "default",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Merge multiple questions into a single unified question.
 
@@ -319,7 +319,7 @@ class TheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="merge_questions.yaml",
-            output_model=OM.StrOutput,
+            output_model=OutputModels.StrOutput,
             mode=mode,
         )
 
@@ -335,7 +335,7 @@ class TheTool:
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Rewrite a text with different modes.
 
@@ -371,7 +371,7 @@ class TheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="rewrite.yaml",
-            output_model=OM.StrOutput,
+            output_model=OutputModels.StrOutput,
             mode=mode,
         )
 
@@ -387,7 +387,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Generate a list of questions about a subject.
 
@@ -424,7 +424,7 @@ class TheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="subject_to_question.yaml",
-            output_model=OM.ReasonListStrOutput,
+            output_model=OutputModels.ReasonListStrOutput,
             mode=None,
         )
 
@@ -439,7 +439,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Summarize the given subject text.
 
@@ -474,7 +474,7 @@ class TheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="summarize.yaml",
-            output_model=OM.StrOutput,
+            output_model=OutputModels.StrOutput,
             mode=None,
         )
 
@@ -489,7 +489,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Translate text between languages.
 
@@ -524,9 +524,59 @@ class TheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="translate.yaml",
-            output_model=OM.StrOutput,
+            output_model=OutputModels.StrOutput,
             mode=None,
             output_lang=None,
+        )
+
+    def detect_entity(
+        self,
+        text: str,
+        with_analysis: bool = False,
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
+        logprobs: bool = False,
+        top_logprobs: int | None = None,
+        validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
+    ) -> OutputModels.ToolOutput:
+        """
+        Detects entities in a given text based on the entity_detector.yaml prompt.
+
+        Arguments:
+            text: The input text
+            with_analysis: Whether to include detailed reasoning analysis
+            output_lang: Language for the output summary
+            user_prompt: Additional instructions for summarization
+            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            logprobs: Whether to return token probability information
+            top_logprobs: Number of top token alternatives to return if logprobs enabled
+            validator: Custom validation function to validate the output
+            max_validation_retries: Maximum number of retry attempts if validation fails
+
+        Returns:
+            ToolOutput: Object containing:
+                - result (list[Entity]): The entities
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - errors (list(str) | None): Errors occured during tool call
+        """
+        return self._operator.run(
+            # User parameters
+            text=text,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            # Internal parameters
+            prompt_file="detect_entity.yaml",
+            output_model=OutputModels.EntityDetectorOutput,
+            mode=None,
         )
 
     def run_custom(
@@ -539,7 +589,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Custom tool that can do almost anything!
 
@@ -574,37 +624,5 @@ class TheTool:
             prompt_file="run_custom.yaml",
             user_prompt=None,
             with_analysis=False,
-            mode=None,
-        )
-    
-
-    def entity_detector(
-        self,
-        text: str,
-        with_analysis: bool = False,
-        output_lang: str | None = None,
-        user_prompt: str | None = None,
-        temperature: float | None = 0.0,
-        logprobs: bool = False,
-        top_logprobs: int | None = None,
-        validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
-        """
-        Detects entities in a given text based on the entity_detector.yaml prompt.
-        """
-        return self._operator.run(
-            text=text,
-            with_analysis=with_analysis,
-            output_lang=output_lang,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            
-            prompt_file="entity_detector.yaml", 
-            output_model=OM.EntityDetectorOutput, 
             mode=None,
         )

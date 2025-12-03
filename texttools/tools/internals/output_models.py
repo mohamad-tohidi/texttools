@@ -1,4 +1,4 @@
-from typing import Literal, Any , List
+from typing import Literal, Any
 
 from pydantic import BaseModel, Field
 
@@ -61,9 +61,11 @@ class CategorizerOutput(BaseModel):
         example="اخلاق اسلامی",
     )
 
+
 class Entity(BaseModel):
     text: str = Field(description="The exact text of the entity")
     type: str = Field(description="The type of the entity")
 
+
 class EntityDetectorOutput(BaseModel):
-    result: List[Entity] = Field(description="List of all extracted entities")
+    result: list[Entity] = Field(description="List of all extracted entities")
