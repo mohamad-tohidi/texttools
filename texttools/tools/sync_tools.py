@@ -71,6 +71,7 @@ class TheTool:
             output_model=OM.CategorizerOutput,
             mode=None,
             output_lang=None,
+            category=category,
         )
 
     def extract_keywords(

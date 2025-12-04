@@ -1,10 +1,10 @@
-from typing import Any, TypeVar, Type, Callable
+from typing import Any, List, TypeVar, Type, Callable
 import logging
 
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
-from texttools.tools.internals.output_models import ToolOutput
+from texttools.tools.internals.output_models import CategoryTree, ToolOutput
 from texttools.tools.internals.operator_utils import OperatorUtils
 from texttools.tools.internals.formatters import Formatter
 from texttools.tools.internals.prompt_loader import PromptLoader
@@ -71,7 +71,16 @@ class AsyncOperator:
         parsed = completion.choices[0].message.parsed
         return parsed, completion
 
-    async def run(
+    async def run(self, **extra_kwargs) -> ToolOutput:
+        """
+        Execute the LLM pipeline.
+        """
+        if "category" in extra_kwargs:
+            await self._recursive_run(**extra_kwargs)
+        else:
+            await self._single_run(**extra_kwargs)
+
+    async def _single_run(
         self,
         # User parameters
         text: str,
@@ -192,3 +201,29 @@ class AsyncOperator:
             logger.error(f"AsyncTheTool failed: {e}")
             output.errors.append(str(e))
             return output
+
+    async def _recursive_run(
+        self,
+        category: CategoryTree,
+        **run_kwargs,
+    ) -> List[str]:
+        """
+        Execute the LLM pipeline with the given input text with a single try.
+        """
+        output = ToolOutput()
+        levels = category.level_count()
+        del run_kwargs["category"]
+        parent_id = 0
+        final_output = []
+        for _ in range(levels):
+            list_categories = [
+                (node.name, node.description)
+                for node in category.find_categories_by_parent_id(parent_id)
+            ]
+            output = await self.run(list_categories=list_categories, **run_kwargs)
+            choosed_category = output.result
+            parent_node = category.find_category(choosed_category)
+            parent_id = parent_node.id
+            final_output.append(parent_node.name)
+
+        return final_output

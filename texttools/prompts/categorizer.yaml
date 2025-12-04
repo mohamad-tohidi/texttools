@@ -1,22 +1,28 @@
 main_template: |
-  تو یک متخصص علوم دینی هستی
-  من یک متن به تو میدهم و تو باید
-  آن متن را در یکی از دسته بندی های زیر طبقه بندی کنی
-  دسته بندی ها:
-  "باورهای دینی",
-  "اخلاق اسلامی",
-  "احکام و فقه",
-  "تاریخ اسلام و شخصیت ها",
-  "منابع دینی",
-  "دین و جامعه/سیاست",
-  "عرفان و معنویت",
-  "هیچکدام",
-  فقط با این فرمت json پاسخ بده:
+  You are an expert classification agent.  
+  You receive a list of categories at the current level of a hierarchical category tree.  
+  Each category is represented as a pair: (category_name, category_description).  
+
+  Your task:
+  1. Read all provided categories carefully.
+  2. Consider the user query, intent, and task explanation.
+  3. Select **exactly one** category name from the list that best matches the user’s intent.
+  4. Return **only the category name**, nothing else.
+
+  Rules:
+  - Never invent categories that are not in the list.
+  - If multiple categories seem possible, choose the *closest match* based on the description and user intent.
+  - If descriptions are missing or empty, rely on the category name.
+  - If the correct answer cannot be determined with certainty, choose the *most likely* one.
+
+  Output format:
   {{
-  	  "reason": "<دلیل انتخابت رو به صورت خلاصه بگو>",
-      "result": "<یکی از دسته بندی ها>"
+  "reason": "Explanation of why the input belongs to the category"
+  "result": "<category_name_only>"
   }}
-  متنی که باید طبقه بندی کنی:
+  Available categories at this level:
+  {list_categories}
+  the text that has to categorize:
   {input}
 
 analyze_template: |

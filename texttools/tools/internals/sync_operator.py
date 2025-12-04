@@ -1,10 +1,10 @@
-from typing import Any, TypeVar, Type, Callable
+from typing import Any, List, TypeVar, Type, Callable
 import logging
 
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.tools.internals.output_models import ToolOutput
+from texttools.tools.internals.output_models import CategoryTree, ToolOutput
 from texttools.tools.internals.operator_utils import OperatorUtils
 from texttools.tools.internals.formatters import Formatter
 from texttools.tools.internals.prompt_loader import PromptLoader
@@ -71,7 +71,16 @@ class Operator:
         parsed = completion.choices[0].message.parsed
         return parsed, completion
 
-    def run(
+    def run(self, **extra_kwargs) -> ToolOutput:
+        """
+        Execute the LLM pipeline.
+        """
+        if "category" in extra_kwargs:
+            self._recursive_run(**extra_kwargs)
+        else:
+            self._single_run(**extra_kwargs)
+
+    def _single_run(
         self,
         # User parameters
         text: str,
@@ -95,7 +104,6 @@ class Operator:
         prompt_loader = PromptLoader()
         formatter = Formatter()
         output = ToolOutput()
-
         try:
             # Prompt configs contain two keys: main_template and analyze template, both are string
             prompt_configs = prompt_loader.load(
@@ -192,3 +200,29 @@ class Operator:
             logger.error(f"TheTool failed: {e}")
             output.errors.append(str(e))
             return output
+
+    def _recursive_run(
+        self,
+        category: CategoryTree,
+        **run_kwargs,
+    ) -> List[str]:
+        """
+        Execute the LLM pipeline with the given input text with a single try.
+        """
+        output = ToolOutput()
+        levels = category.level_count()
+        del run_kwargs["category"]
+        parent_id = 0
+        final_output = []
+        for _ in range(levels):
+            list_categories = [
+                (node.name, node.description)
+                for node in category.find_categories_by_parent_id(parent_id)
+            ]
+            output = self.run(list_categories=list_categories, **run_kwargs)
+            choosed_category = output.result
+            parent_node = category.find_category(choosed_category)
+            parent_id = parent_node.id
+            final_output.append(parent_node.name)
+
+        return final_output
