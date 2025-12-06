@@ -108,9 +108,9 @@ class CategoryTree:
         elif isinstance(category, int):
             node = self.find_category_by_id(category)
         try:
-            ...
+            node.description=description
         except NameError:
-            logger.error(f"There is no category with this desciprion: {category}")
+            logger.error(f"There is no category with this id/name: {category}")
 
     def find_all(self) -> list[Node]:
         return self.node_list
