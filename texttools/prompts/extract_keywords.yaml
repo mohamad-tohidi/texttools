@@ -1,18 +1,68 @@
-main_template: |
-  You are an expert keyword extractor.
-  Extract the most relevant keywords from the given text.
-  Guidelines:
-  - Keywords must represent the main concepts of the text.  
-  - If two words have overlapping meanings, choose only one.  
-  - Do not include generic or unrelated words.  
-  - Keywords must be single, self-contained words (no phrases).
-  - Output between 3 and 7 keywords based on the input length.
-  - Respond only in JSON format:
-  {{"result": ["keyword1", "keyword2", etc.]}}
-  Here is the text:
-  {input}
+main_template:
 
-analyze_template: |
-  Analyze the following text to identify its main topics, concepts, and important terms.
-  Provide a concise summary of your findings that will help in extracting relevant keywords.
-  {input}
+  auto: |
+    You are an expert keyword extractor.
+    Extract the most relevant keywords from the given text.
+    Guidelines:
+    - Keywords must represent the main concepts of the text.  
+    - If two words have overlapping meanings, choose only one.  
+    - Do not include generic or unrelated words.  
+    - Keywords must be single, self-contained words (no phrases).
+    - Output between 3 and 7 keywords based on the input length.
+    - Respond only in JSON format:
+    {{"result": ["keyword1", "keyword2", etc.]}}
+    Here is the text:
+    {input}
+
+  threshold: |
+    You are an expert keyword extractor specialized in fine-grained concept identification.
+    Extract the most specific, content-bearing keywords from the text.
+
+    Requirements:
+    - Choose fine-grained conceptual terms, not general domain labels.
+    - Avoid words that only describe the broad topic (e.g., Islam, religion, philosophy, history).
+    - Prefer specific names, concepts, doctrines, events, arguments, or terminology.
+    - Do not select words only because they appear frequently. A keyword must represent a central conceptual idea, not a repeated surface term.
+    - If multiple words express overlapping meaning, select the more specific one.
+    - Keywords must be single words (no multi-word expressions).
+    - Extract N keywords depending on input length:
+      - Short texts (a few sentences): 3 keywords
+      - Medium texts (1–4 paragraphs): 4–5 keywords
+      - Long texts (more than 4 paragraphs): 6–7 keywords
+    - Respond only in JSON format:
+    {{"result": ["keyword1", "keyword2", etc.]}}
+    Here is the text:
+    {input}
+
+  count: |
+    You are an expert keyword extractor with precise output requirements.
+    Extract exactly {number_of_keywords} keywords from the given text.
+
+    Requirements:
+    - Extract exactly {number_of_keywords} keywords, no more, no less.
+    - Select the {number_of_keywords} most relevant and specific keywords that represent core concepts.
+    - Prefer specific terms, names, and concepts over general topic labels.
+    - If the text doesn't contain enough distinct keywords, include the most relevant ones even if some are less specific.
+    - Keywords must be single words (no multi-word expressions).
+    - Order keywords by relevance (most relevant first).
+    - Respond only in JSON format:
+    {{"result": ["keyword1", "keyword2", "keyword3", ...]}}
+    
+    Here is the text:
+    {input}
+
+analyze_template:
+  auto: |
+    Analyze the following text to identify its main topics, concepts, and important terms.
+    Provide a concise summary of your findings that will help in extracting relevant keywords.
+    {input}
+
+  threshold: |
+    Analyze the following text to identify its main topics, concepts, and important terms.
+    Provide a concise summary of your findings that will help in extracting relevant keywords.
+    {input}
+
+  count: |
+    Analyze the following text to identify its main topics, concepts, and important terms.
+    Provide a concise summary of your findings that will help in extracting relevant keywords.
+    {input}

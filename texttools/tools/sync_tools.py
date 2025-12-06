@@ -81,6 +81,8 @@ class TheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
+        mode: Literal["auto", "threshold", "count"] = "auto",
+        number_of_keywords: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
     ) -> OutputModels.ToolOutput:
@@ -114,12 +116,13 @@ class TheTool:
             temperature=temperature,
             logprobs=logprobs,
             top_logprobs=top_logprobs,
+            mode=mode,
+            number_of_keywords=number_of_keywords,
             validator=validator,
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="extract_keywords.yaml",
             output_model=OutputModels.ListStrOutput,
-            mode=None,
         )
 
     def extract_entities(
