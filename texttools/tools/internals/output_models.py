@@ -1,6 +1,9 @@
-from typing import Dict, Literal, Any, List, Optional
+import logging
+from typing import Any
 
 from pydantic import BaseModel, Field
+
+logger = logging.getLogger("texttools.models")
 
 
 class ToolOutput(BaseModel):
@@ -58,33 +61,34 @@ class Entity(BaseModel):
 
 
 class EntityDetectorOutput(BaseModel):
-    result: List[Entity] = Field(description="List of all extracted entities")
+    result: list[Entity] = Field(description="List of all extracted entities")
 
 
 class Node(BaseModel):
     id: int
     name: str
     level: int
-    parent_id: Optional[int]
-    description: Optional[str] = None
+    parent_id: int | None
+    description: str | None = None
 
 
 class CategoryTree:
     def __init__(self, tree_name):
         self.root = Node(id=0, name=tree_name, level=0, parent_id=None)
-        # self.node_list: List[str] = [self.root.name]
-        self.node_list: List[Node] = [self.root]
+        self.node_list: list[Node] = [self.root]
         self.new_id = 1
 
-    def add_category(self, category_name, parent_name: Optional[str] = None) -> None:
+    def add_category(self, category_name, parent_name: str | None = None) -> None:
         if self.find_category(category_name):
-            raise ValueError(
-                f"this '{category_name}' has been choosed for another category before"
+            logger.error(
+                f"{category_name} has been choosed for another category before"
             )
+            return
         if parent_name:
             parent_node = self.find_category(parent_name)
             if not parent_node:
-                raise ValueError(f"Parent category '{parent_name}' not found")
+                logger.error(f"Parent category '{parent_name}' not found")
+                return
             parent_id = parent_node.id
             level = parent_node.level + 1
         else:
@@ -94,39 +98,36 @@ class CategoryTree:
             Node(id=self.new_id, name=category_name, level=level, parent_id=parent_id)
         )
         self.new_id += 1
-        print(
+        logger.info(
             Node(id=self.new_id, name=category_name, level=level, parent_id=parent_id)
         )
 
     def add_description(self, category, description):
         if isinstance(category, str):
             node = self.find_category(category)
-        if isinstance(category, int):
+        elif isinstance(category, int):
             node = self.find_category_by_id(category)
         try:
             ...
         except NameError:
-            print(f"there is no category with this desciprion: {category}")
+            logger.error(f"There is no category with this desciprion: {category}")
 
-    def find_all(self) -> List[Node]:
+    def find_all(self) -> list[Node]:
         return self.node_list
 
-    def find_category(self, node_name: str) -> Node:
-        # node_names_list = [node.name for node in self.node_list]
+    def find_category(self, node_name: str) -> Node | None:
         for node in self.node_list:
             if node_name == node.name:
                 return node
-        return False
+        return None
 
-    def find_category_by_id(self, node_id: int):
-        # node_names_list = [node.name for node in self.node_list]
+    def find_category_by_id(self, node_id: int) -> Node | None:
         for node in self.node_list:
             if node_id == node.id:
                 return node
-        return False
+        return None
 
-    def find_categories_by_parent_id(self, parent_id: int) -> List[Node]:
-        # node_names_list = [node.name for node in self.node_list]
+    def find_categories_by_parent_id(self, parent_id: int) -> list[Node]:
         nodes = []
         for node in self.node_list:
             if parent_id == node.parent_id:
@@ -136,17 +137,14 @@ class CategoryTree:
         return False
 
     def remove_category(self, node_id: str) -> None:
-        """
-        Remove a child node from a parent
-        """
         child_node = self.find_category(node_id)
         if child_node:
             self.node_list.remove(child_node)
         else:
-            raise ValueError(f"Parent node with value '{node_id}' not found.")
+            logger.error(f"Parent node with value '{node_id}' not found.")
 
-    def dump_tree(self):
-        def build_dict(node: Node) -> Dict:
+    def dump_tree(self) -> dict:
+        def build_dict(node: Node) -> dict:
             children = [
                 build_dict(child)
                 for child in self.node_list
@@ -162,5 +160,5 @@ class CategoryTree:
 
         return {"category_tree": build_dict(self.root)["children"]}
 
-    def level_count(self):
+    def level_count(self) -> int:
         return max([item.level for item in self.node_list])

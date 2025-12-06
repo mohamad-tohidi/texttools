@@ -1,10 +1,10 @@
-from typing import Any, List, TypeVar, Type, Callable
+from typing import Any, TypeVar, Type, Callable
 import logging
 
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.tools.internals.output_models import CategoryTree, ToolOutput
+from texttools.tools.internals.output_models import ToolOutput
 from texttools.tools.internals.operator_utils import OperatorUtils
 from texttools.tools.internals.formatters import Formatter
 from texttools.tools.internals.prompt_loader import PromptLoader

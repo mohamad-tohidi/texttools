@@ -3,7 +3,7 @@ from typing import Literal, Any, Callable
 from openai import AsyncOpenAI
 
 from texttools.tools.internals.async_operator import AsyncOperator
-import texttools.tools.internals.output_models as OM
+import texttools.tools.internals.output_models as OutputModels
 
 
 class AsyncTheTool:
@@ -29,7 +29,7 @@ class AsyncTheTool:
     async def categorize(
         self,
         text: str,
-        category: OM.CategoryTree,
+        category: OutputModels.CategoryTree,
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
@@ -37,12 +37,13 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Categorize a text into a single Islamic studies domain category.
 
         Arguments:
             text: The input text to categorize
+            category: The category tree class to give to LLM
             with_analysis: Whether to include detailed reasoning analysis
             user_prompt: Additional instructions for the categorization
             temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
@@ -53,13 +54,13 @@ class AsyncTheTool:
 
         Returns:
             ToolOutput: Object containing:
-                - result (str): The assigned Islamic studies category
+                - result (str): The assigned category
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        output = OM.ToolOutput()
-        # recursive implementation
+        output = OutputModels.ToolOutput()
+        # Recursive implementation
         levels = category.level_count()
         parent_id = 0
         final_output = []
@@ -80,7 +81,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 # Internal parameters
                 prompt_file="categorizer.yaml",
-                output_model=OM.CategorizerOutput,
+                output_model=OutputModels.CategorizerOutput,
                 mode=None,
                 output_lang=None,
                 # this part changed from the original
@@ -105,7 +106,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Extract salient keywords from text.
 
@@ -140,7 +141,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="extract_keywords.yaml",
-            output_model=OM.ListStrOutput,
+            output_model=OutputModels.ListStrOutput,
             mode=None,
         )
 
@@ -155,7 +156,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Perform Named Entity Recognition (NER) over the input text.
 
@@ -190,7 +191,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="extract_entities.yaml",
-            output_model=OM.ListDictStrStrOutput,
+            output_model=OutputModels.ListDictStrStrOutput,
             mode=None,
         )
 
@@ -204,7 +205,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Detect if the input is phrased as a question.
 
@@ -237,7 +238,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="is_question.yaml",
-            output_model=OM.BoolOutput,
+            output_model=OutputModels.BoolOutput,
             mode=None,
             output_lang=None,
         )
@@ -253,7 +254,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Generate a single question from the given text.
 
@@ -288,7 +289,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="text_to_question.yaml",
-            output_model=OM.StrOutput,
+            output_model=OutputModels.StrOutput,
             mode=None,
         )
 
@@ -304,7 +305,7 @@ class AsyncTheTool:
         mode: Literal["default", "reason"] = "default",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Merge multiple questions into a single unified question.
 
@@ -341,7 +342,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="merge_questions.yaml",
-            output_model=OM.StrOutput,
+            output_model=OutputModels.StrOutput,
             mode=mode,
         )
 
@@ -357,7 +358,7 @@ class AsyncTheTool:
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Rewrite a text with different modes.
 
@@ -393,7 +394,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="rewrite.yaml",
-            output_model=OM.StrOutput,
+            output_model=OutputModels.StrOutput,
             mode=mode,
         )
 
@@ -409,7 +410,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Generate a list of questions about a subject.
 
@@ -446,7 +447,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="subject_to_question.yaml",
-            output_model=OM.ReasonListStrOutput,
+            output_model=OutputModels.ReasonListStrOutput,
             mode=None,
         )
 
@@ -461,7 +462,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Summarize the given subject text.
 
@@ -496,7 +497,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="summarize.yaml",
-            output_model=OM.StrOutput,
+            output_model=OutputModels.StrOutput,
             mode=None,
         )
 
@@ -511,7 +512,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Translate text between languages.
 
@@ -546,7 +547,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="translate.yaml",
-            output_model=OM.StrOutput,
+            output_model=OutputModels.StrOutput,
             mode=None,
             output_lang=None,
         )
@@ -561,7 +562,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         """
         Custom tool that can do almost anything!
 
@@ -610,7 +611,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[any], bool] | None = None,
         max_validation_retries: int | None = None,
-    ) -> OM.ToolOutput:
+    ) -> OutputModels.ToolOutput:
         return await self._operator.run(
             text=text,
             with_analysis=with_analysis,
@@ -622,6 +623,6 @@ class AsyncTheTool:
             validator=validator,
             max_validation_retries=max_validation_retries,
             prompt_file="entity_detector.yaml",
-            output_model=OM.EntityDetectorOutput,
+            output_model=OutputModels.EntityDetectorOutput,
             mode=None,
         )
