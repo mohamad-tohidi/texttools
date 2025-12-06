@@ -15,7 +15,7 @@ It provides ready-to-use utilities for **translation, question detection, keywor
 TextTools provides a rich collection of high-level NLP utilities,
 Each tool is designed to work with structured outputs (JSON / Pydantic).
 
-- **`categorize()`** - Classifies text into Islamic studies categories 
+- **`categorize()`** - Classifies text into given categories (You have to create a category tree)
 - **`extract_keywords()`** - Extracts keywords from text
 - **`extract_entities()`** - Named Entity Recognition (NER) system
 - **`is_question()`** - Binary detection of whether input is a question
