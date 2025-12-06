@@ -63,12 +63,13 @@ class TheTool:
         final_output = []
         for _ in range(levels):
             list_categories = [
-                (node.name, node.description)
+                node.name
                 for node in category_tree.find_categories_by_parent_id(parent_id)
             ]
             output = self._operator.run(
                 # User parameters
                 text=text,
+                list_categories=list_categories,
                 with_analysis=with_analysis,
                 user_prompt=user_prompt,
                 temperature=temperature,
@@ -78,14 +79,13 @@ class TheTool:
                 max_validation_retries=max_validation_retries,
                 # Internal parameters
                 prompt_file="categorizer.yaml",
-                output_model=OutputModels.create_dynamic_model(list_categories[0]),
+                output_model=OutputModels.create_dynamic_model(list_categories),
                 mode=None,
                 output_lang=None,
-                list_categories=list_categories,
             )
             choosed_category = output.result
             parent_node = category_tree.find_category(choosed_category)
-            parent_id = parent_node.id
+            parent_id = parent_node.node_id
             final_output.append(parent_node.name)
         output.result = final_output
         return output

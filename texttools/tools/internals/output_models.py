@@ -45,8 +45,7 @@ class ReasonListStrOutput(BaseModel):
     result: list[str] = Field(..., description="The output list of strings")
 
 
-# This function creates a dynamic CategorizerOutput
-# It's needed to create CategorizerOutput with dynamic categories
+# This function is needed to create CategorizerOutput with dynamic categories
 def create_dynamic_model(allowed_values: list[str]) -> Type[BaseModel]:
     literal_type = Literal[*allowed_values]
 
@@ -112,15 +111,15 @@ class CategoryTree:
             )
         )
 
-    def add_description(self, category, description):
-        if isinstance(category, str):
-            node = self.find_category(category)
-        elif isinstance(category, int):
-            node = self.find_category_by_id(category)
-        try:
-            ...
-        except NameError:
-            logger.error(f"There is no category with this desciprion: {category}")
+    # def add_description(self, category, description):
+    #     if isinstance(category, str):
+    #         node = self.find_category(category)
+    #     elif isinstance(category, int):
+    #         node = self.find_category_by_id(category)
+    #     try:
+    #         ...
+    #     except NameError:
+    #         logger.error(f"There is no category with this desciprion: {category}")
 
     def find_all(self) -> list[Node]:
         return self.node_list
