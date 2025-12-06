@@ -65,7 +65,7 @@ class EntityDetectorOutput(BaseModel):
 
 
 class Node(BaseModel):
-    id: int
+    node_id: int
     name: str
     level: int
     parent_id: int | None
@@ -74,7 +74,7 @@ class Node(BaseModel):
 
 class CategoryTree:
     def __init__(self, tree_name):
-        self.root = Node(id=0, name=tree_name, level=0, parent_id=None)
+        self.root = Node(node_id=0, name=tree_name, level=0, parent_id=None)
         self.node_list: list[Node] = [self.root]
         self.new_id = 1
 
@@ -89,17 +89,27 @@ class CategoryTree:
             if not parent_node:
                 logger.error(f"Parent category '{parent_name}' not found")
                 return
-            parent_id = parent_node.id
+            parent_id = parent_node.node_id
             level = parent_node.level + 1
         else:
             level = 1
             parent_id = 0
         self.node_list.append(
-            Node(id=self.new_id, name=category_name, level=level, parent_id=parent_id)
+            Node(
+                node_id=self.new_id,
+                name=category_name,
+                level=level,
+                parent_id=parent_id,
+            )
         )
         self.new_id += 1
         logger.info(
-            Node(id=self.new_id, name=category_name, level=level, parent_id=parent_id)
+            Node(
+                node_id=self.new_id,
+                name=category_name,
+                level=level,
+                parent_id=parent_id,
+            )
         )
 
     def add_description(self, category, description):
@@ -123,7 +133,7 @@ class CategoryTree:
 
     def find_category_by_id(self, node_id: int) -> Node | None:
         for node in self.node_list:
-            if node_id == node.id:
+            if node_id == node.node_id:
                 return node
         return None
 
@@ -148,10 +158,10 @@ class CategoryTree:
             children = [
                 build_dict(child)
                 for child in self.node_list
-                if child.parent_id == node.id
+                if child.parent_id == node.node_id
             ]
             return {
-                "id": node.id,
+                "node_id": node.node_id,
                 "name": node.name,
                 "level": node.level,
                 "parent_id": node.parent_id,

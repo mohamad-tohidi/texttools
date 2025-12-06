@@ -27,7 +27,7 @@ class TheTool:
     def categorize(
         self,
         text: str,
-        category: OutputModels.CategoryTree,
+        category_tree: OutputModels.CategoryTree,
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
@@ -41,7 +41,7 @@ class TheTool:
 
         Arguments:
             text: The input text to categorize
-            category: The category tree class to give to LLM
+            category_tree: The category tree class to give to LLM
             with_analysis: Whether to include detailed reasoning analysis
             user_prompt: Additional instructions for the categorization
             temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
@@ -59,13 +59,13 @@ class TheTool:
         """
         output = OutputModels.ToolOutput()
         # Recursive implementation
-        levels = category.level_count()
+        levels = category_tree.level_count()
         parent_id = 0
         final_output = []
         for _ in range(levels):
             list_categories = [
                 (node.name, node.description)
-                for node in category.find_categories_by_parent_id(parent_id)
+                for node in category_tree.find_categories_by_parent_id(parent_id)
             ]
             output = self._operator.run(
                 # User parameters
@@ -87,7 +87,7 @@ class TheTool:
                 list_categories=list_categories,
             )
             choosed_category = output.result
-            parent_node = category.find_category(choosed_category)
+            parent_node = category_tree.find_category(choosed_category)
             parent_id = parent_node.id
             final_output.append(parent_node.name)
         output.result = final_output
