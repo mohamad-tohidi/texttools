@@ -58,23 +58,41 @@ class AsyncTheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return await self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            # Internal parameters
-            prompt_file="categorizer.yaml",
-            output_model=OM.CategorizerOutput,
-            mode=None,
-            output_lang=None,
-            category=category,
-        )
+        output = OM.ToolOutput()
+        # recursive implementation
+        levels = category.level_count()
+        parent_id = 0
+        final_output = []
+        for _ in range(levels):
+            list_categories = [
+                (node.name, node.description)
+                for node in category.find_categories_by_parent_id(parent_id)
+            ]
+            output = await self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                # Internal parameters
+                prompt_file="categorizer.yaml",
+                output_model=OM.CategorizerOutput,
+                mode=None,
+                output_lang=None,
+                # this part changed from the original
+                # category=category,
+                list_categories=list_categories,
+            )
+            choosed_category = output.result
+            parent_node = category.find_category(choosed_category)
+            parent_id = parent_node.id
+            final_output.append(parent_node.name)
+        output.result = final_output
+        return output
 
     async def extract_keywords(
         self,
