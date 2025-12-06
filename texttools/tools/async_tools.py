@@ -81,11 +81,9 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 # Internal parameters
                 prompt_file="categorizer.yaml",
-                output_model=OutputModels.CategorizerOutput,
+                output_model=OutputModels.create_dynamic_model(list_categories[0]),
                 mode=None,
                 output_lang=None,
-                # this part changed from the original
-                # category=category,
                 list_categories=list_categories,
             )
             choosed_category = output.result
