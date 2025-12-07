@@ -1,37 +1,75 @@
-main_template: |
-  You are an expert classification agent.  
-  You receive a list of categories at the current level of a hierarchical category tree.  
-  Each category is represented as a pair: (category_name, category_description).  
+main_template:
 
-  Your task:
-  - Read all provided categories carefully.
-  - Consider the user query, intent, and task explanation.
-  - Select exactly one category name from the list that best matches the user’s intent.
-  - Return only the category name, nothing else.
+  category_list: |
+    You are an expert classification agent.  
+    You receive a list of categories.
 
-  Rules:
-  - Never invent categories that are not in the list.
-  - If multiple categories seem possible, choose the closest match based on the description and user intent.
-  - If descriptions are missing or empty, rely on the category name.
-  - If the correct answer cannot be determined with certainty, choose the most likely one.
+    Your task:
+    - Read all provided categories carefully.
+    - Consider the user query, intent, and task explanation.
+    - Select exactly one category name from the list that best matches the user’s intent.
+    - Return only the category name, nothing else.
 
-  Output format:
-  {{
-  "reason": "Explanation of why the input belongs to the category"
-  "result": "<category_name_only>"
-  }}
+    Rules:
+    - Never invent categories that are not in the list.
+    - If multiple categories seem possible, choose the closest match based on the description and user intent.
+    - If descriptions are missing or empty, rely on the category name.
+    - If the correct answer cannot be determined with certainty, choose the most likely one.
 
-  Available categories at this level:
-  {list_categories}
+    Output format:
+    {{
+    "reason": "Explanation of why the input belongs to the category"
+    "result": "<category_name_only>"
+    }}
 
-  The text that has to be categorized:
-  {input}
+    Available categories:
+    {list_categories}
 
-analyze_template: |
-  We want to categorize the given text.
-  To improve categorization, we need an analysis of the text.
-  Analyze the given text and write its main idea and a short analysis of that.
-  Analysis should be very short.
-  
-  Text:
-  {input}
+    The text that has to be categorized:
+    {input}
+
+  category_tree: |
+    You are an expert classification agent.  
+    You receive a list of categories at the current level of a hierarchical category tree.  
+
+    Your task:
+    - Read all provided categories carefully.
+    - Consider the user query, intent, and task explanation.
+    - Select exactly one category name from the list that best matches the user’s intent.
+    - Return only the category name, nothing else.
+
+    Rules:
+    - Never invent categories that are not in the list.
+    - If multiple categories seem possible, choose the closest match based on the description and user intent.
+    - If descriptions are missing or empty, rely on the category name.
+    - If the correct answer cannot be determined with certainty, choose the most likely one.
+
+    Output format:
+    {{
+    "reason": "Explanation of why the input belongs to the category"
+    "result": "<category_name_only>"
+    }}
+
+    Available categories at this level:
+    {list_categories}
+
+    The text that has to be categorized:
+    {input}
+
+analyze_template:
+
+  category_list: |
+    We want to categorize the given text.
+    To improve categorization, we need an analysis of the text.
+    Analyze the given text and write its main idea and a short analysis of that.
+    Analysis should be very short.
+    Text:
+    {input}
+
+  category_tree: |
+    We want to categorize the given text.
+    To improve categorization, we need an analysis of the text.
+    Analyze the given text and write its main idea and a short analysis of that.
+    Analysis should be very short.
+    Text:
+    {input}

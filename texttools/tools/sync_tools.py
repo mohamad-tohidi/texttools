@@ -27,21 +27,22 @@ class TheTool:
     def categorize(
         self,
         text: str,
-        category_tree: OutputModels.CategoryTree,
+        categories: list[str] | OutputModels.CategoryTree,
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
+        mode: Literal["category_list", "category_tree"] = "category_list",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
     ) -> OutputModels.ToolOutput:
         """
-        Categorize a text into a category tree.
+        Categorize a text into a category / category tree.
 
         Arguments:
             text: The input text to categorize
-            category_tree: The category tree class to give to LLM
+            categories: The category / category_tree to give to LLM
             with_analysis: Whether to include detailed reasoning analysis
             user_prompt: Additional instructions for the categorization
             temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
@@ -57,70 +58,90 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        # Initializations
-        output = OutputModels.ToolOutput()
-        levels = category_tree.level_count()
-        parent_id = 0
-        final_output = []
+        if mode == "category_tree":
+            # Initializations
+            output = OutputModels.ToolOutput()
+            levels = categories.level_count()
+            parent_id = 0
+            final_output = []
 
-        for _ in range(levels):
-            # Get child nodes for current parent
-            child_nodes = category_tree.find_categories_by_parent_id(parent_id)
+            for _ in range(levels):
+                # Get child nodes for current parent
+                child_nodes = categories.find_categories_by_parent_id(parent_id)
 
-            # Check if child nodes exist
-            if not child_nodes:
-                output.errors.append(
-                    f"No categories found for parent_id {parent_id} in the tree"
+                # Check if child nodes exist
+                if not child_nodes:
+                    output.errors.append(
+                        f"No categories found for parent_id {parent_id} in the tree"
+                    )
+                    return output
+
+                # Extract category names
+                list_categories = [node.name for node in child_nodes]
+
+                # Run categorization for this level
+                level_output = self._operator.run(
+                    # User parameters
+                    text=text,
+                    list_categories=list_categories,
+                    with_analysis=with_analysis,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    mode="category_tree",
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    # Internal parameters
+                    prompt_file="categorizer.yaml",
+                    output_model=OutputModels.create_dynamic_model(list_categories),
+                    output_lang=None,
                 )
-                return output
 
-            # Extract category names
-            list_categories = [node.name for node in child_nodes]
+                # Check for errors from operator
+                if level_output.errors:
+                    output.errors.extend(level_output.errors)
+                    return output
 
-            # Run categorization for this level
-            level_output = self._operator.run(
+                # Get the chosen category
+                chosen_category = level_output.result
+
+                # Find the corresponding node
+                parent_node = categories.find_category(chosen_category)
+                if parent_node is None:
+                    output.errors.append(
+                        f"Category '{chosen_category}' not found in tree after selection"
+                    )
+                    return output
+
+                parent_id = parent_node.node_id
+                final_output.append(parent_node.name)
+
+                # Copy analysis/logprobs from the last level's output
+                output.analysis = level_output.analysis
+                output.logprobs = level_output.logprobs
+
+            output.result = final_output
+            return output
+
+        else:
+            return self._operator.run(
                 # User parameters
                 text=text,
-                list_categories=list_categories,
+                list_categories=categories,
                 with_analysis=with_analysis,
                 user_prompt=user_prompt,
                 temperature=temperature,
                 logprobs=logprobs,
                 top_logprobs=top_logprobs,
+                mode="category_list",
                 validator=validator,
                 max_validation_retries=max_validation_retries,
                 # Internal parameters
                 prompt_file="categorizer.yaml",
-                output_model=OutputModels.create_dynamic_model(list_categories),
-                mode=None,
+                output_model=OutputModels.create_dynamic_model(categories),
                 output_lang=None,
             )
-
-            # Check for errors from operator
-            if level_output.errors:
-                output.errors.extend(level_output.errors)
-                return output
-
-            # Get the chosen category
-            chosen_category = level_output.result
-
-            # Find the corresponding node
-            parent_node = category_tree.find_category(chosen_category)
-            if parent_node is None:
-                output.errors.append(
-                    f"Category '{chosen_category}' not found in tree after selection"
-                )
-                return output
-
-            parent_id = parent_node.node_id
-            final_output.append(parent_node.name)
-
-            # Copy analysis/logprobs from the last level's output
-            output.analysis = level_output.analysis
-            output.logprobs = level_output.logprobs
-
-        output.result = final_output
-        return output
 
     def extract_keywords(
         self,

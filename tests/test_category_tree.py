@@ -20,15 +20,28 @@ t = TheTool(client=client, model=MODEL)
 # Create a category tree
 tree = CategoryTree("category_test_tree")
 tree.add_category("اخلاق")
-tree.add_category("معرفتشناسی")
+tree.add_category("معرفت شناسی")
 tree.add_category("متافیزیک")
 tree.add_category("فلسفه ذهن")
 tree.add_category("آگاهی", "فلسفه ذهن")
 tree.add_category("ذهن و بدن", "فلسفه ذهن")
 tree.add_category("امکان و ضرورت", "متافیزیک")
 
+# Test category tree
 categories = t.categorize(
     "اراده قدرت مفهومی مهم در مابعد الطبیعه است که توسط نیچه مطرح شده",
     tree,
+    mode="category_tree",
 )
 print(repr(categories))
+
+# Create category list
+category_list = ["اخلاق", "معرفت شناسی", "متافیزیک", "فلسفه ذهن"]
+
+# Test list mode
+category = t.categorize(
+    "اراده قدرت مفهومی مهم در مابعد الطبیعه است که توسط نیچه مطرح شده",
+    category_list,
+    mode="category_list",
+)
+print(repr(category))
