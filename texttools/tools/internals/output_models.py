@@ -136,14 +136,14 @@ class CategoryTree:
                 return node
         return None
 
-    def find_categories_by_parent_id(self, parent_id: int) -> list[Node]:
+    def find_categories_by_parent_id(self, parent_id: int) -> list[Node] | None:
         nodes = []
         for node in self.node_list:
             if parent_id == node.parent_id:
                 nodes.append(node)
         if nodes:
             return nodes
-        return False
+        return None
 
     def remove_category(self, node_id: str) -> None:
         child_node = self.find_category(node_id)
