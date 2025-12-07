@@ -45,24 +45,6 @@ class ReasonListStrOutput(BaseModel):
     result: list[str] = Field(..., description="The output list of strings")
 
 
-# This function is needed to create CategorizerOutput with dynamic categories
-def create_dynamic_model(allowed_values: list[str]) -> Type[BaseModel]:
-    literal_type = Literal[*allowed_values]
-
-    CategorizerOutput = create_model(
-        "CategorizerOutput",
-        reason=(
-            str,
-            Field(
-                ..., description="Explanation of why the input belongs to the category"
-            ),
-        ),
-        result=(literal_type, Field(..., description="Predicted category label")),
-    )
-
-    return CategorizerOutput
-
-
 class Node(BaseModel):
     node_id: int
     name: str
@@ -171,6 +153,24 @@ class CategoryTree:
 
     def level_count(self) -> int:
         return max([item.level for item in self.node_list])
+
+
+# This function is needed to create CategorizerOutput with dynamic categories
+def create_dynamic_model(allowed_values: list[str]) -> Type[BaseModel]:
+    literal_type = Literal[*allowed_values]
+
+    CategorizerOutput = create_model(
+        "CategorizerOutput",
+        reason=(
+            str,
+            Field(
+                ..., description="Explanation of why the input belongs to the category"
+            ),
+        ),
+        result=(literal_type, Field(..., description="Predicted category label")),
+    )
+
+    return CategorizerOutput
 
 
 class Entity(BaseModel):

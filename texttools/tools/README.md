@@ -19,14 +19,16 @@ The `Operator` class provides:
 - Inject user prompts
 - Extract logprobs
 
-### Output Models
-Structured output models defined in `output_models.py`:
+### Models
+Models defined in `models.py`:
 - `ToolOutput` - Output model of each tool
 - `StrOutput` - Simple string output
 - `ListStrOutput` - List of strings
 - `ListDictStrStrOutput` - List of dictionaries
 - `ReasonListStrOutput` - Output with reasoning
-- `CategorizerOutput` - Specialized categorization output
+- `CategoryTree` - Category tree for categorizer
+- `create_dynamic_model() - Creates dynamic BaseModel for categorizer
+
 
 ### Formatter
 The `Fromatter` class:
