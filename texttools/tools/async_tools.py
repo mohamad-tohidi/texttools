@@ -4,7 +4,7 @@ from openai import AsyncOpenAI
 
 from texttools.tools.internals.async_operator import AsyncOperator
 import texttools.tools.internals.output_models as OutputModels
-from texttools.tools.internals.text_splitting import recursive_splitting
+from texttools.tools.internals.text_to_chunks import text_to_chunks
 
 
 class AsyncTheTool:
@@ -534,13 +534,14 @@ class AsyncTheTool:
             )
         else:
             # Chunk without overlap
-            list_text = recursive_splitting(text, 1200, 0)
+            chunk_list = text_to_chunks(text, 1200, 0)
+
             # Run translation for each chunk
             output_str = ""
-            for text in list_text:
+            for chunk in chunk_list:
                 translation = await self._operator.run(
                     # User parameters
-                    text=text,
+                    text=chunk,
                     target_language=target_language,
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,

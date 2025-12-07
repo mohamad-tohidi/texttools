@@ -4,7 +4,7 @@ from openai import OpenAI
 
 from texttools.tools.internals.sync_operator import Operator
 import texttools.tools.internals.output_models as OutputModels
-from texttools.tools.internals.text_splitting import recursive_splitting
+from texttools.tools.internals.text_to_chunks import text_to_chunks
 
 
 class TheTool:
@@ -532,7 +532,7 @@ class TheTool:
             )
         else:
             # Chunking without overlap
-            list_text = recursive_splitting(text, 1200, 0)
+            list_text = text_to_chunks(text, 1200, 0)
             # Run translation for each chunk
             output_str = ""
             for text in list_text:

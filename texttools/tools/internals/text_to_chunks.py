@@ -1,7 +1,7 @@
 import re
 
 
-def recursive_splitting(text: str, size: int, overlap: int) -> list[str]:
+def text_to_chunks(text: str, size: int, overlap: int) -> list[str]:
     separators = ["\n\n", "\n", " ", ""]
     is_separator_regex = False
     keep_separator = True  # Equivalent to 'start'

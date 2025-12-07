@@ -1,4 +1,4 @@
-from texttools.tools.internals.text_splitting import recursive_splitting
+from texttools.tools.internals.text_to_chunks import text_to_chunks
 
 text = """Charles James Kirk was born on October 14, 1993, in the Chicago suburb of Arlington Heights, Illinois,[1] and raised in nearby Prospect Heights.[2] His father, Robert W. Kirk, is an architect who was involved in the construction of Trump Tower.[3][4] His mother, Kathryn (née Smith),[5] is a former trader at the Chicago Mercantile Exchange who subsequently worked as a mental health counselor.[2][3][4] He had one sibling, a younger sister, Mary, who went on to become an art curator in Chicago.[6][7]
 
@@ -32,5 +32,5 @@ Turning Point Faith
 After Liberty University did not renew Kirk's contract with the Falkirk Center for Faith and Liberty in 2021, Kirk and Pentecostal pastor Rob McCoy founded Turning Point Faith, an organization that encouraged pastors and other church leaders to be active in local and national political issues.[48][51] Its activities include faith-based voter drives and promotion of TPUSA's views, with the stated goal to help churches become more civically engaged so that American society can "return to foundational Christian values".[52] According to TPUSA's 2021 Investor Prospectus, the program—with a budget of $6.4 million—"will 'address America's crumbling religious foundation by engaging thousands of pastors nationwide' in order to 'breathe renewed civic engagement into our churches'".[53]
 """
 
-print(recursive_splitting(text, 1200, 0))
-print(len(recursive_splitting(text, 1200, 0)))
+print(text_to_chunks(text, 1200, 0))
+print(len(text_to_chunks(text, 1200, 0)))
