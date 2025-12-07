@@ -1,9 +1,6 @@
-import logging
 from typing import Type, Any, Literal
 
 from pydantic import BaseModel, Field, create_model
-
-logger = logging.getLogger("texttools.models")
 
 
 class ToolOutput(BaseModel):
@@ -61,15 +58,14 @@ class CategoryTree:
 
     def add_category(self, category_name, parent_name: str | None = None) -> None:
         if self.find_category(category_name):
-            logger.error(
+            raise ValueError(
                 f"{category_name} has been choosed for another category before"
             )
             return
         if parent_name:
             parent_node = self.find_category(parent_name)
             if not parent_node:
-                logger.error(f"Parent category '{parent_name}' not found")
-                return
+                raise ValueError(f"Parent category '{parent_name}' not found")
             parent_id = parent_node.node_id
             level = parent_node.level + 1
         else:
@@ -84,7 +80,7 @@ class CategoryTree:
             )
         )
         self.new_id += 1
-        logger.info(
+        print(
             Node(
                 node_id=self.new_id,
                 name=category_name,
@@ -93,15 +89,18 @@ class CategoryTree:
             )
         )
 
-    def add_description(self, category, description):
+    def add_description(self, category: str | int, description: str) -> None:
         if isinstance(category, str):
             node = self.find_category(category)
         elif isinstance(category, int):
             node = self.find_category_by_id(category)
-        try:
-            node.description = description
-        except NameError:
-            logger.error(f"There is no category with this id/name: {category}")
+        else:
+            raise TypeError("Category must be either string (name) or integer (id)")
+
+        if not node:
+            raise ValueError(f"Category '{category}' not found")
+
+        node.description = description
 
     def find_all(self) -> list[Node]:
         return self.node_list
@@ -132,7 +131,7 @@ class CategoryTree:
         if child_node:
             self.node_list.remove(child_node)
         else:
-            logger.error(f"Parent node with value '{node_id}' not found.")
+            raise ValueError(f"Parent node with value '{node_id}' not found.")
 
     def dump_tree(self) -> dict:
         def build_dict(node: Node) -> dict:
