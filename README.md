@@ -46,7 +46,7 @@ TextTools provides several optional flags to customize LLM behavior:
 
 - **`validator (Callable)`** → Forces TheTool to validate the output result based on your custom validator. Validator should return a bool (True if there were no problem, False if the validation fails.) If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can specify `max_validation_retries=<N>` to change the number of retries.
 
-All these parameters can be used individually or together to tailor the behavior of any tool in **TextTools**.
+- **`priority (int)`** → Task execution priority level. Higher values = higher priority. Affects processing order in queues.
 
 **Note:** There might be some tools that don't support some of the parameters above.
 
