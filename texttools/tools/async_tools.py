@@ -36,6 +36,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Categorize a text into a single Islamic studies domain category.
@@ -72,6 +73,7 @@ class AsyncTheTool:
             output_model=OutputModels.CategorizerOutput,
             mode=None,
             output_lang=None,
+            priority=priority,
         )
 
     async def extract_keywords(
@@ -85,6 +87,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Extract salient keywords from text.
@@ -122,6 +125,7 @@ class AsyncTheTool:
             prompt_file="extract_keywords.yaml",
             output_model=OutputModels.ListStrOutput,
             mode=None,
+            priority=priority,
         )
 
     async def extract_entities(
@@ -135,6 +139,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Perform Named Entity Recognition (NER) over the input text.
@@ -172,6 +177,7 @@ class AsyncTheTool:
             prompt_file="extract_entities.yaml",
             output_model=OutputModels.ListDictStrStrOutput,
             mode=None,
+            priority=priority,
         )
 
     async def is_question(
@@ -184,6 +190,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Detect if the input is phrased as a question.
@@ -220,6 +227,7 @@ class AsyncTheTool:
             output_model=OutputModels.BoolOutput,
             mode=None,
             output_lang=None,
+            priority=priority,
         )
 
     async def text_to_question(
@@ -233,6 +241,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Generate a single question from the given text.
@@ -270,6 +279,7 @@ class AsyncTheTool:
             prompt_file="text_to_question.yaml",
             output_model=OutputModels.StrOutput,
             mode=None,
+            priority=priority,
         )
 
     async def merge_questions(
@@ -284,6 +294,7 @@ class AsyncTheTool:
         mode: Literal["default", "reason"] = "default",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Merge multiple questions into a single unified question.
@@ -323,6 +334,7 @@ class AsyncTheTool:
             prompt_file="merge_questions.yaml",
             output_model=OutputModels.StrOutput,
             mode=mode,
+            priority=priority,
         )
 
     async def rewrite(
@@ -337,6 +349,7 @@ class AsyncTheTool:
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Rewrite a text with different modes.
@@ -375,6 +388,7 @@ class AsyncTheTool:
             prompt_file="rewrite.yaml",
             output_model=OutputModels.StrOutput,
             mode=mode,
+            priority=priority,
         )
 
     async def subject_to_question(
@@ -389,6 +403,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Generate a list of questions about a subject.
@@ -428,6 +443,7 @@ class AsyncTheTool:
             prompt_file="subject_to_question.yaml",
             output_model=OutputModels.ReasonListStrOutput,
             mode=None,
+            priority=priority,
         )
 
     async def summarize(
@@ -441,6 +457,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Summarize the given subject text.
@@ -478,6 +495,7 @@ class AsyncTheTool:
             prompt_file="summarize.yaml",
             output_model=OutputModels.StrOutput,
             mode=None,
+            priority=priority,
         )
 
     async def translate(
@@ -491,6 +509,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Translate text between languages.
@@ -529,6 +548,7 @@ class AsyncTheTool:
             output_model=OutputModels.StrOutput,
             mode=None,
             output_lang=None,
+            priority=priority,
         )
 
     async def detect_entity(
@@ -542,6 +562,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Detects entities in a given text based on the entity_detector.yaml prompt.
@@ -579,6 +600,7 @@ class AsyncTheTool:
             prompt_file="detect_entity.yaml",
             output_model=OutputModels.EntityDetectorOutput,
             mode=None,
+            priority=priority,
         )
 
     async def run_custom(
@@ -591,6 +613,7 @@ class AsyncTheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Custom tool that can do almost anything!
@@ -627,4 +650,5 @@ class AsyncTheTool:
             user_prompt=None,
             with_analysis=False,
             mode=None,
+            priority=priority,
         )
