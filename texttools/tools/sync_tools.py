@@ -37,7 +37,7 @@ class TheTool:
         max_validation_retries: int | None = None,
     ) -> OutputModels.ToolOutput:
         """
-        Categorize a text into a single Islamic studies domain category.
+        Categorize a text into a category tree.
 
         Arguments:
             text: The input text to categorize
@@ -58,15 +58,20 @@ class TheTool:
                 - errors (list(str) | None): Errors occured during tool call
         """
         # Recursive implementation
+        output = OutputModels.ToolOutput()
         levels = category_tree.level_count()
         parent_id = 0
         final_output = []
         for _ in range(levels):
-            list_categories = [
-                node.name
-                for node in category_tree.find_categories_by_parent_id(parent_id)
-            ]
-            output = self._operator.run(
+            child_nodes = category_tree.find_categories_by_parent_id(parent_id)
+            if not child_nodes:
+                output.errors.append(
+                    f"No categories found for parent_id {parent_id} in the tree"
+                )
+                return output
+            list_categories = [node.name for node in child_nodes]
+
+            level_output = self._operator.run(
                 # User parameters
                 text=text,
                 list_categories=list_categories,
@@ -83,10 +88,23 @@ class TheTool:
                 mode=None,
                 output_lang=None,
             )
-            choosed_category = output.result
-            parent_node = category_tree.find_category(choosed_category)
+
+            if level_output.errors:
+                output.errors.extend(level_output.errors)
+                return output
+
+            chosen_category = output.result
+            parent_node = category_tree.find_category(chosen_category)
+
+            if parent_node is None:
+                output.errors.append(
+                    f"Category '{chosen_category}' not found in tree after selection"
+                )
+                return output
+
             parent_id = parent_node.node_id
             final_output.append(parent_node.name)
+
         output.result = final_output
         return output
 
