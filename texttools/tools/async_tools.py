@@ -59,20 +59,27 @@ class AsyncTheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        # Recursive implementation
+        # Initializations
         output = OutputModels.ToolOutput()
         levels = category_tree.level_count()
         parent_id = 0
         final_output = []
+
         for _ in range(levels):
+            # Get child nodes for current parent
             child_nodes = category_tree.find_categories_by_parent_id(parent_id)
+
+            # Check if child nodes exist
             if not child_nodes:
                 output.errors.append(
                     f"No categories found for parent_id {parent_id} in the tree"
                 )
                 return output
+
+            # Extract category names
             list_categories = [node.name for node in child_nodes]
 
+            # Run categorization for this level
             level_output = await self._operator.run(
                 # User parameters
                 text=text,
@@ -91,13 +98,16 @@ class AsyncTheTool:
                 output_lang=None,
             )
 
+            # Check for errors from operator
             if level_output.errors:
                 output.errors.extend(level_output.errors)
                 return output
 
-            chosen_category = output.result
-            parent_node = category_tree.find_category(chosen_category)
+            # Get the chosen category
+            chosen_category = level_output.result
 
+            # Find the corresponding node
+            parent_node = category_tree.find_category(chosen_category)
             if parent_node is None:
                 output.errors.append(
                     f"Category '{chosen_category}' not found in tree after selection"
@@ -106,6 +116,10 @@ class AsyncTheTool:
 
             parent_id = parent_node.node_id
             final_output.append(parent_node.name)
+
+            # Copy analysis/logprobs from the last level's output
+            output.analysis = level_output.analysis
+            output.logprobs = level_output.logprobs
 
         output.result = final_output
         return output
