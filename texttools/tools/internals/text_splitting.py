@@ -1,7 +1,7 @@
 import re
 
 
-def recursive_splitting(text: str, size: int, overlap: int):
+def recursive_splitting(text: str, size: int, overlap: int) -> list[str]:
     separators = ["\n\n", "\n", " ", ""]
     is_separator_regex = False
     keep_separator = True  # Equivalent to 'start'
@@ -10,7 +10,9 @@ def recursive_splitting(text: str, size: int, overlap: int):
     chunk_size = size
     chunk_overlap = overlap
 
-    def _split_text_with_regex(text, separator, keep_separator):
+    def _split_text_with_regex(
+        text: str, separator: str, keep_separator: bool
+    ) -> list[str]:
         if not separator:
             return [text]
         if not keep_separator:
@@ -21,13 +23,13 @@ def recursive_splitting(text: str, size: int, overlap: int):
             splits += [_splits[-1]]
         return [_splits[0]] + splits if _splits[0] else splits
 
-    def _join_docs(docs, separator):
+    def _join_docs(docs: list[str], separator: str) -> str | None:
         text = separator.join(docs)
         if strip_whitespace:
             text = text.strip()
         return text if text else None
 
-    def _merge_splits(splits, separator):
+    def _merge_splits(splits: list[str], separator: str) -> list[str]:
         separator_len = length_function(separator)
         docs = []
         current_doc = []
@@ -57,7 +59,7 @@ def recursive_splitting(text: str, size: int, overlap: int):
             docs.append(doc)
         return docs
 
-    def _split_text(text, separators):
+    def _split_text(text: str, separators: list[str]) -> list[str]:
         final_chunks = []
         separator = separators[-1]
         new_separators = []
