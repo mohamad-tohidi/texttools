@@ -48,7 +48,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -101,7 +101,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -154,7 +154,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -205,7 +205,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -258,7 +258,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -313,7 +313,7 @@ class TheTool:
             mode: Merging strategy - 'default' for direct merge, 'reason' for reasoned merge
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -369,7 +369,7 @@ class TheTool:
             mode: Rewriting mode - 'positive', 'negative', or 'hard_negative'
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -424,7 +424,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -478,7 +478,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -531,7 +531,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -585,7 +585,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -635,7 +635,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
