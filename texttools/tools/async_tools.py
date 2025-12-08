@@ -1,4 +1,5 @@
-from typing import Literal, Any, Callable
+from typing import Literal, Any
+from collections.abc import Callable
 
 from openai import AsyncOpenAI
 

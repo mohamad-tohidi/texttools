@@ -1,4 +1,5 @@
-from typing import Any, TypeVar, Type, Callable
+from typing import Any, TypeVar, Type
+from collections.abc import Callable
 import logging
 
 from openai import AsyncOpenAI
