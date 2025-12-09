@@ -19,13 +19,13 @@ t = TheTool(client=client, model=MODEL)
 
 # Create a category tree
 tree = CategoryTree("category_test_tree")
-tree.add_category("اخلاق")
-tree.add_category("معرفت شناسی")
-tree.add_category("متافیزیک")
-tree.add_category("فلسفه ذهن")
-tree.add_category("آگاهی", "فلسفه ذهن")
-tree.add_category("ذهن و بدن", "فلسفه ذهن")
-tree.add_category("امکان و ضرورت", "متافیزیک")
+tree.add_node("اخلاق")
+tree.add_node("معرفت شناسی")
+tree.add_node("متافیزیک")
+tree.add_node("فلسفه ذهن")
+tree.add_node("آگاهی", "فلسفه ذهن")
+tree.add_node("ذهن و بدن", "فلسفه ذهن")
+tree.add_node("امکان و ضرورت", "متافیزیک")
 
 # Test category tree
 categories = t.categorize(

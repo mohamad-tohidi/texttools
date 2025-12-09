@@ -67,17 +67,18 @@ class TheTool:
 
             for _ in range(levels):
                 # Get child nodes for current parent
-                child_nodes = categories.find_categories_by_parent_id(parent_id)
+                parent_node = categories.find_node(parent_id)
+                children = categories.find_children(parent_node)
 
                 # Check if child nodes exist
-                if not child_nodes:
+                if not children:
                     output.errors.append(
                         f"No categories found for parent_id {parent_id} in the tree"
                     )
                     return output
 
                 # Extract category names
-                list_categories = [node.name for node in child_nodes]
+                list_categories = [node.name for node in children]
 
                 # Run categorization for this level
                 level_output = self._operator.run(
@@ -107,7 +108,7 @@ class TheTool:
                 chosen_category = level_output.result
 
                 # Find the corresponding node
-                parent_node = categories.find_category(chosen_category)
+                parent_node = categories.find_node(chosen_category)
                 if parent_node is None:
                     output.errors.append(
                         f"Category '{chosen_category}' not found in tree after selection"
