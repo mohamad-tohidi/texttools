@@ -59,9 +59,8 @@ class CategoryTree:
     def add_category(self, category_name, parent_name: str | None = None) -> None:
         if self.find_category(category_name):
             raise ValueError(
-                f"{category_name} has been choosed for another category before"
+                f"{category_name} has been chosen for another category before"
             )
-            return
         if parent_name:
             parent_node = self.find_category(parent_name)
             if not parent_node:
