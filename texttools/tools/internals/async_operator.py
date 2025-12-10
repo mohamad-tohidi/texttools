@@ -52,6 +52,7 @@ class AsyncOperator:
         temperature: float,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        priority: int | None = 0,
     ) -> tuple[T, Any]:
         """
         Parses a chat completion using OpenAI's structured output format.
@@ -67,7 +68,8 @@ class AsyncOperator:
         if logprobs:
             request_kwargs["logprobs"] = True
             request_kwargs["top_logprobs"] = top_logprobs
-
+        if priority:
+            request_kwargs["extra_body"] = {"priority": priority}
         completion = await self._client.beta.chat.completions.parse(**request_kwargs)
         parsed = completion.choices[0].message.parsed
         return parsed, completion
@@ -88,6 +90,7 @@ class AsyncOperator:
         prompt_file: str,
         output_model: Type[T],
         mode: str | None,
+        priority: int | None = 0,
         **extra_kwargs,
     ) -> ToolOutput:
         """
@@ -137,7 +140,7 @@ class AsyncOperator:
             messages = formatter.user_merge_format(messages)
 
             parsed, completion = await self._parse_completion(
-                messages, output_model, temperature, logprobs, top_logprobs
+                messages, output_model, temperature, logprobs, top_logprobs, priority
             )
 
             output.result = parsed.result

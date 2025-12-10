@@ -29,7 +29,7 @@ Each tool is designed to work with structured outputs (JSON / Pydantic).
 
 ---
 
-## ⚙️ `with_analysis`, `logprobs`, `output_lang`, `user_prompt`, `temperature` and `validator` parameters
+## ⚙️ `with_analysis`, `logprobs`, `output_lang`, `user_prompt`, `temperature`, `validator` and `priority` parameters
 
 TextTools provides several optional flags to customize LLM behavior:
 
@@ -37,6 +37,7 @@ TextTools provides several optional flags to customize LLM behavior:
 **Note:** This doubles token usage per call because it triggers an additional LLM request.
 
 - **`logprobs (bool)`** → Returns token-level probabilities for the generated output. You can also specify `top_logprobs=<N>` to get the top N alternative tokens and their probabilities.  
+**Note:** This feature works if it's supported by the model.
 
 - **`output_lang (str)`** → Forces the model to respond in a specific language. The model will ignore other instructions about language and respond strictly in the requested language.
 
@@ -46,7 +47,8 @@ TextTools provides several optional flags to customize LLM behavior:
 
 - **`validator (Callable)`** → Forces TheTool to validate the output result based on your custom validator. Validator should return a bool (True if there were no problem, False if the validation fails.) If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can specify `max_validation_retries=<N>` to change the number of retries.
 
-All these parameters can be used individually or together to tailor the behavior of any tool in **TextTools**.
+- **`priority (int)`** → Task execution priority level. Higher values = higher priority. Affects processing order in queues.
+**Note:** This feature works if it's supported by the model and vLLM.
 
 **Note:** There might be some tools that don't support some of the parameters above.
 

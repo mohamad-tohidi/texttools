@@ -35,6 +35,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Categorize a text into a single Islamic studies domain category.
@@ -48,6 +49,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -71,6 +73,7 @@ class TheTool:
             output_model=OutputModels.CategorizerOutput,
             mode=None,
             output_lang=None,
+            priority=priority,
         )
 
     def extract_keywords(
@@ -86,6 +89,7 @@ class TheTool:
         number_of_keywords: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Extract salient keywords from text.
@@ -100,6 +104,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -124,6 +129,7 @@ class TheTool:
             # Internal parameters
             prompt_file="extract_keywords.yaml",
             output_model=OutputModels.ListStrOutput,
+            priority=priority,
         )
 
     def extract_entities(
@@ -137,6 +143,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Perform Named Entity Recognition (NER) over the input text.
@@ -151,6 +158,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -174,6 +182,7 @@ class TheTool:
             prompt_file="extract_entities.yaml",
             output_model=OutputModels.ListDictStrStrOutput,
             mode=None,
+            priority=priority,
         )
 
     def is_question(
@@ -186,6 +195,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Detect if the input is phrased as a question.
@@ -199,6 +209,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -222,6 +233,7 @@ class TheTool:
             output_model=OutputModels.BoolOutput,
             mode=None,
             output_lang=None,
+            priority=priority,
         )
 
     def text_to_question(
@@ -235,6 +247,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Generate a single question from the given text.
@@ -249,6 +262,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -272,6 +286,7 @@ class TheTool:
             prompt_file="text_to_question.yaml",
             output_model=OutputModels.StrOutput,
             mode=None,
+            priority=priority,
         )
 
     def merge_questions(
@@ -286,6 +301,7 @@ class TheTool:
         mode: Literal["default", "reason"] = "default",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Merge multiple questions into a single unified question.
@@ -301,6 +317,7 @@ class TheTool:
             mode: Merging strategy - 'default' for direct merge, 'reason' for reasoned merge
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -325,6 +342,7 @@ class TheTool:
             prompt_file="merge_questions.yaml",
             output_model=OutputModels.StrOutput,
             mode=mode,
+            priority=priority,
         )
 
     def rewrite(
@@ -339,6 +357,7 @@ class TheTool:
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Rewrite a text with different modes.
@@ -354,6 +373,7 @@ class TheTool:
             mode: Rewriting mode - 'positive', 'negative', or 'hard_negative'
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -377,6 +397,7 @@ class TheTool:
             prompt_file="rewrite.yaml",
             output_model=OutputModels.StrOutput,
             mode=mode,
+            priority=priority,
         )
 
     def subject_to_question(
@@ -391,6 +412,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Generate a list of questions about a subject.
@@ -406,6 +428,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -430,6 +453,7 @@ class TheTool:
             prompt_file="subject_to_question.yaml",
             output_model=OutputModels.ReasonListStrOutput,
             mode=None,
+            priority=priority,
         )
 
     def summarize(
@@ -443,6 +467,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Summarize the given subject text.
@@ -457,6 +482,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -480,6 +506,7 @@ class TheTool:
             prompt_file="summarize.yaml",
             output_model=OutputModels.StrOutput,
             mode=None,
+            priority=priority,
         )
 
     def translate(
@@ -493,6 +520,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Translate text between languages.
@@ -507,6 +535,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -531,6 +560,7 @@ class TheTool:
             output_model=OutputModels.StrOutput,
             mode=None,
             output_lang=None,
+            priority=priority,
         )
 
     def detect_entity(
@@ -544,6 +574,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Detects entities in a given text based on the entity_detector.yaml prompt.
@@ -558,6 +589,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -581,6 +613,7 @@ class TheTool:
             prompt_file="detect_entity.yaml",
             output_model=OutputModels.EntityDetectorOutput,
             mode=None,
+            priority=priority,
         )
 
     def run_custom(
@@ -593,6 +626,7 @@ class TheTool:
         top_logprobs: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
+        priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
         Custom tool that can do almost anything!
@@ -605,6 +639,7 @@ class TheTool:
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
 
         Returns:
             ToolOutput: Object containing:
@@ -629,4 +664,5 @@ class TheTool:
             user_prompt=None,
             with_analysis=False,
             mode=None,
+            priority=priority,
         )
