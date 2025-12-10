@@ -100,6 +100,7 @@ class TheTool:
                     mode=mode,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
+                    priority=priority,
                     # Internal parameters
                     prompt_file="categorize.yaml",
                     output_model=Models.create_dynamic_model(category_names),
@@ -146,6 +147,7 @@ class TheTool:
                 mode=mode,
                 validator=validator,
                 max_validation_retries=max_validation_retries,
+                priority=priority,
                 # Internal parameters
                 prompt_file="categorize.yaml",
                 output_model=Models.create_dynamic_model(categories),
@@ -202,10 +204,10 @@ class TheTool:
             number_of_keywords=number_of_keywords,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="extract_keywords.yaml",
             output_model=Models.ListStrOutput,
-            priority=priority,
         )
 
     def extract_entities(
@@ -254,11 +256,11 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="extract_entities.yaml",
             output_model=Models.ListDictStrStrOutput,
             mode=None,
-            priority=priority,
         )
 
     def is_question(
@@ -304,12 +306,12 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="is_question.yaml",
             output_model=Models.BoolOutput,
             mode=None,
             output_lang=None,
-            priority=priority,
         )
 
     def text_to_question(
@@ -358,11 +360,11 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="text_to_question.yaml",
             output_model=Models.StrOutput,
             mode=None,
-            priority=priority,
         )
 
     def merge_questions(
@@ -414,11 +416,11 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="merge_questions.yaml",
             output_model=Models.StrOutput,
             mode=mode,
-            priority=priority,
         )
 
     def rewrite(
@@ -469,11 +471,11 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="rewrite.yaml",
             output_model=Models.StrOutput,
             mode=mode,
-            priority=priority,
         )
 
     def subject_to_question(
@@ -525,11 +527,11 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="subject_to_question.yaml",
             output_model=Models.ReasonListStrOutput,
             mode=None,
-            priority=priority,
         )
 
     def summarize(
@@ -578,11 +580,11 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="summarize.yaml",
             output_model=Models.StrOutput,
             mode=None,
-            priority=priority,
         )
 
     def translate(
@@ -631,12 +633,12 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="translate.yaml",
             output_model=Models.StrOutput,
             mode=None,
             output_lang=None,
-            priority=priority,
         )
 
     def detect_entity(
@@ -685,11 +687,11 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="detect_entity.yaml",
             output_model=Models.EntityDetectorOutput,
             mode=None,
-            priority=priority,
         )
 
     def run_custom(
@@ -735,10 +737,10 @@ class TheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="run_custom.yaml",
             user_prompt=None,
             with_analysis=False,
             mode=None,
-            priority=priority,
         )

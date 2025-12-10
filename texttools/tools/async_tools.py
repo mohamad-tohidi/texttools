@@ -204,10 +204,10 @@ class AsyncTheTool:
             number_of_keywords=number_of_keywords,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="extract_keywords.yaml",
             output_model=Models.ListStrOutput,
-            priority=priority,
         )
 
     async def extract_entities(
@@ -256,11 +256,11 @@ class AsyncTheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="extract_entities.yaml",
             output_model=Models.ListDictStrStrOutput,
             mode=None,
-            priority=priority,
         )
 
     async def is_question(
@@ -306,12 +306,12 @@ class AsyncTheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="is_question.yaml",
             output_model=Models.BoolOutput,
             mode=None,
             output_lang=None,
-            priority=priority,
         )
 
     async def text_to_question(
@@ -360,11 +360,11 @@ class AsyncTheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="text_to_question.yaml",
             output_model=Models.StrOutput,
             mode=None,
-            priority=priority,
         )
 
     async def merge_questions(
@@ -416,11 +416,11 @@ class AsyncTheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="merge_questions.yaml",
             output_model=Models.StrOutput,
             mode=mode,
-            priority=priority,
         )
 
     async def rewrite(
@@ -471,11 +471,11 @@ class AsyncTheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="rewrite.yaml",
             output_model=Models.StrOutput,
             mode=mode,
-            priority=priority,
         )
 
     async def subject_to_question(
@@ -527,11 +527,11 @@ class AsyncTheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="subject_to_question.yaml",
             output_model=Models.ReasonListStrOutput,
             mode=None,
-            priority=priority,
         )
 
     async def summarize(
@@ -580,11 +580,11 @@ class AsyncTheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="summarize.yaml",
             output_model=Models.StrOutput,
             mode=None,
-            priority=priority,
         )
 
     async def translate(
@@ -633,12 +633,12 @@ class AsyncTheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="translate.yaml",
             output_model=Models.StrOutput,
             mode=None,
             output_lang=None,
-            priority=priority,
         )
 
     async def detect_entity(
@@ -687,11 +687,11 @@ class AsyncTheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="detect_entity.yaml",
             output_model=Models.EntityDetectorOutput,
             mode=None,
-            priority=priority,
         )
 
     async def run_custom(
@@ -737,10 +737,10 @@ class AsyncTheTool:
             top_logprobs=top_logprobs,
             validator=validator,
             max_validation_retries=max_validation_retries,
+            priority=priority,
             # Internal parameters
             prompt_file="run_custom.yaml",
             user_prompt=None,
             with_analysis=False,
             mode=None,
-            priority=priority,
         )
