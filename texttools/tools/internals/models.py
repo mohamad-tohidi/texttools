@@ -10,10 +10,11 @@ class ToolOutput(BaseModel):
     logprobs: list[dict[str, Any]] = []
     process: str = ""
     processed_at: datetime = datetime.now()
+    execution_time: datetime = None
     errors: list[str] = []
 
     def __repr__(self) -> str:
-        return f"ToolOutput(process='{self.process}', result_type='{type(self.result)}', result='{self.result}', analysis='{self.analysis}', logprobs='{self.logprobs}', errors='{self.errors}', processed_at='{self.processed_at}'"
+        return f"ToolOutput(process='{self.process}', result_type='{type(self.result)}', result='{self.result}', analysis='{self.analysis}', logprobs='{self.logprobs}', errors='{self.errors}', processed_at='{self.processed_at}', execution_time='{self.execution_time}'"
 
 
 class StrOutput(BaseModel):

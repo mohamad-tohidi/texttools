@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal, Any
 from collections.abc import Callable
 
@@ -61,6 +62,8 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
+        start = datetime.now()
+
         if mode == "category_tree":
             # Initializations
             output = Models.ToolOutput()
@@ -78,6 +81,8 @@ class TheTool:
                     output.errors.append(
                         f"No categories found for parent_id {parent_id} in the tree"
                     )
+                    end = datetime.now()
+                    output.execution_time = (end - start).total_seconds()
                     return output
 
                 # Extract category names and descriptions
@@ -110,6 +115,8 @@ class TheTool:
                 # Check for errors from operator
                 if level_output.errors:
                     output.errors.extend(level_output.errors)
+                    end = datetime.now()
+                    output.execution_time = (end - start).total_seconds()
                     return output
 
                 # Get the chosen category
@@ -121,6 +128,8 @@ class TheTool:
                     output.errors.append(
                         f"Category '{chosen_category}' not found in tree after selection"
                     )
+                    end = datetime.now()
+                    output.execution_time = (end - start).total_seconds()
                     return output
 
                 parent_id = parent_node.node_id
@@ -132,10 +141,12 @@ class TheTool:
                 output.process = level_output.process
 
             output.result = final_output
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
             return output
 
         else:
-            return self._operator.run(
+            output = self._operator.run(
                 # User parameters
                 text=text,
                 category_list=categories,
@@ -153,6 +164,9 @@ class TheTool:
                 output_model=Models.create_dynamic_model(categories),
                 output_lang=None,
             )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
 
     def extract_keywords(
         self,
@@ -191,7 +205,8 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
+        start = datetime.now()
+        output = self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -209,6 +224,9 @@ class TheTool:
             prompt_file="extract_keywords.yaml",
             output_model=Models.ListStrOutput,
         )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
 
     def extract_entities(
         self,
@@ -245,7 +263,8 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
+        start = datetime.now()
+        output = self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -262,6 +281,9 @@ class TheTool:
             output_model=Models.ListDictStrStrOutput,
             mode=None,
         )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
 
     def is_question(
         self,
@@ -296,7 +318,8 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
+        start = datetime.now()
+        output = self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -313,6 +336,9 @@ class TheTool:
             mode=None,
             output_lang=None,
         )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
 
     def text_to_question(
         self,
@@ -349,7 +375,8 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
+        start = datetime.now()
+        output = self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -366,6 +393,9 @@ class TheTool:
             output_model=Models.StrOutput,
             mode=None,
         )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
 
     def merge_questions(
         self,
@@ -404,8 +434,9 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
+        start = datetime.now()
         text = ", ".join(text)
-        return self._operator.run(
+        output = self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -422,6 +453,9 @@ class TheTool:
             output_model=Models.StrOutput,
             mode=mode,
         )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
 
     def rewrite(
         self,
@@ -460,7 +494,8 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
+        start = datetime.now()
+        output = self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -477,6 +512,9 @@ class TheTool:
             output_model=Models.StrOutput,
             mode=mode,
         )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
 
     def subject_to_question(
         self,
@@ -515,7 +553,8 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
+        start = datetime.now()
+        output = self._operator.run(
             # User parameters
             text=text,
             number_of_questions=number_of_questions,
@@ -533,6 +572,9 @@ class TheTool:
             output_model=Models.ReasonListStrOutput,
             mode=None,
         )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
 
     def summarize(
         self,
@@ -569,7 +611,8 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
+        start = datetime.now()
+        output = self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -586,6 +629,9 @@ class TheTool:
             output_model=Models.StrOutput,
             mode=None,
         )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
 
     def translate(
         self,
@@ -622,7 +668,8 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
+        start = datetime.now()
+        output = self._operator.run(
             # User parameters
             text=text,
             target_language=target_language,
@@ -640,6 +687,9 @@ class TheTool:
             mode=None,
             output_lang=None,
         )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
 
     def detect_entity(
         self,
@@ -676,7 +726,8 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
+        start = datetime.now()
+        output = self._operator.run(
             # User parameters
             text=text,
             with_analysis=with_analysis,
@@ -693,6 +744,9 @@ class TheTool:
             output_model=Models.EntityDetectorOutput,
             mode=None,
         )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
 
     def run_custom(
         self,
@@ -726,7 +780,8 @@ class TheTool:
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
+        start = datetime.now()
+        output = self._operator.run(
             # User paramaeters
             text=prompt,
             output_model=output_model,
@@ -744,3 +799,6 @@ class TheTool:
             with_analysis=False,
             mode=None,
         )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
