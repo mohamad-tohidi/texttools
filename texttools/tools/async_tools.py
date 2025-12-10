@@ -127,9 +127,10 @@ class AsyncTheTool:
                 parent_id = parent_node.node_id
                 final_output.append(parent_node.name)
 
-                # Copy analysis/logprobs from the last level's output
+                # Copy analysis/logprobs/process from the last level's output
                 output.analysis = level_output.analysis
                 output.logprobs = level_output.logprobs
+                output.process = level_output.process
 
             output.result = final_output
             return output

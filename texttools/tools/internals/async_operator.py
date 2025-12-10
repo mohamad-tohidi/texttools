@@ -190,6 +190,8 @@ class AsyncOperator:
             if with_analysis:
                 output.analysis = analysis
 
+            output.process = prompt_file[:-5]
+
             return output
 
         except Exception as e:
