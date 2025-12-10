@@ -79,25 +79,29 @@ class AsyncTheTool:
                     )
                     return output
 
-                # Extract category names
-                list_categories = [node.name for node in children]
+                # Extract category names and descriptions
+                category_list = [
+                    f"Category Name: {node.name}, Description: {node.description}"
+                    for node in children
+                ]
+                category_names = [node.name for node in children]
 
                 # Run categorization for this level
                 level_output = await self._operator.run(
                     # User parameters
                     text=text,
-                    list_categories=list_categories,
+                    category_list=category_list,
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,
                     temperature=temperature,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
-                    mode="category_tree",
+                    mode=mode,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     # Internal parameters
                     prompt_file="categorizer.yaml",
-                    output_model=OutputModels.create_dynamic_model(list_categories),
+                    output_model=OutputModels.create_dynamic_model(category_names),
                     output_lang=None,
                 )
 
@@ -131,13 +135,13 @@ class AsyncTheTool:
             return await self._operator.run(
                 # User parameters
                 text=text,
-                list_categories=categories,
+                category_list=categories,
                 with_analysis=with_analysis,
                 user_prompt=user_prompt,
                 temperature=temperature,
                 logprobs=logprobs,
                 top_logprobs=top_logprobs,
-                mode="category_list",
+                mode=mode,
                 validator=validator,
                 max_validation_retries=max_validation_retries,
                 # Internal parameters

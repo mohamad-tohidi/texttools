@@ -47,7 +47,7 @@ class Node(BaseModel):
     name: str
     level: int
     parent_id: int | None
-    description: str | None = None
+    description: str = "No description provided"
 
 
 class CategoryTree:
@@ -56,9 +56,15 @@ class CategoryTree:
         self.node_list: list[Node] = [self.root]
         self.new_id = 1
 
-    def add_node(self, node_name: str, parent_name: str | None = None) -> None:
+    def add_node(
+        self,
+        node_name: str,
+        parent_name: str | None = None,
+        description: str | None = None,
+    ) -> None:
         if self.find_node(node_name):
             raise ValueError(f"{node_name} has been chosen for another category before")
+
         if parent_name:
             parent_node = self.find_node(parent_name)
             if parent_node is None:
@@ -68,23 +74,19 @@ class CategoryTree:
         else:
             level = 1
             parent_id = 0
-        self.node_list.append(
-            Node(
-                node_id=self.new_id,
-                name=node_name,
-                level=level,
-                parent_id=parent_id,
-            )
-        )
+
+        node_data = {
+            "node_id": self.new_id,
+            "name": node_name,
+            "level": level,
+            "parent_id": parent_id,
+        }
+
+        if description is not None:
+            node_data["description"] = description
+
+        self.node_list.append(Node(**node_data))
         self.new_id += 1
-
-    def add_description(self, identifier: str | int, description: str) -> None:
-        node = self.find_node(identifier)
-
-        if node is None:
-            raise ValueError(f"Node with identifier: '{identifier}' not found")
-
-        node.description = description
 
     def get_nodes(self) -> list[Node]:
         return self.node_list

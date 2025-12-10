@@ -22,8 +22,8 @@ main_template:
     "result": "<category_name_only>"
     }}
 
-    Available categories:
-    {list_categories}
+    Available categories with their descriptions:
+    {category_list}
 
     The text that has to be categorized:
     {input}
@@ -50,8 +50,10 @@ main_template:
     "result": "<category_name_only>"
     }}
 
-    Available categories at this level:
-    {list_categories}
+    Available categories with their descriptions at this level:
+    {category_list}
+
+    Do not include category descriptions at all. Only write the raw category.
 
     The text that has to be categorized:
     {input}
