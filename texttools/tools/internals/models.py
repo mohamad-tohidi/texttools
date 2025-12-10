@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Type, Any, Literal
 
 from pydantic import BaseModel, Field, create_model
@@ -8,10 +9,11 @@ class ToolOutput(BaseModel):
     analysis: str = ""
     logprobs: list[dict[str, Any]] = []
     process: str = ""
+    processed_at: datetime = datetime.now()
     errors: list[str] = []
 
     def __repr__(self) -> str:
-        return f"ToolOutput(process='{self.process}', result_type='{type(self.result)}', result='{self.result}', analysis='{self.analysis}', logprobs='{self.logprobs}', errors='{self.errors}'"
+        return f"ToolOutput(process='{self.process}', result_type='{type(self.result)}', result='{self.result}', analysis='{self.analysis}', logprobs='{self.logprobs}', errors='{self.errors}', processed_at='{self.processed_at}'"
 
 
 class StrOutput(BaseModel):
