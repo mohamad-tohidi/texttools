@@ -64,7 +64,7 @@ class TheTool:
         if mode == "category_tree":
             # Initializations
             output = Models.ToolOutput()
-            levels = categories.level_count()
+            levels = categories.get_level_count()
             parent_id = 0
             final_output = []
 

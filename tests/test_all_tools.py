@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools import TheTool
+from texttools import TheTool, CategoryTree
 
 # Load environment variables from .env
 load_dotenv()
@@ -18,12 +18,31 @@ client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 # Create an instance of TheTool
 t = TheTool(client=client, model=MODEL)
 
-# Categorizer
+# Categorizer: list mode
 category = t.categorize("سلام حالت چطوره؟", categories=["هیچکدام", "دینی", "فلسفه"])
 print(repr(category))
 
+# Categorizer: tree mode
+tree = CategoryTree("category_test_tree")
+tree.add_node("اخلاق")
+tree.add_node("معرفت شناسی")
+tree.add_node("متافیزیک", description="اراده قدرت در حیطه متافیزیک است")
+tree.add_node("فلسفه ذهن", description="فلسفه ذهن به چگونگی درک ما از جهان می پردازد")
+tree.add_node("آگاهی", "فلسفه ذهن", description="آگاهی خیلی مهم است")
+tree.add_node("ذهن و بدن", "فلسفه ذهن")
+tree.add_node("امکان و ضرورت", "متافیزیک")
+
+categories = t.categorize(
+    "اراده قدرت مفهومی مهم در مابعد الطبیعه است که توسط نیچه مطرح شده",
+    tree,
+    mode="category_tree",
+)
+print(repr(categories))
+
 # Keyword Extractor
-keywords = t.extract_keywords("Tomorrow, we will be dead by the car crash")
+keywords = t.extract_keywords(
+    "Tomorrow, we will be dead by the car crash", mode="count", number_of_keywords=3
+)
 print(repr(keywords))
 
 # NER Extractor

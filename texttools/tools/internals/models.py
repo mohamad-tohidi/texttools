@@ -53,7 +53,7 @@ class Node(BaseModel):
 class CategoryTree:
     def __init__(self, tree_name):
         self.root = Node(node_id=0, name=tree_name, level=0, parent_id=None)
-        self.node_list: list[Node] = [self.root]
+        self.all_nodes: list[Node] = [self.root]
         self.new_id = 1
 
     def add_node(
@@ -85,11 +85,14 @@ class CategoryTree:
         if description is not None:
             node_data["description"] = description
 
-        self.node_list.append(Node(**node_data))
+        self.all_nodes.append(Node(**node_data))
         self.new_id += 1
 
     def get_nodes(self) -> list[Node]:
-        return self.node_list
+        return self.all_nodes
+
+    def get_level_count(self) -> int:
+        return max([item.level for item in self.all_nodes])
 
     def find_node(self, identifier: int | str) -> Node | None:
         if isinstance(identifier, str):
@@ -106,11 +109,9 @@ class CategoryTree:
             return None
 
     def find_children(self, parent_node: Node) -> list[Node] | None:
-        children = []
-        for node in self.get_nodes():
-            if parent_node.node_id == node.parent_id:
-                children.append(node)
-
+        children = [
+            node for node in self.get_nodes() if parent_node.node_id == node.parent_id
+        ]
         return children if children else None
 
     def remove_node(self, identifier: int | str) -> None:
@@ -122,14 +123,14 @@ class CategoryTree:
 
             # Ending condition
             if children is None:
-                self.node_list.remove(node)
+                self.all_nodes.remove(node)
                 return
 
             for child in children:
                 self.remove_node(child.name)
 
             # Remove the node from tree
-            self.node_list.remove(node)
+            self.all_nodes.remove(node)
         else:
             raise ValueError(f"Node with identifier: '{identifier}' not found.")
 
@@ -137,7 +138,7 @@ class CategoryTree:
         def build_dict(node: Node) -> dict:
             children = [
                 build_dict(child)
-                for child in self.node_list
+                for child in self.all_nodes
                 if child.parent_id == node.node_id
             ]
             return {
@@ -149,9 +150,6 @@ class CategoryTree:
             }
 
         return {"category_tree": build_dict(self.root)["children"]}
-
-    def level_count(self) -> int:
-        return max([item.level for item in self.node_list])
 
 
 # This function is needed to create CategorizerOutput with dynamic categories
@@ -174,7 +172,7 @@ def create_dynamic_model(allowed_values: list[str]) -> Type[BaseModel]:
 
 class Entity(BaseModel):
     text: str = Field(description="The exact text of the entity")
-    type: str = Field(description="The type of the entity")
+    entity_type: str = Field(description="The type of the entity")
 
 
 class EntityDetectorOutput(BaseModel):
