@@ -4,7 +4,7 @@ from collections.abc import Callable
 from openai import AsyncOpenAI
 
 from texttools.tools.internals.async_operator import AsyncOperator
-import texttools.tools.internals.output_models as OutputModels
+import texttools.tools.internals.models as Models
 
 
 class AsyncTheTool:
@@ -30,7 +30,7 @@ class AsyncTheTool:
     async def categorize(
         self,
         text: str,
-        categories: list[str] | OutputModels.CategoryTree,
+        categories: list[str] | Models.CategoryTree,
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
@@ -40,7 +40,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Categorize a text into a category / category tree.
 
@@ -65,7 +65,7 @@ class AsyncTheTool:
         """
         if mode == "category_tree":
             # Initializations
-            output = OutputModels.ToolOutput()
+            output = Models.ToolOutput()
             levels = categories.level_count()
             parent_id = 0
             final_output = []
@@ -103,8 +103,8 @@ class AsyncTheTool:
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     # Internal parameters
-                    prompt_file="categorizer.yaml",
-                    output_model=OutputModels.create_dynamic_model(category_names),
+                    prompt_file="categorize.yaml",
+                    output_model=Models.create_dynamic_model(category_names),
                     output_lang=None,
                 )
 
@@ -148,8 +148,8 @@ class AsyncTheTool:
                 validator=validator,
                 max_validation_retries=max_validation_retries,
                 # Internal parameters
-                prompt_file="categorizer.yaml",
-                output_model=OutputModels.create_dynamic_model(categories),
+                prompt_file="categorize.yaml",
+                output_model=Models.create_dynamic_model(categories),
                 output_lang=None,
             )
 
@@ -167,7 +167,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Extract salient keywords from text.
 
@@ -205,7 +205,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="extract_keywords.yaml",
-            output_model=OutputModels.ListStrOutput,
+            output_model=Models.ListStrOutput,
             priority=priority,
         )
 
@@ -221,7 +221,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Perform Named Entity Recognition (NER) over the input text.
 
@@ -257,7 +257,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="extract_entities.yaml",
-            output_model=OutputModels.ListDictStrStrOutput,
+            output_model=Models.ListDictStrStrOutput,
             mode=None,
             priority=priority,
         )
@@ -273,7 +273,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Detect if the input is phrased as a question.
 
@@ -307,7 +307,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="is_question.yaml",
-            output_model=OutputModels.BoolOutput,
+            output_model=Models.BoolOutput,
             mode=None,
             output_lang=None,
             priority=priority,
@@ -325,7 +325,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Generate a single question from the given text.
 
@@ -361,7 +361,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="text_to_question.yaml",
-            output_model=OutputModels.StrOutput,
+            output_model=Models.StrOutput,
             mode=None,
             priority=priority,
         )
@@ -379,7 +379,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Merge multiple questions into a single unified question.
 
@@ -417,7 +417,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="merge_questions.yaml",
-            output_model=OutputModels.StrOutput,
+            output_model=Models.StrOutput,
             mode=mode,
             priority=priority,
         )
@@ -435,7 +435,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Rewrite a text with different modes.
 
@@ -472,7 +472,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="rewrite.yaml",
-            output_model=OutputModels.StrOutput,
+            output_model=Models.StrOutput,
             mode=mode,
             priority=priority,
         )
@@ -490,7 +490,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Generate a list of questions about a subject.
 
@@ -528,7 +528,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="subject_to_question.yaml",
-            output_model=OutputModels.ReasonListStrOutput,
+            output_model=Models.ReasonListStrOutput,
             mode=None,
             priority=priority,
         )
@@ -545,7 +545,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Summarize the given subject text.
 
@@ -581,7 +581,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="summarize.yaml",
-            output_model=OutputModels.StrOutput,
+            output_model=Models.StrOutput,
             mode=None,
             priority=priority,
         )
@@ -598,7 +598,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Translate text between languages.
 
@@ -634,7 +634,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="translate.yaml",
-            output_model=OutputModels.StrOutput,
+            output_model=Models.StrOutput,
             mode=None,
             output_lang=None,
             priority=priority,
@@ -652,7 +652,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Detects entities in a given text based on the entity_detector.yaml prompt.
 
@@ -688,7 +688,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             # Internal parameters
             prompt_file="detect_entity.yaml",
-            output_model=OutputModels.EntityDetectorOutput,
+            output_model=Models.EntityDetectorOutput,
             mode=None,
             priority=priority,
         )
@@ -704,7 +704,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
-    ) -> OutputModels.ToolOutput:
+    ) -> Models.ToolOutput:
         """
         Custom tool that can do almost anything!
 

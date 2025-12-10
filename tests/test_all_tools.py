@@ -19,7 +19,7 @@ client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 t = TheTool(client=client, model=MODEL)
 
 # Categorizer
-category = t.categorize("سلام حالت چطوره؟")
+category = t.categorize("سلام حالت چطوره؟", categories=["هیچکدام", "دینی", "فلسفه"])
 print(repr(category))
 
 # Keyword Extractor

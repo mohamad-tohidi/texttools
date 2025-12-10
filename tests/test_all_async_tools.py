@@ -20,7 +20,9 @@ t = AsyncTheTool(client=client, model=MODEL)
 
 
 async def main():
-    category_task = t.categorize("سلام حالت چطوره؟")
+    category_task = t.categorize(
+        "سلام حالت چطوره؟", categories=["هیچکدام", "دینی", "فلسفه"]
+    )
     keywords_task = t.extract_keywords("Tomorrow, we will be dead by the car crash")
     entities_task = t.extract_entities("We will be dead by the car crash")
     detection_task = t.is_question("We will be dead by the car crash")
