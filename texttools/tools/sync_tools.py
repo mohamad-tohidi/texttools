@@ -28,20 +28,23 @@ class TheTool:
     def categorize(
         self,
         text: str,
+        categories: list[str] | OutputModels.CategoryTree,
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int | None = None,
+        mode: Literal["category_list", "category_tree"] = "category_list",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> OutputModels.ToolOutput:
         """
-        Categorize a text into a single Islamic studies domain category.
+        Categorize a text into a category / category tree.
 
         Arguments:
             text: The input text to categorize
+            categories: The category / category_tree to give to LLM
             with_analysis: Whether to include detailed reasoning analysis
             user_prompt: Additional instructions for the categorization
             temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
@@ -53,28 +56,100 @@ class TheTool:
 
         Returns:
             ToolOutput: Object containing:
-                - result (str): The assigned Islamic studies category
+                - result (str): The assigned category
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
                 - errors (list(str) | None): Errors occured during tool call
         """
-        return self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            # Internal parameters
-            prompt_file="categorize.yaml",
-            output_model=OutputModels.CategorizerOutput,
-            mode=None,
-            output_lang=None,
-            priority=priority,
-        )
+        if mode == "category_tree":
+            # Initializations
+            output = OutputModels.ToolOutput()
+            levels = categories.level_count()
+            parent_id = 0
+            final_output = []
+
+            for _ in range(levels):
+                # Get child nodes for current parent
+                parent_node = categories.find_node(parent_id)
+                children = categories.find_children(parent_node)
+
+                # Check if child nodes exist
+                if not children:
+                    output.errors.append(
+                        f"No categories found for parent_id {parent_id} in the tree"
+                    )
+                    return output
+
+                # Extract category names and descriptions
+                category_list = [
+                    f"Category Name: {node.name}, Description: {node.description}"
+                    for node in children
+                ]
+                category_names = [node.name for node in children]
+
+                # Run categorization for this level
+                level_output = self._operator.run(
+                    # User parameters
+                    text=text,
+                    category_list=category_list,
+                    with_analysis=with_analysis,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    mode=mode,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    # Internal parameters
+                    prompt_file="categorizer.yaml",
+                    output_model=OutputModels.create_dynamic_model(category_names),
+                    output_lang=None,
+                )
+
+                # Check for errors from operator
+                if level_output.errors:
+                    output.errors.extend(level_output.errors)
+                    return output
+
+                # Get the chosen category
+                chosen_category = level_output.result
+
+                # Find the corresponding node
+                parent_node = categories.find_node(chosen_category)
+                if parent_node is None:
+                    output.errors.append(
+                        f"Category '{chosen_category}' not found in tree after selection"
+                    )
+                    return output
+
+                parent_id = parent_node.node_id
+                final_output.append(parent_node.name)
+
+                # Copy analysis/logprobs from the last level's output
+                output.analysis = level_output.analysis
+                output.logprobs = level_output.logprobs
+
+            output.result = final_output
+            return output
+
+        else:
+            return self._operator.run(
+                # User parameters
+                text=text,
+                category_list=categories,
+                with_analysis=with_analysis,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                mode=mode,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                # Internal parameters
+                prompt_file="categorizer.yaml",
+                output_model=OutputModels.create_dynamic_model(categories),
+                output_lang=None,
+            )
 
     def extract_keywords(
         self,

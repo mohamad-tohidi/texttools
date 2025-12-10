@@ -101,7 +101,6 @@ class Operator:
         prompt_loader = PromptLoader()
         formatter = Formatter()
         output = ToolOutput()
-
         try:
             # Prompt configs contain two keys: main_template and analyze template, both are string
             prompt_configs = prompt_loader.load(
