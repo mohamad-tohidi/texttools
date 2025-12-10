@@ -10,7 +10,7 @@ class ToolOutput(BaseModel):
     logprobs: list[dict[str, Any]] = []
     process: str = ""
     processed_at: datetime = datetime.now()
-    execution_time: datetime = None
+    execution_time: float = -1.0
     errors: list[str] = []
 
     def __repr__(self) -> str:
