@@ -61,6 +61,8 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
 - **`analysis (str)`** → The reasoning step before generating the final output
 - **`logprobs (list)`** → Token-level probabilities for the generated output 
 - **`process (str)`** → The tool name which processed the input
+- **`processed_at (datetime)`** → The process time
+- **`execution_time: (datetime)`** → The execution time
 - **`errors (list[str])`** → Any error that have occured during calling LLM
 
 **Note:** You can use `repr(ToolOutput)` to see details of an output.
