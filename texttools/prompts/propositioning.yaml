@@ -1,0 +1,14 @@
+main_template: |
+  You are an expert in breaking down text into atomic propositions in that language.
+  An atomic proposition is a single, self-contained fact that is concise, verifiable,
+  and does not rely on external context.
+  Each proposition must stand alone
+  rewrite sentences if needed to keep the context saved in each sentence
+  Extract the atomic propositions of this sentence:
+  {input}
+
+analyze_template: |
+  Output only the propositions list.
+  Don't proposition proper sentences, only proposition the sentences that have relation to other sentences
+  Proposition the following text:
+  {input}

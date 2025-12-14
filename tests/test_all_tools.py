@@ -84,6 +84,9 @@ print(repr(summary))
 translation = t.translate("سلام حالت چطوره؟", target_language="English")
 print(repr(translation))
 
+# Propositioning
+propositioning = t.propositioning("جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.", output_lang="Persian")
+print(repr(propositioning))
 
 # Custom tool
 class Student(BaseModel):

@@ -25,6 +25,7 @@ Each tool is designed to work with structured outputs (JSON / Pydantic).
 - **`subject_to_question()`** - Generates questions about a specific subject
 - **`summarize()`** - Text summarization
 - **`translate()`** - Text translation between languages
+- **`propositioning()`** - Convert text to atomic independence meaningful sentences 
 - **`run_custom()`** - Allows users to define a custom tool with an arbitrary BaseModel
 
 ---
