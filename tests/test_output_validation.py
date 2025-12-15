@@ -29,7 +29,7 @@ question = t.text_to_question(
     "زندگی",
     output_lang="Persian",
     validator=validate,
-    max_validation_retries=5,
+    max_validation_retries=0,
     temperature=1.0,
 )
-print(question)
+print(repr(question))

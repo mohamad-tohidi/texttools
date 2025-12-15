@@ -8,9 +8,9 @@ class ToolOutput(BaseModel):
     result: Any = None
     logprobs: list[dict[str, Any]] = []
     analysis: str = ""
-    process: str = ""
+    process: str | None = None
     processed_at: datetime = datetime.now()
-    execution_time: float = -1.0
+    execution_time: float | None = None
     errors: list[str] = []
 
     def __repr__(self) -> str:

@@ -19,7 +19,12 @@ client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 t = TheTool(client=client, model=MODEL)
 
 # Categorizer: list mode
-category = t.categorize("سلام حالت چطوره؟", categories=["هیچکدام", "دینی", "فلسفه"])
+category = t.categorize(
+    "سلام حالت چطوره؟",
+    categories=["هیچکدام", "دینی", "فلسفه"],
+    logprobs=True,
+    top_logprobs=-1,
+)
 print(repr(category))
 
 # Categorizer: tree mode
@@ -46,7 +51,7 @@ keywords = t.extract_keywords(
 print(repr(keywords))
 
 # NER Extractor
-entities = t.extract_entities("We will be dead by the car crash")
+entities = t.extract_entities("We will be dead by the car crash", with_analysis=True)
 print(repr(entities))
 
 
@@ -85,7 +90,10 @@ translation = t.translate("سلام حالت چطوره؟", target_language="Eng
 print(repr(translation))
 
 # propositionize
-propositionize = t.propositionize("جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.", output_lang="Persian")
+propositionize = t.propositionize(
+    "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.",
+    output_lang="Persian",
+)
 print(repr(propositionize))
 
 # fact_check
