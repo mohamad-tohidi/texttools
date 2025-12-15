@@ -4,4 +4,4 @@ main_template: |
   {output_model_str}
 
 analyze_template: |
-  
+  {analyze_template}

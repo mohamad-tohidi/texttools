@@ -44,16 +44,44 @@ class PromptLoader:
             if self.MAIN_TEMPLATE not in data:
                 raise PromptError(f"Missing 'main_template' in {prompt_file}")
 
+            if self.ANALYZE_TEMPLATE not in data:
+                raise PromptError(f"Missing 'analyze_template' in {prompt_file}")
+
             if mode and mode not in data.get(self.MAIN_TEMPLATE, {}):
                 raise PromptError(f"Mode '{mode}' not found in {prompt_file}")
 
-            return {
-                self.MAIN_TEMPLATE: data[self.MAIN_TEMPLATE][mode]
+            # Extract templates based on mode
+            main_template = (
+                data[self.MAIN_TEMPLATE][mode]
                 if mode and isinstance(data[self.MAIN_TEMPLATE], dict)
-                else data[self.MAIN_TEMPLATE],
-                self.ANALYZE_TEMPLATE: data.get(self.ANALYZE_TEMPLATE, {}).get(mode)
-                if mode and isinstance(data.get(self.ANALYZE_TEMPLATE), dict)
-                else data.get(self.ANALYZE_TEMPLATE, ""),
+                else data[self.MAIN_TEMPLATE]
+            )
+
+            analyze_template = (
+                data[self.ANALYZE_TEMPLATE][mode]
+                if mode and isinstance(data[self.ANALYZE_TEMPLATE], dict)
+                else data[self.ANALYZE_TEMPLATE]
+            )
+
+            if not main_template or not main_template.strip():
+                raise PromptError(
+                    f"Empty main_template in {prompt_file}"
+                    + (f" for mode '{mode}'" if mode else "")
+                )
+
+            if (
+                not analyze_template
+                or not analyze_template.strip()
+                or analyze_template.strip() in ["{analyze_template}", "{}"]
+            ):
+                raise PromptError(
+                    "analyze_template cannot be empty"
+                    + (f" for mode '{mode}'" if mode else "")
+                )
+
+            return {
+                self.MAIN_TEMPLATE: main_template,
+                self.ANALYZE_TEMPLATE: analyze_template,
             }
 
         except yaml.YAMLError as e:

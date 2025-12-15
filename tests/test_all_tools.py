@@ -97,8 +97,12 @@ propositionize = t.propositionize(
 print(repr(propositionize))
 
 # check_fact
-check_fact = t.check_fact(text="امام نهم در ایران به خاک سپرده شد", source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست")
+check_fact = t.check_fact(
+    text="امام نهم در ایران به خاک سپرده شد",
+    source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست",
+)
 print(repr(check_fact))
+
 
 # Custom tool
 class Student(BaseModel):

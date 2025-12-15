@@ -1049,6 +1049,8 @@ class TheTool:
         self,
         prompt: str,
         output_model: Any,
+        with_analysis: bool = False,
+        analyze_template: str | None = None,
         output_lang: str | None = None,
         temperature: float | None = None,
         logprobs: bool | None = None,
@@ -1063,7 +1065,10 @@ class TheTool:
         Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
 
         Arguments:
-            text: The user prompt
+            prompt: The user prompt
+            output_model: Pydantic BaseModel used for structured output
+            with_analysis: Whether to include detailed reasoning analysis
+            analyze_template: The analyze template used for reasoning analysis
             output_lang: Language for the output summary
             temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
             logprobs: Whether to return token probability information
@@ -1090,6 +1095,8 @@ class TheTool:
                 # User paramaeters
                 text=prompt,
                 output_model=output_model,
+                with_analysis=with_analysis,
+                analyze_template=analyze_template,
                 output_model_str=output_model.model_json_schema(),
                 output_lang=output_lang,
                 temperature=temperature,
@@ -1101,7 +1108,6 @@ class TheTool:
                 # Internal parameters
                 prompt_file="run_custom.yaml",
                 user_prompt=None,
-                with_analysis=False,
                 mode=None,
             )
             end = datetime.now()
