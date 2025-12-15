@@ -18,11 +18,6 @@ class TheTool:
     """
     Each method configures the operator with a specific YAML prompt,
     output schema, and flags, then delegates execution to `operator.run()`.
-
-    Usage:
-        client = OpenAI(...)
-        tool = TheTool(client, model="model-name")
-        result = tool.categorize("text ...", with_analysis=True)
     """
 
     def __init__(
@@ -1039,7 +1034,6 @@ class TheTool:
             output.errors.append(f"Unexpected error: {e}")
 
         return output
-        return output
 
     def run_custom(
         self,
@@ -1113,5 +1107,4 @@ class TheTool:
         except Exception as e:
             output.errors.append(f"Unexpected error: {e}")
 
-        return output
         return output
