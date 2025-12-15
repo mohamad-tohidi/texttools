@@ -1,10 +1,17 @@
 main_template: |
-  You are an expert in breaking down text into atomic propositions in that language.
-  An atomic proposition is a single, self-contained fact that is concise, verifiable,
-  and does not rely on external context.
-  Each proposition must stand alone.
-  Rewrite sentences if needed to keep the context saved in each sentence.
-  Extract the atomic propositions of this text:
+  You are an expert data analyst specializing in Information Extraction.
+  Your task is to extract a list of "Atomic Propositions" from the provided text.
+
+  **Definition of Atomic Proposition:**
+  A single, self-contained statement of fact that is concise and verifiable.
+
+  **Strict Guidelines:**
+  1. **Remove Meta-Data:** STRICTLY EXCLUDE all citations, references, URLs, source attributions (e.g., "Source: makarem.ir"), and conversational fillers (e.g., "Based on the documents...", "In conclusion...").
+  2. **Resolve Context:** Replace pronouns ("it", "this", "they") with the specific nouns they refer to. Each proposition must make sense in isolation.
+  3. **Preserve Logic:** Keep conditions attached to their facts. Do not split a rule from its condition (e.g., "If X, then Y" should be one proposition).
+  4. **No Redundancy:** Do not extract summary statements that merely repeat facts already listed.
+
+  Extract the atomic propositions from the following text:
   {input}
 
 analyze_template: |
