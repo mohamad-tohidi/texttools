@@ -30,6 +30,34 @@ Each tool is designed to work with structured outputs (JSON / Pydantic).
 
 ---
 
+## 📊 Tool Quality Tiers
+
+| Status | Meaning | Use in Production? |
+|--------|---------|-------------------|
+| **✅ Production** | Evaluated, tested, stable. | **Yes** - ready for reliable use. |
+| **🧪 Experimental** | Added to the package but **not fully evaluated**. Functional, but quality may vary. | **Use with caution** - outputs not yet validated. |
+
+### Current Status
+**Production Tools:**
+- `categorize()` (list mode)
+- `extract_keywords()`
+- `extract_entities()`
+- `is_question()`
+- `text_to_question()`*
+- `merge_questions()`
+- `rewrite()`
+- `subject_to_question()`
+- `summarize()`
+- `translate()`
+- `run_custom()` (fine in most cases)
+
+**Experimental Tools:**
+- `categorize()` (tree mode)
+- `propositionize()`
+- `run_custom()` (not evaluated in all scenarios)
+
+---
+
 ## ⚙️ `with_analysis`, `logprobs`, `output_lang`, `user_prompt`, `temperature`, `validator` and `priority` parameters
 
 TextTools provides several optional flags to customize LLM behavior:
