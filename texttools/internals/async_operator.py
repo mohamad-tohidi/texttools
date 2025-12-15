@@ -2,42 +2,42 @@ from typing import Any, TypeVar, Type
 from collections.abc import Callable
 import logging
 
-from openai import OpenAI
+from openai import AsyncOpenAI
 from pydantic import BaseModel
 
-from texttools.tools.internals.models import ToolOutput
-from texttools.tools.internals.operator_utils import OperatorUtils
-from texttools.tools.internals.formatters import Formatter
-from texttools.tools.internals.prompt_loader import PromptLoader
+from texttools.internals.models import ToolOutput
+from texttools.internals.operator_utils import OperatorUtils
+from texttools.internals.formatters import Formatter
+from texttools.internals.prompt_loader import PromptLoader
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
 
-logger = logging.getLogger("texttools.operator")
+logger = logging.getLogger("texttools.async_operator")
 
 
-class Operator:
+class AsyncOperator:
     """
-    Core engine for running text-processing operations with an LLM (Sync).
+    Core engine for running text-processing operations with an LLM (Async).
 
     It wires together:
     - `PromptLoader` → loads YAML prompt templates.
     - `UserMergeFormatter` → applies formatting to messages (e.g., merging).
-    - OpenAI client → executes completions/parsed completions.
+    - AsyncOpenAI client → executes completions/parsed completions.
     """
 
-    def __init__(self, client: OpenAI, model: str):
+    def __init__(self, client: AsyncOpenAI, model: str):
         self._client = client
         self._model = model
 
-    def _analyze(self, prompt_configs: dict[str, str], temperature: float) -> str:
+    async def _analyze(self, prompt_configs: dict[str, str], temperature: float) -> str:
         """
         Calls OpenAI API for analysis using the configured prompt template.
         Returns the analyzed content as a string.
         """
         analyze_prompt = prompt_configs["analyze_template"]
         analyze_message = [OperatorUtils.build_user_message(analyze_prompt)]
-        completion = self._client.chat.completions.create(
+        completion = await self._client.chat.completions.create(
             model=self._model,
             messages=analyze_message,
             temperature=temperature,
@@ -45,7 +45,7 @@ class Operator:
         analysis = completion.choices[0].message.content.strip()
         return analysis
 
-    def _parse_completion(
+    async def _parse_completion(
         self,
         message: list[dict[str, str]],
         output_model: Type[T],
@@ -68,15 +68,13 @@ class Operator:
         if logprobs:
             request_kwargs["logprobs"] = True
             request_kwargs["top_logprobs"] = top_logprobs
-
         if priority:
             request_kwargs["extra_body"] = {"priority": priority}
-
-        completion = self._client.beta.chat.completions.parse(**request_kwargs)
+        completion = await self._client.beta.chat.completions.parse(**request_kwargs)
         parsed = completion.choices[0].message.parsed
         return parsed, completion
 
-    def run(
+    async def run(
         self,
         # User parameters
         text: str,
@@ -96,11 +94,12 @@ class Operator:
         **extra_kwargs,
     ) -> ToolOutput:
         """
-        Execute the LLM pipeline with the given input text.
+        Execute the async LLM pipeline with the given input text. (Async)
         """
         prompt_loader = PromptLoader()
         formatter = Formatter()
         output = ToolOutput()
+
         try:
             # Prompt configs contain two keys: main_template and analyze template, both are string
             prompt_configs = prompt_loader.load(
@@ -113,7 +112,7 @@ class Operator:
             messages = []
 
             if with_analysis:
-                analysis = self._analyze(prompt_configs, temperature)
+                analysis = await self._analyze(prompt_configs, temperature)
                 messages.append(
                     OperatorUtils.build_user_message(
                         f"Based on this analysis: {analysis}"
@@ -140,7 +139,7 @@ class Operator:
 
             messages = formatter.user_merge_format(messages)
 
-            parsed, completion = self._parse_completion(
+            parsed, completion = await self._parse_completion(
                 messages, output_model, temperature, logprobs, top_logprobs, priority
             )
 
@@ -156,7 +155,7 @@ class Operator:
                     # Generate new temperature for retry
                     retry_temperature = OperatorUtils.get_retry_temp(temperature)
                     try:
-                        parsed, completion = self._parse_completion(
+                        parsed, completion = await self._parse_completion(
                             messages,
                             output_model,
                             retry_temperature,
@@ -196,6 +195,6 @@ class Operator:
             return output
 
         except Exception as e:
-            logger.error(f"TheTool failed: {e}")
+            logger.error(f"AsyncTheTool failed: {e}")
             output.errors.append(str(e))
             return output

@@ -30,7 +30,7 @@ class PromptLoader:
         """
         Loads prompt templates from YAML file with optional mode selection.
         """
-        base_dir = Path(__file__).parent.parent.parent / Path("prompts")
+        base_dir = Path(__file__).parent.parent / Path("prompts")
         prompt_path = base_dir / prompt_file
         data = yaml.safe_load(prompt_path.read_text(encoding="utf-8"))
 

@@ -4,8 +4,8 @@ from collections.abc import Callable
 
 from openai import AsyncOpenAI
 
-from texttools.tools.internals.async_operator import AsyncOperator
-import texttools.tools.internals.models as Models
+from texttools.internals.async_operator import AsyncOperator
+import texttools.internals.models as Models
 
 
 class AsyncTheTool:

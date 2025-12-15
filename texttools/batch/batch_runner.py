@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 from texttools.batch.internals.batch_manager import BatchManager
 from texttools.batch.batch_config import BatchConfig
-from texttools.tools.internals.models import StrOutput
+from texttools.internals.models import StrOutput
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)

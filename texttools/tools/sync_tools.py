@@ -4,8 +4,8 @@ from collections.abc import Callable
 
 from openai import OpenAI
 
-from texttools.tools.internals.sync_operator import Operator
-import texttools.tools.internals.models as Models
+from texttools.internals.sync_operator import Operator
+import texttools.internals.models as Models
 
 
 class TheTool:

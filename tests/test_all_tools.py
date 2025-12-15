@@ -46,7 +46,7 @@ keywords = t.extract_keywords(
 print(repr(keywords))
 
 # NER Extractor
-entities = t.extract_entities("We will be dead by the car crash")
+entities = t.extract_entities("We will be dead by the car crash", with_analysis=True)
 print(repr(entities))
 
 
@@ -85,8 +85,12 @@ translation = t.translate("سلام حالت چطوره؟", target_language="Eng
 print(repr(translation))
 
 # propositionize
-propositionize = t.propositionize("جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.", output_lang="Persian")
+propositionize = t.propositionize(
+    "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.",
+    output_lang="Persian",
+)
 print(repr(propositionize))
+
 
 # Custom tool
 class Student(BaseModel):
