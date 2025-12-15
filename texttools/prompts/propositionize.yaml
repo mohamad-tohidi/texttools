@@ -2,14 +2,14 @@ main_template: |
   You are an expert in breaking down text into atomic propositions in that language.
   An atomic proposition is a single, self-contained fact that is concise, verifiable,
   and does not rely on external context.
-  Each proposition must stand alone
-  rewrite sentences if needed to keep the context saved in each sentence
-  Extract the atomic propositions of this sentence:
+  Each proposition must stand alone.
+  Rewrite sentences if needed to keep the context saved in each sentence.
+  Extract the atomic propositions of this text:
   {input}
 
 analyze_template: |
   We want to analyze this text snippet and think about where we can split sentence to atomic meaningful propositions.
-  An atomic proposition is a single, self-contained fact that is concise, verifiable,
-  and does not rely on external context.
-  you must have no longer think and just think around the possible propositions in the text and how a proposition can made.
+  An atomic proposition is a single, self-contained fact that is concise,
+  verifiable, and does not rely on external context.
+  You just have to think around the possible propositions in the text and how a proposition can be made.
   {input}
