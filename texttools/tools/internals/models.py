@@ -181,6 +181,3 @@ class Entity(BaseModel):
 
 class EntityDetectorOutput(BaseModel):
     result: list[Entity] = Field(description="List of all extracted entities")
-
-class Propositions(BaseModel):
-    result: list[str] = Field(description="List of propositions")

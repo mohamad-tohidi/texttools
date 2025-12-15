@@ -798,7 +798,7 @@ class TheTool:
             priority=priority,
             # Internal parameters
             prompt_file="propositionizer.yaml",
-            output_model=Models.Propositions,
+            output_model=Models.ListStrOutput,
             mode=None,
         )
         end = datetime.now()
