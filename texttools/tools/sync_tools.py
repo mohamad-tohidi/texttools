@@ -60,7 +60,11 @@ class TheTool:
                 - result (str): The assigned category
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
+
         """
         start = datetime.now()
 
@@ -203,6 +207,9 @@ class TheTool:
                 - result (list[str]): List of extracted keywords
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()
@@ -261,6 +268,9 @@ class TheTool:
                 - result (list[dict]): List of entities with 'text' and 'type' keys
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()
@@ -316,6 +326,9 @@ class TheTool:
                 - result (bool): True if text is a question, False otherwise
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()
@@ -373,6 +386,9 @@ class TheTool:
                 - result (str): The generated question
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()
@@ -432,6 +448,9 @@ class TheTool:
                 - result (str): The merged question
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()
@@ -492,6 +511,9 @@ class TheTool:
                 - result (str): The rewritten text
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()
@@ -551,6 +573,9 @@ class TheTool:
                 - result (list[str]): List of generated questions
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()
@@ -609,6 +634,9 @@ class TheTool:
                 - result (str): The summary text
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()
@@ -666,6 +694,9 @@ class TheTool:
                 - result (str): The translated text
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()
@@ -724,6 +755,9 @@ class TheTool:
                 - result (list[Entity]): The entities
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()
@@ -781,6 +815,9 @@ class TheTool:
                 - result (list[str]): The propositions
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()
@@ -835,6 +872,9 @@ class TheTool:
                 - result (str): The translated text
                 - logprobs (list | None): Probability data if logprobs enabled
                 - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
         start = datetime.now()

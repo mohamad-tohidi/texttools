@@ -6,8 +6,8 @@ from pydantic import BaseModel, Field, create_model
 
 class ToolOutput(BaseModel):
     result: Any = None
-    analysis: str = ""
     logprobs: list[dict[str, Any]] = []
+    analysis: str = ""
     process: str = ""
     processed_at: datetime = datetime.now()
     execution_time: float = -1.0
