@@ -4,20 +4,16 @@ main_template: |
   Return True if the statement can be concluded from the source, and False otherwise.
   Respond only in JSON format (Output should be a boolean):
   {{"result": True/False}}
-
   The statement is:
   {input}
-  
   The source text is:
   {source_text}
 
 analyze_template: |
-  Think about how a sentence (as a statement) can be concluded from another sentence (as a source).
-  Do not think deeply about it.
-  bellow i get you a sample to you to use it for your thinking phase.
-
+  You should analyze a statement and a source text and provide a brief,
+  summarized analysis that could help in determining that can the statement
+  be concluded from the source or not.
   The statement is:
   {input}
-  
   The source text is:
   {source_text}
