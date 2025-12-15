@@ -748,7 +748,7 @@ class TheTool:
         output.execution_time = (end - start).total_seconds()
         return output
 
-    def propositioning(
+    def propositionizer(
         self,
         text: str,
         with_analysis: bool = False,
@@ -797,7 +797,7 @@ class TheTool:
             max_validation_retries=max_validation_retries,
             priority=priority,
             # Internal parameters
-            prompt_file="propositioning.yaml",
+            prompt_file="propositionizer.yaml",
             output_model=Models.Propositions,
             mode=None,
         )
