@@ -47,6 +47,7 @@ async def main():
         "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.",
         output_lang="Persian",
     )
+    check_fact_task = t.check_fact(text="امام نهم در ایران به خاک سپرده شد", source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست")
     (
         category,
         keywords,
@@ -59,6 +60,7 @@ async def main():
         summary,
         translation,
         propositionize,
+        check_fact,
     ) = await asyncio.gather(
         category_task,
         keywords_task,
@@ -71,6 +73,7 @@ async def main():
         summary_task,
         translation_task,
         propositionize_task,
+        check_fact_task,
     )
 
     for tool_output in (
@@ -85,6 +88,7 @@ async def main():
         summary,
         translation,
         propositionize,
+        check_fact,
     ):
         print(repr(tool_output))
 
