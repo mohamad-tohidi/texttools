@@ -56,6 +56,7 @@ Each tool is designed to work with structured outputs (JSON / Pydantic).
 - `categorize()` (tree mode)
 - `propositionize()`
 - `run_custom()` (not evaluated in all scenarios)
+- `check_fact()`
 
 ---
 
