@@ -21,7 +21,10 @@ t = AsyncTheTool(client=client, model=MODEL)
 
 async def main():
     category_task = t.categorize(
-        "سلام حالت چطوره؟", categories=["هیچکدام", "دینی", "فلسفه"]
+        "سلام حالت چطوره؟",
+        categories=["هیچکدام", "دینی", "فلسفه"],
+        logprobs=True,
+        top_logprobs=-1,
     )
     keywords_task = t.extract_keywords("Tomorrow, we will be dead by the car crash")
     entities_task = t.extract_entities("We will be dead by the car crash")
@@ -40,7 +43,10 @@ async def main():
     questions_task = t.subject_to_question("Friendship", 3)
     summary_task = t.summarize("Tomorrow, we will be dead by the car crash")
     translation_task = t.translate("سلام حالت چطوره؟", target_language="English")
-    propositionize_task = t.propositionize("جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.", output_lang="Persian")
+    propositionize_task = t.propositionize(
+        "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.",
+        output_lang="Persian",
+    )
     (
         category,
         keywords,

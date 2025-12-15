@@ -19,7 +19,12 @@ client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 t = TheTool(client=client, model=MODEL)
 
 # Categorizer: list mode
-category = t.categorize("سلام حالت چطوره؟", categories=["هیچکدام", "دینی", "فلسفه"])
+category = t.categorize(
+    "سلام حالت چطوره؟",
+    categories=["هیچکدام", "دینی", "فلسفه"],
+    logprobs=True,
+    top_logprobs=-1,
+)
 print(repr(category))
 
 # Categorizer: tree mode

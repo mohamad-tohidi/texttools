@@ -6,17 +6,18 @@ from openai import OpenAI
 
 from texttools.internals.sync_operator import Operator
 import texttools.internals.models as Models
+from texttools.internals.exceptions import (
+    TextToolsError,
+    PromptError,
+    LLMError,
+    ValidationError,
+)
 
 
 class TheTool:
     """
     Each method configures the operator with a specific YAML prompt,
     output schema, and flags, then delegates execution to `operator.run()`.
-
-    Usage:
-        client = OpenAI(...)
-        tool = TheTool(client, model="model-name")
-        result = tool.categorize("text ...", with_analysis=True)
     """
 
     def __init__(
@@ -66,41 +67,97 @@ class TheTool:
                 - errors (list(str) | None): Errors occured during tool call
 
         """
-        start = datetime.now()
+        output = Models.ToolOutput()
 
-        if mode == "category_tree":
-            # Initializations
-            output = Models.ToolOutput()
-            levels = categories.get_level_count()
-            parent_id = 0
-            final_output = []
+        try:
+            start = datetime.now()
 
-            for _ in range(levels):
-                # Get child nodes for current parent
-                parent_node = categories.get_node(parent_id)
-                children = categories.get_children(parent_node)
+            if mode == "category_tree":
+                # Initializations
+                output = Models.ToolOutput()
+                levels = categories.get_level_count()
+                parent_id = 0
+                final_output = []
 
-                # Check if child nodes exist
-                if not children:
-                    output.errors.append(
-                        f"No categories found for parent_id {parent_id} in the tree"
+                for _ in range(levels):
+                    # Get child nodes for current parent
+                    parent_node = categories.get_node(parent_id)
+                    children = categories.get_children(parent_node)
+
+                    # Check if child nodes exist
+                    if not children:
+                        output.errors.append(
+                            f"No categories found for parent_id {parent_id} in the tree"
+                        )
+                        end = datetime.now()
+                        output.execution_time = (end - start).total_seconds()
+                        return output
+
+                    # Extract category names and descriptions
+                    category_list = [
+                        f"Category Name: {node.name}, Description: {node.description}"
+                        for node in children
+                    ]
+                    category_names = [node.name for node in children]
+
+                    # Run categorization for this level
+                    level_output = self._operator.run(
+                        # User parameters
+                        text=text,
+                        category_list=category_list,
+                        with_analysis=with_analysis,
+                        user_prompt=user_prompt,
+                        temperature=temperature,
+                        logprobs=logprobs,
+                        top_logprobs=top_logprobs,
+                        mode=mode,
+                        validator=validator,
+                        max_validation_retries=max_validation_retries,
+                        priority=priority,
+                        # Internal parameters
+                        prompt_file="categorize.yaml",
+                        output_model=Models.create_dynamic_model(category_names),
+                        output_lang=None,
                     )
-                    end = datetime.now()
-                    output.execution_time = (end - start).total_seconds()
-                    return output
 
-                # Extract category names and descriptions
-                category_list = [
-                    f"Category Name: {node.name}, Description: {node.description}"
-                    for node in children
-                ]
-                category_names = [node.name for node in children]
+                    # Check for errors from operator
+                    if level_output.errors:
+                        output.errors.extend(level_output.errors)
+                        end = datetime.now()
+                        output.execution_time = (end - start).total_seconds()
+                        return output
 
-                # Run categorization for this level
-                level_output = self._operator.run(
+                    # Get the chosen category
+                    chosen_category = level_output.result
+
+                    # Find the corresponding node
+                    parent_node = categories.get_node(chosen_category)
+                    if parent_node is None:
+                        output.errors.append(
+                            f"Category '{chosen_category}' not found in tree after selection"
+                        )
+                        end = datetime.now()
+                        output.execution_time = (end - start).total_seconds()
+                        return output
+
+                    parent_id = parent_node.node_id
+                    final_output.append(parent_node.name)
+
+                    # Copy analysis/logprobs/process from the last level's output
+                    output.analysis = level_output.analysis
+                    output.logprobs = level_output.logprobs
+                    output.process = level_output.process
+
+                output.result = final_output
+                end = datetime.now()
+                output.execution_time = (end - start).total_seconds()
+                return output
+
+            else:
+                output = self._operator.run(
                     # User parameters
                     text=text,
-                    category_list=category_list,
+                    category_list=categories,
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,
                     temperature=temperature,
@@ -112,65 +169,25 @@ class TheTool:
                     priority=priority,
                     # Internal parameters
                     prompt_file="categorize.yaml",
-                    output_model=Models.create_dynamic_model(category_names),
+                    output_model=Models.create_dynamic_model(categories),
                     output_lang=None,
                 )
+                end = datetime.now()
+                output.execution_time = (end - start).total_seconds()
+                return output
 
-                # Check for errors from operator
-                if level_output.errors:
-                    output.errors.extend(level_output.errors)
-                    end = datetime.now()
-                    output.execution_time = (end - start).total_seconds()
-                    return output
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
 
-                # Get the chosen category
-                chosen_category = level_output.result
-
-                # Find the corresponding node
-                parent_node = categories.get_node(chosen_category)
-                if parent_node is None:
-                    output.errors.append(
-                        f"Category '{chosen_category}' not found in tree after selection"
-                    )
-                    end = datetime.now()
-                    output.execution_time = (end - start).total_seconds()
-                    return output
-
-                parent_id = parent_node.node_id
-                final_output.append(parent_node.name)
-
-                # Copy analysis/logprobs/process from the last level's output
-                output.analysis = level_output.analysis
-                output.logprobs = level_output.logprobs
-                output.process = level_output.process
-
-            output.result = final_output
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
-
-        else:
-            output = self._operator.run(
-                # User parameters
-                text=text,
-                category_list=categories,
-                with_analysis=with_analysis,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                mode=mode,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                prompt_file="categorize.yaml",
-                output_model=Models.create_dynamic_model(categories),
-                output_lang=None,
-            )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
+        return output
 
     def extract_keywords(
         self,
@@ -212,27 +229,43 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            output_lang=output_lang,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            mode=mode,
-            number_of_keywords=number_of_keywords,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="extract_keywords.yaml",
-            output_model=Models.ListStrOutput,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                output_lang=output_lang,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                mode=mode,
+                number_of_keywords=number_of_keywords,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="extract_keywords.yaml",
+                output_model=Models.ListStrOutput,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def extract_entities(
@@ -273,26 +306,42 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            output_lang=output_lang,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="extract_entities.yaml",
-            output_model=Models.ListDictStrStrOutput,
-            mode=None,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                output_lang=output_lang,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="extract_entities.yaml",
+                output_model=Models.ListDictStrStrOutput,
+                mode=None,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def is_question(
@@ -331,26 +380,42 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="is_question.yaml",
-            output_model=Models.BoolOutput,
-            mode=None,
-            output_lang=None,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="is_question.yaml",
+                output_model=Models.BoolOutput,
+                mode=None,
+                output_lang=None,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def text_to_question(
@@ -391,26 +456,42 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            output_lang=output_lang,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="text_to_question.yaml",
-            output_model=Models.StrOutput,
-            mode=None,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                output_lang=output_lang,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="text_to_question.yaml",
+                output_model=Models.StrOutput,
+                mode=None,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def merge_questions(
@@ -453,27 +534,43 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        text = ", ".join(text)
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            output_lang=output_lang,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="merge_questions.yaml",
-            output_model=Models.StrOutput,
-            mode=mode,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            text = ", ".join(text)
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                output_lang=output_lang,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="merge_questions.yaml",
+                output_model=Models.StrOutput,
+                mode=mode,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def rewrite(
@@ -516,26 +613,42 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            output_lang=output_lang,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="rewrite.yaml",
-            output_model=Models.StrOutput,
-            mode=mode,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                output_lang=output_lang,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="rewrite.yaml",
+                output_model=Models.StrOutput,
+                mode=mode,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def subject_to_question(
@@ -578,27 +691,43 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            number_of_questions=number_of_questions,
-            with_analysis=with_analysis,
-            output_lang=output_lang,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="subject_to_question.yaml",
-            output_model=Models.ReasonListStrOutput,
-            mode=None,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                number_of_questions=number_of_questions,
+                with_analysis=with_analysis,
+                output_lang=output_lang,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="subject_to_question.yaml",
+                output_model=Models.ReasonListStrOutput,
+                mode=None,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def summarize(
@@ -639,26 +768,42 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            output_lang=output_lang,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="summarize.yaml",
-            output_model=Models.StrOutput,
-            mode=None,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                output_lang=output_lang,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="summarize.yaml",
+                output_model=Models.StrOutput,
+                mode=None,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def translate(
@@ -699,27 +844,43 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            target_language=target_language,
-            with_analysis=with_analysis,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="translate.yaml",
-            output_model=Models.StrOutput,
-            mode=None,
-            output_lang=None,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                target_language=target_language,
+                with_analysis=with_analysis,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="translate.yaml",
+                output_model=Models.StrOutput,
+                mode=None,
+                output_lang=None,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def detect_entity(
@@ -760,26 +921,42 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            output_lang=output_lang,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="detect_entity.yaml",
-            output_model=Models.EntityDetectorOutput,
-            mode=None,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                output_lang=output_lang,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="detect_entity.yaml",
+                output_model=Models.EntityDetectorOutput,
+                mode=None,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def propositionize(
@@ -820,26 +997,42 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            output_lang=output_lang,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="propositionize.yaml",
-            output_model=Models.ListStrOutput,
-            mode=None,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                output_lang=output_lang,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="propositionize.yaml",
+                output_model=Models.ListStrOutput,
+                mode=None,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def run_custom(
@@ -877,25 +1070,41 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User paramaeters
-            text=prompt,
-            output_model=output_model,
-            output_model_str=output_model.model_json_schema(),
-            output_lang=output_lang,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="run_custom.yaml",
-            user_prompt=None,
-            with_analysis=False,
-            mode=None,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User paramaeters
+                text=prompt,
+                output_model=output_model,
+                output_model_str=output_model.model_json_schema(),
+                output_lang=output_lang,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="run_custom.yaml",
+                user_prompt=None,
+                with_analysis=False,
+                mode=None,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output

@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from texttools.batch.internals.batch_manager import BatchManager
 from texttools.batch.batch_config import BatchConfig
 from texttools.internals.models import StrOutput
+from texttools.internals.exceptions import TextToolsError, ConfigurationError
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
@@ -27,22 +28,26 @@ class BatchJobRunner:
     def __init__(
         self, config: BatchConfig = BatchConfig(), output_model: Type[T] = StrOutput
     ):
-        self._config = config
-        self._system_prompt = config.system_prompt
-        self._job_name = config.job_name
-        self._input_data_path = config.input_data_path
-        self._output_data_filename = config.output_data_filename
-        self._model = config.model
-        self._output_model = output_model
-        self._manager = self._init_manager()
-        self._data = self._load_data()
-        self._parts: list[list[dict[str, Any]]] = []
-        # Map part index to job name
-        self._part_idx_to_job_name: dict[int, str] = {}
-        # Track retry attempts per part
-        self._part_attempts: dict[int, int] = {}
-        self._partition_data()
-        Path(self._config.BASE_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
+        try:
+            self._config = config
+            self._system_prompt = config.system_prompt
+            self._job_name = config.job_name
+            self._input_data_path = config.input_data_path
+            self._output_data_filename = config.output_data_filename
+            self._model = config.model
+            self._output_model = output_model
+            self._manager = self._init_manager()
+            self._data = self._load_data()
+            self._parts: list[list[dict[str, Any]]] = []
+            # Map part index to job name
+            self._part_idx_to_job_name: dict[int, str] = {}
+            # Track retry attempts per part
+            self._part_attempts: dict[int, int] = {}
+            self._partition_data()
+            Path(self._config.BASE_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
+
+        except Exception as e:
+            raise ConfigurationError(f"Batch runner initialization failed: {e}")
 
     def _init_manager(self) -> BatchManager:
         load_dotenv()
@@ -162,56 +167,62 @@ class BatchJobRunner:
 
         Submits jobs, monitors progress, handles retries, and saves results.
         """
-        # Submit all jobs up-front for concurrent execution
-        self._submit_all_jobs()
-        pending_parts: set[int] = set(self._part_idx_to_job_name.keys())
-        logger.info(f"Pending parts: {sorted(pending_parts)}")
-        # Polling loop
-        while pending_parts:
-            finished_this_round: list[int] = []
-            for part_idx in list(pending_parts):
-                job_name = self._part_idx_to_job_name[part_idx]
-                status = self._manager.check_status(job_name=job_name)
-                logger.info(f"Status for {job_name}: {status}")
-                if status == "completed":
-                    logger.info(
-                        f"Job completed. Fetching results for part {part_idx + 1}..."
-                    )
-                    output_data, log = self._manager.fetch_results(
-                        job_name=job_name, remove_cache=False
-                    )
-                    output_data = self._config.import_function(output_data)
-                    self._save_results(output_data, log, part_idx)
-                    logger.info(f"Fetched and saved results for part {part_idx + 1}.")
-                    finished_this_round.append(part_idx)
-                elif status == "failed":
-                    attempt = self._part_attempts.get(part_idx, 0) + 1
-                    self._part_attempts[part_idx] = attempt
-                    if attempt <= self._config.max_retries:
+        try:
+            # Submit all jobs up-front for concurrent execution
+            self._submit_all_jobs()
+            pending_parts: set[int] = set(self._part_idx_to_job_name.keys())
+            logger.info(f"Pending parts: {sorted(pending_parts)}")
+            # Polling loop
+            while pending_parts:
+                finished_this_round: list[int] = []
+                for part_idx in list(pending_parts):
+                    job_name = self._part_idx_to_job_name[part_idx]
+                    status = self._manager.check_status(job_name=job_name)
+                    logger.info(f"Status for {job_name}: {status}")
+                    if status == "completed":
                         logger.info(
-                            f"Job {job_name} failed (attempt {attempt}). Retrying after short backoff..."
+                            f"Job completed. Fetching results for part {part_idx + 1}..."
                         )
-                        self._manager._clear_state(job_name)
-                        time.sleep(10)
-                        payload = self._to_manager_payload(self._parts[part_idx])
-                        new_job_name = (
-                            f"{self._job_name}_part_{part_idx + 1}_retry_{attempt}"
+                        output_data, log = self._manager.fetch_results(
+                            job_name=job_name, remove_cache=False
                         )
-                        self._manager.start(payload, job_name=new_job_name)
-                        self._part_idx_to_job_name[part_idx] = new_job_name
-                    else:
+                        output_data = self._config.import_function(output_data)
+                        self._save_results(output_data, log, part_idx)
                         logger.info(
-                            f"Job {job_name} failed after {attempt - 1} retries. Marking as failed."
+                            f"Fetched and saved results for part {part_idx + 1}."
                         )
                         finished_this_round.append(part_idx)
-                else:
-                    # Still running or queued
-                    continue
-            # Remove finished parts
-            for part_idx in finished_this_round:
-                pending_parts.discard(part_idx)
-            if pending_parts:
-                logger.info(
-                    f"Waiting {self._config.poll_interval_seconds}s before next status check for parts: {sorted(pending_parts)}"
-                )
-                time.sleep(self._config.poll_interval_seconds)
+                    elif status == "failed":
+                        attempt = self._part_attempts.get(part_idx, 0) + 1
+                        self._part_attempts[part_idx] = attempt
+                        if attempt <= self._config.max_retries:
+                            logger.info(
+                                f"Job {job_name} failed (attempt {attempt}). Retrying after short backoff..."
+                            )
+                            self._manager._clear_state(job_name)
+                            time.sleep(10)
+                            payload = self._to_manager_payload(self._parts[part_idx])
+                            new_job_name = (
+                                f"{self._job_name}_part_{part_idx + 1}_retry_{attempt}"
+                            )
+                            self._manager.start(payload, job_name=new_job_name)
+                            self._part_idx_to_job_name[part_idx] = new_job_name
+                        else:
+                            logger.info(
+                                f"Job {job_name} failed after {attempt - 1} retries. Marking as failed."
+                            )
+                            finished_this_round.append(part_idx)
+                    else:
+                        # Still running or queued
+                        continue
+                # Remove finished parts
+                for part_idx in finished_this_round:
+                    pending_parts.discard(part_idx)
+                if pending_parts:
+                    logger.info(
+                        f"Waiting {self._config.poll_interval_seconds}s before next status check for parts: {sorted(pending_parts)}"
+                    )
+                    time.sleep(self._config.poll_interval_seconds)
+
+        except Exception as e:
+            raise TextToolsError(f"Batch job execution failed: {e}")
