@@ -8,7 +8,8 @@ main_template: |
   {input}
 
 analyze_template: |
-  Output only the propositions list.
-  Don't proposition proper sentences, only proposition the sentences that have relation to other sentences
-  Proposition the following text:
+  We want to analyze this text snippet and think about where we can split sentence to atomic meaningful propositions.
+  An atomic proposition is a single, self-contained fact that is concise, verifiable,
+  and does not rely on external context.
+  you must have no longer think and just think around the possible propositions in the text and how a proposition can made.
   {input}
