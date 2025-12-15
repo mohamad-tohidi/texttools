@@ -40,6 +40,7 @@ async def main():
     questions_task = t.subject_to_question("Friendship", 3)
     summary_task = t.summarize("Tomorrow, we will be dead by the car crash")
     translation_task = t.translate("سلام حالت چطوره؟", target_language="English")
+    propositionize_task = t.propositionize("جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.", output_lang="Persian")
     (
         category,
         keywords,
@@ -51,6 +52,7 @@ async def main():
         questions,
         summary,
         translation,
+        propositionize,
     ) = await asyncio.gather(
         category_task,
         keywords_task,
@@ -62,6 +64,7 @@ async def main():
         questions_task,
         summary_task,
         translation_task,
+        propositionize_task,
     )
 
     for tool_output in (
@@ -75,6 +78,7 @@ async def main():
         questions,
         summary,
         translation,
+        propositionize,
     ):
         print(repr(tool_output))
 
