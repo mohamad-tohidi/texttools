@@ -26,7 +26,7 @@ Each tool is designed to work with structured outputs (JSON / Pydantic).
 - **`summarize()`** - Text summarization
 - **`translate()`** - Text translation between languages
 - **`propositionize()`** - Convert text to atomic independence meaningful sentences 
-- **`fact_check()`** - Check a statement is relevant to source text or not 
+- **`check_fact()`** - Check a statement is relevant to source text or not 
 - **`run_custom()`** - Allows users to define a custom tool with an arbitrary BaseModel
 
 ---

@@ -1035,7 +1035,7 @@ class TheTool:
 
         return output
 
-    def fact_check(
+    def check_fact(
         self,
         text: str,
         source_text: str,
@@ -1089,7 +1089,7 @@ class TheTool:
             max_validation_retries=max_validation_retries,
             priority=priority,
             # Internal parameters
-            prompt_file="fact_check.yaml",
+            prompt_file="check_fact.yaml",
             output_model=Models.BoolOutput,
             mode=None,
             source_text=source_text,
