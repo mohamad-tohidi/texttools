@@ -748,7 +748,7 @@ class AsyncTheTool:
         output.execution_time = (end - start).total_seconds()
         return output
 
-    async def propositionizer(
+    async def propositionize(
         self,
         text: str,
         with_analysis: bool = False,
@@ -797,7 +797,7 @@ class AsyncTheTool:
             max_validation_retries=max_validation_retries,
             priority=priority,
             # Internal parameters
-            prompt_file="propositionizer.yaml",
+            prompt_file="propositionize.yaml",
             output_model=Models.ListStrOutput,
             mode=None,
         )
