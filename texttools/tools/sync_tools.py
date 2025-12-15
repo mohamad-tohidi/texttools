@@ -73,8 +73,8 @@ class TheTool:
 
             for _ in range(levels):
                 # Get child nodes for current parent
-                parent_node = categories.find_node(parent_id)
-                children = categories.find_children(parent_node)
+                parent_node = categories.get_node(parent_id)
+                children = categories.get_children(parent_node)
 
                 # Check if child nodes exist
                 if not children:
@@ -123,7 +123,7 @@ class TheTool:
                 chosen_category = level_output.result
 
                 # Find the corresponding node
-                parent_node = categories.find_node(chosen_category)
+                parent_node = categories.get_node(chosen_category)
                 if parent_node is None:
                     output.errors.append(
                         f"Category '{chosen_category}' not found in tree after selection"
