@@ -1075,27 +1075,42 @@ class TheTool:
                 - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
                 - errors (list(str) | None): Errors occured during tool call
         """
-        start = datetime.now()
-        output = self._operator.run(
-            # User parameters
-            text=text,
-            with_analysis=with_analysis,
-            output_lang=output_lang,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            logprobs=logprobs,
-            top_logprobs=top_logprobs,
-            validator=validator,
-            max_validation_retries=max_validation_retries,
-            priority=priority,
-            # Internal parameters
-            prompt_file="check_fact.yaml",
-            output_model=Models.BoolOutput,
-            mode=None,
-            source_text=source_text,
-        )
-        end = datetime.now()
-        output.execution_time = (end - start).total_seconds()
+        output = Models.ToolOutput()
+        try:
+            start = datetime.now()
+            output = self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                output_lang=output_lang,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="check_fact.yaml",
+                output_model=Models.BoolOutput,
+                mode=None,
+                source_text=source_text,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
         return output
 
     def run_custom(
