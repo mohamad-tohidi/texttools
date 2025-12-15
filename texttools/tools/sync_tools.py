@@ -44,6 +44,8 @@ class TheTool:
         """
         Categorize a text into a category / category tree.
 
+        Important Note: category_tree mode is EXPERIMENTAL, you can use it but it isn't reliable.
+
         Arguments:
             text: The input text to categorize
             categories: The category / category_tree to give to LLM
@@ -822,6 +824,8 @@ class TheTool:
         """
         Translate text between languages.
 
+        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
+
         Arguments:
             text: The input text to translate
             target_language: The target language for translation
@@ -899,6 +903,8 @@ class TheTool:
         """
         Detects entities in a given text based on the entity_detector.yaml prompt.
 
+        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
+
         Arguments:
             text: The input text
             with_analysis: Whether to include detailed reasoning analysis
@@ -975,6 +981,8 @@ class TheTool:
         """
         Proposition input text to meaningful sentences.
 
+        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
+
         Arguments:
             text: The input text
             with_analysis: Whether to include detailed reasoning analysis
@@ -1050,7 +1058,9 @@ class TheTool:
         priority: int | None = 0,
     ) -> Models.ToolOutput:
         """
-        Check a statement is relevant to source text or not
+        Checks wheather a statement is relevant to the source text or not.
+
+        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
 
         Arguments:
             text: The input text
@@ -1127,6 +1137,8 @@ class TheTool:
     ) -> Models.ToolOutput:
         """
         Custom tool that can do almost anything!
+
+        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
 
         Arguments:
             text: The user prompt

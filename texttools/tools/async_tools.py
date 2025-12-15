@@ -44,6 +44,8 @@ class AsyncTheTool:
         """
         Categorize a text into a category / category tree.
 
+        Important Note: category_tree mode is EXPERIMENTAL, you can use it but it isn't reliable.
+
         Arguments:
             text: The input text to categorize
             categories: The category / category_tree to give to LLM
@@ -822,6 +824,8 @@ class AsyncTheTool:
         """
         Translate text between languages.
 
+        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
+
         Arguments:
             text: The input text to translate
             target_language: The target language for translation
@@ -899,6 +903,8 @@ class AsyncTheTool:
         """
         Detects entities in a given text based on the entity_detector.yaml prompt.
 
+        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
+
         Arguments:
             text: The input text
             with_analysis: Whether to include detailed reasoning analysis
@@ -975,6 +981,8 @@ class AsyncTheTool:
         """
         Proposition input text to meaningful sentences.
 
+        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
+
         Arguments:
             text: The input text
             with_analysis: Whether to include detailed reasoning analysis
@@ -1050,7 +1058,9 @@ class AsyncTheTool:
         priority: int | None = 0,
     ) -> Models.ToolOutput:
         """
-        Check a statement is relevant to source text or not
+        Checks wheather a statement is relevant to the source text or not.
+
+        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
 
         Arguments:
             text: The input text
@@ -1112,6 +1122,7 @@ class AsyncTheTool:
             output.errors.append(f"Unexpected error: {e}")
 
         return output
+
     async def run_custom(
         self,
         prompt: str,
@@ -1126,6 +1137,8 @@ class AsyncTheTool:
     ) -> Models.ToolOutput:
         """
         Custom tool that can do almost anything!
+
+        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
 
         Arguments:
             text: The user prompt

@@ -44,19 +44,19 @@ Each tool is designed to work with structured outputs (JSON / Pydantic).
 - `extract_keywords()`
 - `extract_entities()`
 - `is_question()`
-- `text_to_question()`*
+- `text_to_question()`
 - `merge_questions()`
 - `rewrite()`
 - `subject_to_question()`
 - `summarize()`
-- `translate()`
 - `run_custom()` (fine in most cases)
 
 **Experimental Tools:**
 - `categorize()` (tree mode)
+- `translate()`
 - `propositionize()`
-- `run_custom()` (not evaluated in all scenarios)
 - `check_fact()`
+- `run_custom()` (not evaluated in all scenarios)
 
 ---
 
