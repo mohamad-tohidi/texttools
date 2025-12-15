@@ -1,13 +1,14 @@
 main_template: |
-  You are an expert in checking whether a statement is relevant to the source text.
-  you must return a boolean that show true if statement related to source text and else return false
-
-  statement is:
+  You are an expert in determining whether a statement is relevant to the source text or not.
+  You must return a boolean value: True or False.
+  Return True if the statement is related to the source text, and False otherwise.
+  
+  The statement is:
   {input}
   
-  source text is: 
+  The source text is:
   {source_text}
 
 analyze_template: |
-  think about how a sentence (as statement) can be related to another sentence (as source)
-  do not deep thinking about it
+  Think about how a sentence (as a statement) can be related to another sentence (as a source).
+  Do not think deeply about it.
