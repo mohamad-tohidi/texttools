@@ -88,6 +88,10 @@ print(repr(translation))
 propositionize = t.propositionize("جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.", output_lang="Persian")
 print(repr(propositionize))
 
+# fact_check
+fact_check = t.fact_check(text="امام نهم در ایران به خاک سپرده شد", source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست")
+print(repr(fact_check))
+
 # Custom tool
 class Student(BaseModel):
     result: list[dict[str, str]]

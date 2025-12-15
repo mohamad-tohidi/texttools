@@ -41,6 +41,7 @@ async def main():
     summary_task = t.summarize("Tomorrow, we will be dead by the car crash")
     translation_task = t.translate("سلام حالت چطوره؟", target_language="English")
     propositionize_task = t.propositionize("جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.", output_lang="Persian")
+    fact_check_task = t.fact_check(text="امام نهم در ایران به خاک سپرده شد", source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست")
     (
         category,
         keywords,
@@ -53,6 +54,7 @@ async def main():
         summary,
         translation,
         propositionize,
+        fact_check,
     ) = await asyncio.gather(
         category_task,
         keywords_task,
@@ -65,6 +67,7 @@ async def main():
         summary_task,
         translation_task,
         propositionize_task,
+        fact_check_task,
     )
 
     for tool_output in (
@@ -79,6 +82,7 @@ async def main():
         summary,
         translation,
         propositionize,
+        fact_check,
     ):
         print(repr(tool_output))
 

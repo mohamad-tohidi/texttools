@@ -841,6 +841,69 @@ class AsyncTheTool:
         output.execution_time = (end - start).total_seconds()
         return output
 
+    async def fact_check(
+        self,
+        text: str,
+        source_text: str,
+        with_analysis: bool = False,
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
+        logprobs: bool = False,
+        top_logprobs: int | None = None,
+        validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int | None = None,
+        priority: int | None = 0,
+    ) -> Models.ToolOutput:
+        """
+        Check a statement is relevant to source text or not
+
+        Arguments:
+            text: The input text
+            source_text: the source text that we want to check relation of text to it
+            with_analysis: Whether to include detailed reasoning analysis
+            output_lang: Language for the output summary
+            user_prompt: Additional instructions for summarization
+            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            logprobs: Whether to return token probability information
+            top_logprobs: Number of top token alternatives to return if logprobs enabled
+            validator: Custom validation function to validate the output
+            max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
+
+        Returns:
+            ToolOutput: Object containing:
+                - result (bool): statement is relevant to source text or not
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
+                - errors (list(str) | None): Errors occured during tool call
+        """
+        start = datetime.now()
+        output = await self._operator.run(
+            # User parameters
+            text=text,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            # Internal parameters
+            prompt_file="fact_check.yaml",
+            output_model=Models.BoolOutput,
+            mode=None,
+            source_text=source_text,
+        )
+        end = datetime.now()
+        output.execution_time = (end - start).total_seconds()
+        return output
+
     async def run_custom(
         self,
         prompt: str,
