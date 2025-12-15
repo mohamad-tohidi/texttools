@@ -2,6 +2,8 @@ from functools import lru_cache
 from pathlib import Path
 import yaml
 
+from texttools.tools.internals.exceptions import PromptError
+
 
 class PromptLoader:
     """
@@ -30,27 +32,49 @@ class PromptLoader:
         """
         Loads prompt templates from YAML file with optional mode selection.
         """
-        base_dir = Path(__file__).parent.parent.parent / Path("prompts")
-        prompt_path = base_dir / prompt_file
-        data = yaml.safe_load(prompt_path.read_text(encoding="utf-8"))
+        try:
+            base_dir = Path(__file__).parent.parent.parent / Path("prompts")
+            prompt_path = base_dir / prompt_file
 
-        return {
-            self.MAIN_TEMPLATE: data[self.MAIN_TEMPLATE][mode]
-            if mode
-            else data[self.MAIN_TEMPLATE],
-            self.ANALYZE_TEMPLATE: data.get(self.ANALYZE_TEMPLATE)[mode]
-            if mode
-            else data.get(self.ANALYZE_TEMPLATE),
-        }
+            if not prompt_path.exists():
+                raise PromptError(f"Prompt file not found: {prompt_file}")
+
+            data = yaml.safe_load(prompt_path.read_text(encoding="utf-8"))
+
+            if self.MAIN_TEMPLATE not in data:
+                raise PromptError(f"Missing 'main_template' in {prompt_file}")
+
+            if mode and mode not in data.get(self.MAIN_TEMPLATE, {}):
+                raise PromptError(f"Mode '{mode}' not found in {prompt_file}")
+
+            return {
+                self.MAIN_TEMPLATE: data[self.MAIN_TEMPLATE][mode]
+                if mode and isinstance(data[self.MAIN_TEMPLATE], dict)
+                else data[self.MAIN_TEMPLATE],
+                self.ANALYZE_TEMPLATE: data.get(self.ANALYZE_TEMPLATE, {}).get(mode)
+                if mode and isinstance(data.get(self.ANALYZE_TEMPLATE), dict)
+                else data.get(self.ANALYZE_TEMPLATE, ""),
+            }
+
+        except yaml.YAMLError as e:
+            raise PromptError(f"Invalid YAML in {prompt_file}: {e}")
+        except Exception as e:
+            raise PromptError(f"Failed to load prompt {prompt_file}: {e}")
 
     def load(
         self, prompt_file: str, text: str, mode: str, **extra_kwargs
     ) -> dict[str, str]:
-        template_configs = self._load_templates(prompt_file, mode)
-        format_args = self._build_format_args(text, **extra_kwargs)
+        try:
+            template_configs = self._load_templates(prompt_file, mode)
+            format_args = self._build_format_args(text, **extra_kwargs)
 
-        # Inject variables inside each template
-        for key in template_configs.keys():
-            template_configs[key] = template_configs[key].format(**format_args)
+            # Inject variables inside each template
+            for key in template_configs.keys():
+                template_configs[key] = template_configs[key].format(**format_args)
 
-        return template_configs
+            return template_configs
+
+        except KeyError as e:
+            raise PromptError(f"Missing template variable: {e}")
+        except Exception as e:
+            raise PromptError(f"Failed to format prompt: {e}")
