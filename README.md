@@ -64,21 +64,21 @@ Each tool is designed to work with structured outputs (JSON / Pydantic).
 
 TextTools provides several optional flags to customize LLM behavior:
 
-- **`with_analysis (bool)`** → Adds a reasoning step before generating the final output.
+- **`with_analysis: bool`** → Adds a reasoning step before generating the final output.
 **Note:** This doubles token usage per call because it triggers an additional LLM request.
 
-- **`logprobs (bool)`** → Returns token-level probabilities for the generated output. You can also specify `top_logprobs=<N>` to get the top N alternative tokens and their probabilities.  
+- **`logprobs: bool`** → Returns token-level probabilities for the generated output. You can also specify `top_logprobs=<N>` to get the top N alternative tokens and their probabilities.  
 **Note:** This feature works if it's supported by the model.
 
-- **`output_lang (str)`** → Forces the model to respond in a specific language. The model will ignore other instructions about language and respond strictly in the requested language.
+- **`output_lang: str`** → Forces the model to respond in a specific language. The model will ignore other instructions about language and respond strictly in the requested language.
 
-- **`user_prompt (str)`** → Allows you to inject a custom instruction or prompt into the model alongside the main template. This gives you fine-grained control over how the model interprets or modifies the input text.
+- **`user_prompt: str`** → Allows you to inject a custom instruction or prompt into the model alongside the main template. This gives you fine-grained control over how the model interprets or modifies the input text.
 
-- **`temperature (float)`** → Determines how creative the model should respond. Takes a float number from `0.0` to `2.0`.
+- **`temperature: float`** → Determines how creative the model should respond. Takes a float number from `0.0` to `2.0`.
 
-- **`validator (Callable)`** → Forces TheTool to validate the output result based on your custom validator. Validator should return a bool (True if there were no problem, False if the validation fails.) If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can specify `max_validation_retries=<N>` to change the number of retries.
+- **`validator: Callable (Experimental)`** → Forces TheTool to validate the output result based on your custom validator. Validator should return a bool (True if there were no problem, False if the validation fails.) If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can specify `max_validation_retries=<N>` to change the number of retries.
 
-- **`priority (int)`** → Task execution priority level. Higher values = higher priority. Affects processing order in queues.
+- **`priority: int (Experimental)`** → Task execution priority level. Higher values = higher priority. Affects processing order in queues.
 **Note:** This feature works if it's supported by the model and vLLM.
 
 **Note:** There might be some tools that don't support some of the parameters above.
