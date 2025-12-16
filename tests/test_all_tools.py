@@ -60,7 +60,7 @@ detection = t.is_question("We will be dead by the car crash")
 print(repr(detection))
 
 # Question from Text Generator
-question = t.text_to_question("We will be dead by the car crash")
+question = t.text_to_question("We will be dead by the car crash", 2)
 print(repr(question))
 
 # Question Merger
@@ -77,7 +77,7 @@ rewritten = t.rewrite(
 )
 print(repr(rewritten))
 
-# Question Generator from Subject
+# Question from Subject Generator
 questions = t.subject_to_question("Friendship", 3)
 print(repr(questions))
 
@@ -89,14 +89,14 @@ print(repr(summary))
 translation = t.translate("سلام حالت چطوره؟", target_language="English")
 print(repr(translation))
 
-# propositionize
+# Propositionizer
 propositionize = t.propositionize(
     "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.",
     output_lang="Persian",
 )
 print(repr(propositionize))
 
-# check_fact
+# Check Fact
 check_fact = t.check_fact(
     text="امام نهم در ایران به خاک سپرده شد",
     source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست",
@@ -104,7 +104,7 @@ check_fact = t.check_fact(
 print(repr(check_fact))
 
 
-# Custom tool
+# Run Custom
 class Student(BaseModel):
     result: list[dict[str, str]]
 

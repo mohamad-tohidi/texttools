@@ -423,6 +423,7 @@ class TheTool:
     def text_to_question(
         self,
         text: str,
+        number_of_questions: int,
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
@@ -438,6 +439,7 @@ class TheTool:
 
         Arguments:
             text: The input text to generate a question from
+            number_of_questions: Number of questions to generate
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output question
             user_prompt: Additional instructions for question generation
@@ -465,6 +467,7 @@ class TheTool:
             output = self._operator.run(
                 # User parameters
                 text=text,
+                number_of_questions=number_of_questions,
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -476,7 +479,7 @@ class TheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="text_to_question.yaml",
-                output_model=Models.StrOutput,
+                output_model=Models.ReasonListStrOutput,
                 mode=None,
             )
             end = datetime.now()
