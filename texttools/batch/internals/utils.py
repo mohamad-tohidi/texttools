@@ -1,6 +1,3 @@
-from typing import Any
-
-
 def export_data(data) -> list[dict[str, str]]:
     """
     Produces a structure of the following form from an initial data structure:
@@ -9,7 +6,7 @@ def export_data(data) -> list[dict[str, str]]:
     return data
 
 
-def import_data(data) -> Any:
+def import_data(data) -> object:
     """
     Takes the output and adds and aggregates it to the original structure.
     """

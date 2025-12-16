@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal, Any
+from typing import Literal
 from collections.abc import Callable
 
 from openai import OpenAI
@@ -38,7 +38,7 @@ class TheTool:
         logprobs: bool = False,
         top_logprobs: int = 3,
         mode: Literal["category_list", "category_tree"] = "category_list",
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -209,7 +209,7 @@ class TheTool:
         top_logprobs: int = 3,
         mode: Literal["auto", "threshold", "count"] = "auto",
         number_of_keywords: int | None = None,
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -287,7 +287,7 @@ class TheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -365,7 +365,7 @@ class TheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -441,7 +441,7 @@ class TheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -520,7 +520,7 @@ class TheTool:
         logprobs: bool = False,
         top_logprobs: int = 3,
         mode: Literal["default", "reason"] = "default",
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -599,7 +599,7 @@ class TheTool:
         logprobs: bool = False,
         top_logprobs: int = 3,
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -677,7 +677,7 @@ class TheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -755,7 +755,7 @@ class TheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -832,7 +832,7 @@ class TheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -966,7 +966,7 @@ class TheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -1045,7 +1045,7 @@ class TheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:
@@ -1118,14 +1118,14 @@ class TheTool:
     def run_custom(
         self,
         prompt: str,
-        output_model: Any,
+        output_model: object,
         with_analysis: bool = False,
         analyze_template: str | None = None,
         output_lang: str | None = None,
         temperature: float | None = None,
         logprobs: bool | None = None,
         top_logprobs: int = 3,
-        validator: Callable[[Any], bool] | None = None,
+        validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
     ) -> Models.ToolOutput:

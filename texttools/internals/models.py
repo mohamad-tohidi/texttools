@@ -1,12 +1,12 @@
 from datetime import datetime
-from typing import Type, Any, Literal
+from typing import Type, Literal
 
 from pydantic import BaseModel, Field, create_model
 
 
 class ToolOutput(BaseModel):
-    result: Any = None
-    logprobs: list[dict[str, Any]] = []
+    result: object = None
+    logprobs: list[dict[str, object]] = []
     analysis: str = ""
     process: str | None = None
     processed_at: datetime = datetime.now()
