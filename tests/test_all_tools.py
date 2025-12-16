@@ -51,7 +51,7 @@ keywords = t.extract_keywords(
 print(repr(keywords))
 
 # NER Extractor
-entities = t.extract_entities("We will be dead by the car crash", with_analysis=True)
+entities = t.extract_entities("Ali will be dead by the car crash", entities=["EVENT"])
 print(repr(entities))
 
 

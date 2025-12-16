@@ -273,6 +273,7 @@ class AsyncTheTool:
     async def extract_entities(
         self,
         text: str,
+        entities: list[str] | None = None,
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
@@ -288,6 +289,7 @@ class AsyncTheTool:
 
         Arguments:
             text: The input text to extract entities from
+            entities: List of entities provided by user (Optional)
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output response
             user_prompt: Additional instructions for entity extraction
@@ -315,6 +317,8 @@ class AsyncTheTool:
             output = await self._operator.run(
                 # User parameters
                 text=text,
+                entities=entities
+                or "all named entities (e.g., PER, ORG, LOC, DAT, etc.)",
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,

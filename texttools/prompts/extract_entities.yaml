@@ -1,6 +1,6 @@
 main_template: |
   You are a Named Entity Recognition (NER) extractor.
-  Identify and extract all named entities (e.g., PER, ORG, LOC, DAT, etc.) from the given text.
+  Identify and extract {entities} from the given text.
   For each entity, provide its text and a clear type.
   Respond only in JSON format:
   {{
