@@ -24,12 +24,11 @@ async def main():
         "سلام حالت چطوره؟",
         categories=["هیچکدام", "دینی", "فلسفه"],
         logprobs=True,
-        top_logprobs=-1,
     )
     keywords_task = t.extract_keywords("Tomorrow, we will be dead by the car crash")
     entities_task = t.extract_entities("We will be dead by the car crash")
     detection_task = t.is_question("We will be dead by the car crash")
-    question_task = t.text_to_question("We will be dead by the car crash")
+    question_task = t.text_to_question("We will be dead by the car crash", 2)
     merged_task = t.merge_questions(
         ["چرا ما موجوداتی اجتماعی هستیم؟", "چرا باید در کنار هم زندگی کنیم؟"],
         mode="default",
@@ -47,7 +46,10 @@ async def main():
         "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.",
         output_lang="Persian",
     )
-    check_fact_task = t.check_fact(text="امام نهم در ایران به خاک سپرده شد", source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست")
+    check_fact_task = t.check_fact(
+        text="امام نهم در ایران به خاک سپرده شد",
+        source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست",
+    )
     (
         category,
         keywords,

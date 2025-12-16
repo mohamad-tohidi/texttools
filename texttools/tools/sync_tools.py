@@ -12,6 +12,7 @@ from texttools.internals.exceptions import (
     LLMError,
     ValidationError,
 )
+from texttools.internals.text_to_chunks import text_to_chunks
 
 
 class TheTool:
@@ -35,7 +36,7 @@ class TheTool:
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         mode: Literal["category_list", "category_tree"] = "category_list",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
@@ -75,11 +76,11 @@ class TheTool:
             start = datetime.now()
 
             if mode == "category_tree":
-                # Initializations
-                output = Models.ToolOutput()
                 levels = categories.get_level_count()
                 parent_id = 0
-                final_output = []
+                final_categories = []
+                analysis = ""
+                logprobs = []
 
                 for _ in range(levels):
                     # Get child nodes for current parent
@@ -102,7 +103,7 @@ class TheTool:
                     ]
                     category_names = [node.name for node in children]
 
-                    # Run categorization for this level
+                    # Run categorization for current level
                     level_output = self._operator.run(
                         # User parameters
                         text=text,
@@ -143,16 +144,22 @@ class TheTool:
                         return output
 
                     parent_id = parent_node.node_id
-                    final_output.append(parent_node.name)
+                    final_categories.append(parent_node.name)
 
-                    # Copy analysis/logprobs/process from the last level's output
-                    output.analysis = level_output.analysis
-                    output.logprobs = level_output.logprobs
-                    output.process = level_output.process
+                    if with_analysis:
+                        analysis += level_output.analysis
+                    if logprobs:
+                        logprobs += level_output.logprobs
 
-                output.result = final_output
                 end = datetime.now()
-                output.execution_time = (end - start).total_seconds()
+                output = Models.ToolOutput(
+                    result=final_categories,
+                    logprobs=logprobs,
+                    analysis=analysis,
+                    process="categorize",
+                    execution_time=(end - start).total_seconds(),
+                )
+
                 return output
 
             else:
@@ -199,7 +206,7 @@ class TheTool:
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         mode: Literal["auto", "threshold", "count"] = "auto",
         number_of_keywords: int | None = None,
         validator: Callable[[Any], bool] | None = None,
@@ -279,7 +286,7 @@ class TheTool:
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
@@ -357,7 +364,7 @@ class TheTool:
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
@@ -433,7 +440,7 @@ class TheTool:
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
@@ -511,7 +518,7 @@ class TheTool:
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         mode: Literal["default", "reason"] = "default",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
@@ -590,7 +597,7 @@ class TheTool:
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
@@ -669,7 +676,7 @@ class TheTool:
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
@@ -747,7 +754,7 @@ class TheTool:
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
@@ -819,11 +826,12 @@ class TheTool:
         self,
         text: str,
         target_language: str,
+        use_chunker: bool = True,
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
@@ -836,6 +844,7 @@ class TheTool:
         Arguments:
             text: The input text to translate
             target_language: The target language for translation
+            use_chunker: Whether to use text chunker for text length bigger than 1500
             with_analysis: Whether to include detailed reasoning analysis
             user_prompt: Additional instructions for translation
             temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
@@ -859,27 +868,81 @@ class TheTool:
 
         try:
             start = datetime.now()
-            output = self._operator.run(
-                # User parameters
-                text=text,
-                target_language=target_language,
-                with_analysis=with_analysis,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                prompt_file="translate.yaml",
-                output_model=Models.Str,
-                mode=None,
-                output_lang=None,
-            )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
+
+            if len(text.split(" ")) > 1500 and use_chunker:
+                chunks = text_to_chunks(text, 1200, 0)
+
+                translation = ""
+                analysis = ""
+                logprobs = []
+
+                # Run translation for each chunk
+                for chunk in chunks:
+                    chunk_output = self._operator.run(
+                        # User parameters
+                        text=chunk,
+                        target_language=target_language,
+                        with_analysis=with_analysis,
+                        user_prompt=user_prompt,
+                        temperature=temperature,
+                        logprobs=logprobs,
+                        top_logprobs=top_logprobs,
+                        validator=validator,
+                        max_validation_retries=max_validation_retries,
+                        priority=priority,
+                        # Internal parameters
+                        prompt_file="translate.yaml",
+                        output_model=Models.Str,
+                        mode=None,
+                        output_lang=None,
+                    )
+
+                    # Check for errors from operator
+                    if chunk_output.errors:
+                        output.errors.extend(chunk_output.errors)
+                        end = datetime.now()
+                        output.execution_time = (end - start).total_seconds()
+                        return output
+
+                    # Concatenate the outputs
+                    translation += chunk_output.result + "\n"
+                    if with_analysis:
+                        analysis += chunk_output.analysis
+                    if logprobs:
+                        logprobs += chunk_output.logprobs
+
+                end = datetime.now()
+                output = Models.ToolOutput(
+                    result=translation,
+                    logprobs=logprobs,
+                    analysis=analysis,
+                    process="translate",
+                    execution_time=(end - start).total_seconds(),
+                )
+                return output
+
+            else:
+                output = self._operator.run(
+                    # User parameters
+                    text=text,
+                    target_language=target_language,
+                    with_analysis=with_analysis,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    priority=priority,
+                    # Internal parameters
+                    prompt_file="translate.yaml",
+                    output_model=Models.Str,
+                    mode=None,
+                    output_lang=None,
+                )
+                end = datetime.now()
+                output.execution_time = (end - start).total_seconds()
+                return output
 
         except PromptError as e:
             output.errors.append(f"Prompt error: {e}")
@@ -902,7 +965,7 @@ class TheTool:
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
@@ -981,7 +1044,7 @@ class TheTool:
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
@@ -1061,7 +1124,7 @@ class TheTool:
         output_lang: str | None = None,
         temperature: float | None = None,
         logprobs: bool | None = None,
-        top_logprobs: int | None = None,
+        top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = 0,
