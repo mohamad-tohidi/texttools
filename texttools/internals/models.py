@@ -22,23 +22,23 @@ class ToolOutput(BaseModel):
         """
 
 
-class StrOutput(BaseModel):
+class Str(BaseModel):
     result: str = Field(..., description="The output string", example="text")
 
 
-class BoolOutput(BaseModel):
+class Bool(BaseModel):
     result: bool = Field(
         ..., description="Boolean indicating the output state", example=True
     )
 
 
-class ListStrOutput(BaseModel):
+class ListStr(BaseModel):
     result: list[str] = Field(
         ..., description="The output list of strings", example=["text_1", "text_2"]
     )
 
 
-class ListDictStrStrOutput(BaseModel):
+class ListDictStrStr(BaseModel):
     result: list[dict[str, str]] = Field(
         ...,
         description="List of dictionaries containing string key-value pairs",
@@ -46,7 +46,7 @@ class ListDictStrStrOutput(BaseModel):
     )
 
 
-class ReasonListStrOutput(BaseModel):
+class ReasonListStr(BaseModel):
     reason: str = Field(..., description="Thinking process that led to the output")
     result: list[str] = Field(
         ..., description="The output list of strings", example=["text_1", "text_2"]
@@ -179,12 +179,3 @@ def create_dynamic_model(allowed_values: list[str]) -> Type[BaseModel]:
     )
 
     return CategorizerOutput
-
-
-class Entity(BaseModel):
-    text: str = Field(description="The exact text of the entity")
-    entity_type: str = Field(description="The type of the entity")
-
-
-class EntityDetectorOutput(BaseModel):
-    result: list[Entity] = Field(description="List of all extracted entities")

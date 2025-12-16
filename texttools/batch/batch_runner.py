@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 from texttools.batch.internals.batch_manager import BatchManager
 from texttools.batch.batch_config import BatchConfig
-from texttools.internals.models import StrOutput
+from texttools.internals.models import Str
 from texttools.internals.exceptions import TextToolsError, ConfigurationError
 
 # Base Model type for output models
@@ -26,7 +26,7 @@ class BatchJobRunner:
     """
 
     def __init__(
-        self, config: BatchConfig = BatchConfig(), output_model: Type[T] = StrOutput
+        self, config: BatchConfig = BatchConfig(), output_model: Type[T] = Str
     ):
         try:
             self._config = config

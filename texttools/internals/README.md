@@ -15,10 +15,10 @@ The `Operator` class provides:
 ### Models
 Models defined in `models.py`:
 - `ToolOutput` - Output model of each tool
-- `StrOutput` - Simple string output
-- `ListStrOutput` - List of strings
-- `ListDictStrStrOutput` - List of dictionaries
-- `ReasonListStrOutput` - Output with reasoning
+- `Str` - Simple string output
+- `ListStr` - List of strings
+- `ListDictStrStr` - List of dictionaries
+- `ReasonListStr` - Output with reasoning
 - `CategoryTree` - Category tree for categorizer
 - `create_dynamic_model() - Creates dynamic BaseModel for categorizer
 

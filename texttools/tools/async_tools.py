@@ -251,7 +251,7 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="extract_keywords.yaml",
-                output_model=Models.ListStrOutput,
+                output_model=Models.ListStr,
             )
             end = datetime.now()
             output.execution_time = (end - start).total_seconds()
@@ -330,7 +330,7 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="extract_entities.yaml",
-                output_model=Models.ListDictStrStrOutput,
+                output_model=Models.ListDictStrStr,
                 mode=None,
             )
             end = datetime.now()
@@ -403,7 +403,7 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="is_question.yaml",
-                output_model=Models.BoolOutput,
+                output_model=Models.Bool,
                 mode=None,
                 output_lang=None,
             )
@@ -483,7 +483,7 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="text_to_question.yaml",
-                output_model=Models.ReasonListStrOutput,
+                output_model=Models.ReasonListStr,
                 mode=None,
             )
             end = datetime.now()
@@ -562,7 +562,7 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="merge_questions.yaml",
-                output_model=Models.StrOutput,
+                output_model=Models.Str,
                 mode=mode,
             )
             end = datetime.now()
@@ -640,7 +640,7 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="rewrite.yaml",
-                output_model=Models.StrOutput,
+                output_model=Models.Str,
                 mode=mode,
             )
             end = datetime.now()
@@ -719,7 +719,7 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="subject_to_question.yaml",
-                output_model=Models.ReasonListStrOutput,
+                output_model=Models.ReasonListStr,
                 mode=None,
             )
             end = datetime.now()
@@ -795,7 +795,7 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="summarize.yaml",
-                output_model=Models.StrOutput,
+                output_model=Models.Str,
                 mode=None,
             )
             end = datetime.now()
@@ -873,7 +873,7 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="translate.yaml",
-                output_model=Models.StrOutput,
+                output_model=Models.Str,
                 mode=None,
                 output_lang=None,
             )
@@ -952,7 +952,7 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="propositionize.yaml",
-                output_model=Models.ListStrOutput,
+                output_model=Models.ListStr,
                 mode=None,
             )
             end = datetime.now()
@@ -1032,7 +1032,7 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 prompt_file="check_fact.yaml",
-                output_model=Models.BoolOutput,
+                output_model=Models.Bool,
                 mode=None,
                 source_text=source_text,
             )
