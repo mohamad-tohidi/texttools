@@ -7,7 +7,6 @@ from pydantic import BaseModel
 
 from texttools.internals.models import ToolOutput
 from texttools.internals.operator_utils import OperatorUtils
-from texttools.internals.formatters import Formatter
 from texttools.internals.prompt_loader import PromptLoader
 from texttools.internals.exceptions import (
     TextToolsError,
@@ -138,7 +137,6 @@ class AsyncOperator:
         """
         try:
             prompt_loader = PromptLoader()
-            formatter = Formatter()
             output = ToolOutput()
 
             # Prompt configs contain two keys: main_template and analyze template, both are string
@@ -177,7 +175,7 @@ class AsyncOperator:
                 OperatorUtils.build_user_message(prompt_configs["main_template"])
             )
 
-            messages = formatter.user_merge_format(messages)
+            messages = OperatorUtils.user_merge_format(messages)
 
             if logprobs and (not isinstance(top_logprobs, int) or top_logprobs < 2):
                 raise ValueError("top_logprobs should be an integer greater than 1")

@@ -2,7 +2,7 @@
 
 ## Core Components
 
-### OperatorUtils, Operator/AsyncOperator Class
+### OperatorUtils, Operator, AsyncOperator
 The `Operator` class provides:
 - LLM client integration (OpenAI)
 - Prompt loading and formatting
@@ -11,6 +11,7 @@ The `Operator` class provides:
 - Mode-based prompt selection
 - Inject user prompts
 - Extract logprobs
+- Format prompts
 
 ### Models
 Models defined in `models.py`:
@@ -22,12 +23,6 @@ Models defined in `models.py`:
 - `CategoryTree` - Category tree for categorizer
 - `create_dynamic_model() - Creates dynamic BaseModel for categorizer
 
-
-### Formatter
-The `Fromatter` class:
-- Gathers diffrent formatters to format chats
-- New formatters can be added easily by defining new static methods
-
 ### Prompt Loader
 The `PromptLoader` class:
 - Loads YAML prompt templates from the `prompts/` folder
@@ -35,3 +30,6 @@ The `PromptLoader` class:
 - Uses lru cache for efficiency
 - Handles variable injection into templates
 - Manages both main and analysis templates
+
+### Exceptions
+TextTools exceptions!

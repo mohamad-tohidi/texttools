@@ -38,7 +38,7 @@ def text_to_chunks(text: str, size: int, overlap: int) -> list[str]:
             len_ = length_function(d)
             if total + len_ + (separator_len if current_doc else 0) > chunk_size:
                 if total > chunk_size:
-                    pass  # Optionally add warning
+                    pass
                 if current_doc:
                     doc = _join_docs(current_doc, separator)
                     if doc is not None:
