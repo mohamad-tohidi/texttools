@@ -1044,8 +1044,6 @@ class AsyncTheTool:
         """
         Custom tool that can do almost anything!
 
-        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
-
         Arguments:
             prompt: The user prompt
             output_model: Pydantic BaseModel used for structured output
