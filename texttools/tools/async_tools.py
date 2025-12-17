@@ -1115,6 +1115,82 @@ class AsyncTheTool:
 
         return output
 
+    async def decorate_entity(
+        self,
+        text: str,
+        with_analysis: bool = False,
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float | None = 0.0,
+        logprobs: bool = False,
+        top_logprobs: int = 3,
+        validator: Callable[[object], bool] | None = None,
+        max_validation_retries: int | None = None,
+        priority: int | None = 0,
+    ) -> Models.ToolOutput:
+        """
+        Perform Named Entity Recognition (NER) over the input text.
+
+        Arguments:
+            text: The input text to extract entities from
+            with_analysis: Whether to include detailed reasoning analysis
+            output_lang: Language for the output response
+            user_prompt: Additional instructions for entity extraction
+            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            logprobs: Whether to return token probability information
+            top_logprobs: Number of top token alternatives to return if logprobs enabled
+            validator: Custom validation function to validate the output
+            max_validation_retries: Maximum number of retry attempts if validation fails
+            priority: Task execution priority (if enabled by vLLM and model)
+
+        Returns:
+            ToolOutput: Object containing:
+                - result (list[dict]): List of entities with 'text' and 'type' keys
+                - logprobs (list | None): Probability data if logprobs enabled
+                - analysis (str | None): Detailed reasoning if with_analysis enabled
+                - process (str | None): Description of the process used
+                - processed_at (datetime): Timestamp when the processing occurred
+                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
+                - errors (list(str) | None): Errors occured during tool call
+        """
+        output = Models.ToolOutput()
+
+        try:
+            start = datetime.now()
+            output = await self._operator.run(
+                # User parameters
+                text=text,
+                with_analysis=with_analysis,
+                output_lang=output_lang,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                logprobs=logprobs,
+                top_logprobs=top_logprobs,
+                validator=validator,
+                max_validation_retries=max_validation_retries,
+                priority=priority,
+                # Internal parameters
+                prompt_file="decorate_entity.yaml",
+                output_model=Models.ListDictStrStr,
+                mode=None,
+            )
+            end = datetime.now()
+            output.execution_time = (end - start).total_seconds()
+            return output
+
+        except PromptError as e:
+            output.errors.append(f"Prompt error: {e}")
+        except LLMError as e:
+            output.errors.append(f"LLM error: {e}")
+        except ValidationError as e:
+            output.errors.append(f"Validation error: {e}")
+        except TextToolsError as e:
+            output.errors.append(f"TextTools error: {e}")
+        except Exception as e:
+            output.errors.append(f"Unexpected error: {e}")
+
+        return output
+
     async def run_custom(
         self,
         prompt: str,
