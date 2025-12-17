@@ -18,7 +18,7 @@ main_template:
     {{"result": "str"}}
 
     Anchor Text:
-    "{input}"
+    "{text}"
 
   negative: |
     You are an AI assistant designed to generate high-quality training data for semantic text embedding models.
@@ -35,7 +35,7 @@ main_template:
     {{"result": "str"}}
 
     Anchor Text:
-    "{input}"
+    "{text}"
 
   hard_negative: |
       You are an AI assistant designed to generate high-quality training data for semantic text embedding models.
@@ -57,7 +57,7 @@ main_template:
       {{"result": "str"}}
 
       Anchor Text:
-      "{input}"
+      "{text}"
 
 
 analyze_template:
@@ -74,7 +74,7 @@ analyze_template:
     Your analysis should capture the ESSENTIAL MEANING that must be preserved in any paraphrase.
     
     Text:
-    {input}
+    {text}
 
   negative: |
     Analyze the following text to identify its SPECIFIC TOPIC and DOMAIN for creating a high-quality NEGATIVE sample.
@@ -88,7 +88,7 @@ analyze_template:
     The goal is to find topics that are in the same domain but semantically unrelated to this specific text.
     
     Text:
-    {input}
+    {text}
 
   hard_negative: |
     Analyze this text to identify EXACTLY ONE ELEMENT that can be changed to create a hard-negative sample.
@@ -107,5 +107,5 @@ analyze_template:
     - 80-90% of the vocabulary
     
     Text:
-    {input}
+    {text}
     

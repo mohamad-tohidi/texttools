@@ -12,9 +12,9 @@ main_template: |
     ]
   }}
   Here is the text:
-  {input}
+  {text}
 
 analyze_template: |
   Read the following text and identify any proper nouns, key concepts, or specific mentions that might represent named entities.
   Provide a brief, summarized analysis that could help in categorizing these entities.
-  {input}
+  {text}

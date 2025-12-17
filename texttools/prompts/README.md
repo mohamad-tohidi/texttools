@@ -15,7 +15,7 @@ This folder contains YAML files for all prompts used in the project. Each file r
 ```yaml
 main_template:
   mode_1: |
-    Your main instructions here with placeholders like {input}.
+    Your main instructions here with placeholders like {text}.
   mode_2: |
     Optional reasoning instructions here.
 
@@ -30,6 +30,6 @@ analyze_template:
 
 ## Guidelines
 1. **Naming**: Use descriptive names for each YAML file corresponding to the tool or task it serves.
-2. **Placeholders**: Use `{input}` or other relevant placeholders to dynamically inject data.
+2. **Placeholders**: Use `{text}` or other relevant placeholders to dynamically inject data.
 3. **Modes**: If using modes, ensure both `main_template` and `analyze_template` contain the corresponding keys.
 4. **Consistency**: Keep formatting consistent across files for easier parsing by scripts.

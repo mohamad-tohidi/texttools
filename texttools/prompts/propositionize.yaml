@@ -12,11 +12,11 @@ main_template: |
   4. No Redundancy: Do not extract summary statements that merely repeat facts already listed.
 
   Extract the atomic propositions from the following text:
-  {input}
+  {text}
 
 analyze_template: |
   We want to analyze this text snippet and think about where we can split sentence to atomic meaningful propositions.
   An atomic proposition is a single, self-contained fact that is concise,
   verifiable, and does not rely on external context.
   You just have to think around the possible propositions in the text and how a proposition can be made.
-  {input}
+  {text}

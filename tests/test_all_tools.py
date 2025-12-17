@@ -28,19 +28,20 @@ category = t.categorize(
 print(repr(category))
 
 # Categorizer: tree mode
-tree = CategoryTree("category_test_tree")
-tree.add_node("اخلاق")
-tree.add_node("معرفت شناسی")
-tree.add_node("متافیزیک", description="اراده قدرت در حیطه متافیزیک است")
-tree.add_node("فلسفه ذهن", description="فلسفه ذهن به چگونگی درک ما از جهان می پردازد")
-tree.add_node("آگاهی", "فلسفه ذهن", description="آگاهی خیلی مهم است")
+tree = CategoryTree()
+tree.add_node("اخلاق", "root")
+tree.add_node("معرفت شناسی", "root")
+tree.add_node("متافیزیک", "root", description="اراده قدرت در حیطه متافیزیک است")
+tree.add_node(
+    "فلسفه ذهن", "root", description="فلسفه ذهن به چگونگی درک ما از جهان می پردازد"
+)
+tree.add_node("آگاهی", "فلسفه ذهن")
 tree.add_node("ذهن و بدن", "فلسفه ذهن")
 tree.add_node("امکان و ضرورت", "متافیزیک")
 
 categories = t.categorize(
     "اراده قدرت مفهومی مهم در مابعد الطبیعه است که توسط نیچه مطرح شده",
     tree,
-    mode="category_tree",
 )
 print(repr(categories))
 
@@ -51,7 +52,12 @@ keywords = t.extract_keywords(
 print(repr(keywords))
 
 # NER Extractor
-entities = t.extract_entities("Ali will be dead by the car crash", entities=["EVENT"])
+entities = t.extract_entities(
+    "Ali will be dead by the car crash",
+    entities=["EVENT"],
+    with_analysis=True,
+    logprobs=True,
+)
 print(repr(entities))
 
 

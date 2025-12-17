@@ -9,7 +9,7 @@ main_template: |
   Respond only in JSON format:
   {{"result": ["question1", "question2", ...], "reason": "string"}}
   Here is the answer:
-  {input}
+  {text}
   
 analyze_template: |
   Analyze the following answer to identify its key facts,
@@ -18,5 +18,5 @@ analyze_template: |
   help in formulating relevant and direct questions.
   Just mention the keypoints that was provided in the answer
   Here is the answer:
-  {input}
+  {text}
                 

@@ -1,4 +1,5 @@
-from datetime import datetime
+import sys
+from time import perf_counter
 from typing import Literal
 from collections.abc import Callable
 
@@ -37,10 +38,9 @@ class AsyncTheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        mode: Literal["category_list", "category_tree"] = "category_list",
         validator: Callable[[object], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int = 0,
     ) -> Models.ToolOutput:
         """
         Categorize a text into a category / category tree.
@@ -49,121 +49,27 @@ class AsyncTheTool:
 
         Arguments:
             text: The input text to categorize
-            categories: The category / category_tree to give to LLM
+            categories: The category list / category tree
             with_analysis: Whether to include detailed reasoning analysis
             user_prompt: Additional instructions for the categorization
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (str): The assigned category
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
 
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-
-            if mode == "category_tree":
-                levels = categories.get_level_count()
-                parent_id = 0
-                final_categories = []
-                analysis = ""
-                logprobs = []
-
-                for _ in range(levels):
-                    # Get child nodes for current parent
-                    parent_node = categories.get_node(parent_id)
-                    children = categories.get_children(parent_node)
-
-                    # Check if child nodes exist
-                    if not children:
-                        output.errors.append(
-                            f"No categories found for parent_id {parent_id} in the tree"
-                        )
-                        end = datetime.now()
-                        output.execution_time = (end - start).total_seconds()
-                        return output
-
-                    # Extract category names and descriptions
-                    category_list = [
-                        f"Category Name: {node.name}, Description: {node.description}"
-                        for node in children
-                    ]
-                    category_names = [node.name for node in children]
-
-                    # Run categorization for current level
-                    level_output = await self._operator.run(
-                        # User parameters
-                        text=text,
-                        category_list=category_list,
-                        with_analysis=with_analysis,
-                        user_prompt=user_prompt,
-                        temperature=temperature,
-                        logprobs=logprobs,
-                        top_logprobs=top_logprobs,
-                        mode=mode,
-                        validator=validator,
-                        max_validation_retries=max_validation_retries,
-                        priority=priority,
-                        # Internal parameters
-                        prompt_file="categorize.yaml",
-                        output_model=Models.create_dynamic_model(category_names),
-                        output_lang=None,
-                    )
-
-                    # Check for errors from operator
-                    if level_output.errors:
-                        output.errors.extend(level_output.errors)
-                        end = datetime.now()
-                        output.execution_time = (end - start).total_seconds()
-                        return output
-
-                    # Get the chosen category
-                    chosen_category = level_output.result
-
-                    # Find the corresponding node
-                    parent_node = categories.get_node(chosen_category)
-                    if parent_node is None:
-                        output.errors.append(
-                            f"Category '{chosen_category}' not found in tree after selection"
-                        )
-                        end = datetime.now()
-                        output.execution_time = (end - start).total_seconds()
-                        return output
-
-                    parent_id = parent_node.node_id
-                    final_categories.append(parent_node.name)
-
-                    if with_analysis:
-                        analysis += level_output.analysis
-                    if logprobs:
-                        logprobs += level_output.logprobs
-
-                end = datetime.now()
-                output = Models.ToolOutput(
-                    result=final_categories,
-                    logprobs=logprobs,
-                    analysis=analysis,
-                    process="categorize",
-                    execution_time=(end - start).total_seconds(),
-                )
-
-                return output
-
-            else:
-                output = await self._operator.run(
+            if isinstance(categories, list):
+                operator_output = await self._operator.run(
                     # User parameters
                     text=text,
                     category_list=categories,
@@ -172,31 +78,90 @@ class AsyncTheTool:
                     temperature=temperature,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
-                    mode=mode,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
                     # Internal parameters
-                    prompt_file="categorize.yaml",
+                    prompt_file=prompt_file,
                     output_model=Models.create_dynamic_model(categories),
+                    mode=None,
                     output_lang=None,
                 )
-                end = datetime.now()
-                output.execution_time = (end - start).total_seconds()
-                return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+                metadata = Models.ToolOutputMetadata(
+                    tool_name=tool_name, execution_time=perf_counter() - start
+                )
+                tool_output = Models.ToolOutput(
+                    result=operator_output.result,
+                    analysis=operator_output.analysis,
+                    logprobs=operator_output.logprobs,
+                    metadata=metadata,
+                )
 
-        return output
+            else:
+                levels = categories.get_level_count()
+                parent_node = categories.get_node("root")
+                final_categories = []
+                analysis = ""
+                logprobs_list = []
+
+                for _ in range(levels):
+                    if not parent_node.children:
+                        break
+
+                    category_list = [
+                        f"Category Name: {name}, Description: {node.description}"
+                        for name, node in parent_node.children.items()
+                    ]
+                    category_names = list(parent_node.children.keys())
+
+                    level_operator_output = await self._operator.run(
+                        # User parameters
+                        text=text,
+                        category_list=category_list,
+                        with_analysis=with_analysis,
+                        user_prompt=user_prompt,
+                        temperature=temperature,
+                        logprobs=logprobs,
+                        top_logprobs=top_logprobs,
+                        validator=validator,
+                        max_validation_retries=max_validation_retries,
+                        priority=priority,
+                        # Internal parameters
+                        prompt_file=prompt_file,
+                        output_model=Models.create_dynamic_model(category_names),
+                        mode=None,
+                        output_lang=None,
+                    )
+
+                    chosen_category = level_operator_output.result
+                    parent_node = categories.get_node(chosen_category)
+                    if not parent_node:
+                        break
+                    final_categories.append(chosen_category)
+
+                    if with_analysis:
+                        analysis += level_operator_output.analysis
+                    if logprobs:
+                        logprobs_list.extend(level_operator_output.logprobs)
+
+                metadata = Models.ToolOutputMetadata(
+                    tool_name=tool_name, execution_time=(perf_counter() - start)
+                )
+                tool_output = Models.ToolOutput(
+                    result=final_categories,
+                    analysis=analysis,
+                    logprobs=logprobs_list,
+                    metadata=metadata,
+                )
+
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def extract_keywords(
         self,
@@ -221,28 +186,22 @@ class AsyncTheTool:
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output response
             user_prompt: Additional instructions for keyword extraction
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (list[str]): List of extracted keywords
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-            output = await self._operator.run(
+            operator_output = await self._operator.run(
                 # User parameters
                 text=text,
                 with_analysis=with_analysis,
@@ -257,25 +216,27 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file="extract_keywords.yaml",
+                prompt_file=prompt_file,
                 output_model=Models.ListStr,
             )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+            metadata = Models.ToolOutputMetadata(
+                tool_name=tool_name, execution_time=perf_counter() - start
+            )
+            tool_output = Models.ToolOutput(
+                result=operator_output.result,
+                logprobs=operator_output.logprobs,
+                analysis=operator_output.analysis,
+                metadata=metadata,
+            )
 
-        return output
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def extract_entities(
         self,
@@ -300,28 +261,22 @@ class AsyncTheTool:
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output response
             user_prompt: Additional instructions for entity extraction
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (list[dict]): List of entities with 'text' and 'type' keys
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-            output = await self._operator.run(
+            operator_output = await self._operator.run(
                 # User parameters
                 text=text,
                 entities=entities
@@ -336,26 +291,28 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file="extract_entities.yaml",
+                prompt_file=prompt_file,
                 output_model=Models.ListDictStrStr,
                 mode=None,
             )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+            metadata = Models.ToolOutputMetadata(
+                tool_name=tool_name, execution_time=perf_counter() - start
+            )
+            tool_output = Models.ToolOutput(
+                result=operator_output.result,
+                logprobs=operator_output.logprobs,
+                analysis=operator_output.analysis,
+                metadata=metadata,
+            )
 
-        return output
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def is_question(
         self,
@@ -376,28 +333,22 @@ class AsyncTheTool:
             text: The input text to analyze
             with_analysis: Whether to include detailed reasoning analysis
             user_prompt: Additional instructions for question detection
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (bool): True if text is a question, False otherwise
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-            output = await self._operator.run(
+            operator_output = await self._operator.run(
                 # User parameters
                 text=text,
                 with_analysis=with_analysis,
@@ -409,27 +360,29 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file="is_question.yaml",
+                prompt_file=prompt_file,
                 output_model=Models.Bool,
                 mode=None,
                 output_lang=None,
             )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+            metadata = Models.ToolOutputMetadata(
+                tool_name=tool_name, execution_time=perf_counter() - start
+            )
+            tool_output = Models.ToolOutput(
+                result=operator_output.result,
+                logprobs=operator_output.logprobs,
+                analysis=operator_output.analysis,
+                metadata=metadata,
+            )
 
-        return output
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def text_to_question(
         self,
@@ -454,28 +407,22 @@ class AsyncTheTool:
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output question
             user_prompt: Additional instructions for question generation
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (str): The generated question
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-            output = await self._operator.run(
+            operator_output = await self._operator.run(
                 # User parameters
                 text=text,
                 number_of_questions=number_of_questions,
@@ -489,26 +436,28 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file="text_to_question.yaml",
+                prompt_file=prompt_file,
                 output_model=Models.ReasonListStr,
                 mode=None,
             )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+            metadata = Models.ToolOutputMetadata(
+                tool_name=tool_name, execution_time=perf_counter() - start
+            )
+            tool_output = Models.ToolOutput(
+                result=operator_output.result,
+                logprobs=operator_output.logprobs,
+                analysis=operator_output.analysis,
+                metadata=metadata,
+            )
 
-        return output
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def merge_questions(
         self,
@@ -532,30 +481,24 @@ class AsyncTheTool:
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output merged question
             user_prompt: Additional instructions for question merging
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             mode: Merging strategy - 'default' for direct merge, 'reason' for reasoned merge
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (str): The merged question
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
             text = ", ".join(text)
-            output = await self._operator.run(
+            operator_output = await self._operator.run(
                 # User parameters
                 text=text,
                 with_analysis=with_analysis,
@@ -568,26 +511,28 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file="merge_questions.yaml",
+                prompt_file=prompt_file,
                 output_model=Models.Str,
                 mode=mode,
             )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+            metadata = Models.ToolOutputMetadata(
+                tool_name=tool_name, execution_time=perf_counter() - start
+            )
+            tool_output = Models.ToolOutput(
+                result=operator_output.result,
+                logprobs=operator_output.logprobs,
+                analysis=operator_output.analysis,
+                metadata=metadata,
+            )
 
-        return output
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def rewrite(
         self,
@@ -611,29 +556,23 @@ class AsyncTheTool:
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output rewritten text
             user_prompt: Additional instructions for rewriting
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             mode: Rewriting mode - 'positive', 'negative', or 'hard_negative'
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (str): The rewritten text
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-            output = await self._operator.run(
+            operator_output = await self._operator.run(
                 # User parameters
                 text=text,
                 with_analysis=with_analysis,
@@ -646,26 +585,28 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file="rewrite.yaml",
+                prompt_file=prompt_file,
                 output_model=Models.Str,
                 mode=mode,
             )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+            metadata = Models.ToolOutputMetadata(
+                tool_name=tool_name, execution_time=perf_counter() - start
+            )
+            tool_output = Models.ToolOutput(
+                result=operator_output.result,
+                logprobs=operator_output.logprobs,
+                analysis=operator_output.analysis,
+                metadata=metadata,
+            )
 
-        return output
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def subject_to_question(
         self,
@@ -690,28 +631,22 @@ class AsyncTheTool:
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output questions
             user_prompt: Additional instructions for question generation
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (list[str]): List of generated questions
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-            output = await self._operator.run(
+            operator_output = await self._operator.run(
                 # User parameters
                 text=text,
                 number_of_questions=number_of_questions,
@@ -725,26 +660,28 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file="subject_to_question.yaml",
+                prompt_file=prompt_file,
                 output_model=Models.ReasonListStr,
                 mode=None,
             )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+            metadata = Models.ToolOutputMetadata(
+                tool_name=tool_name, execution_time=perf_counter() - start
+            )
+            tool_output = Models.ToolOutput(
+                result=operator_output.result,
+                logprobs=operator_output.logprobs,
+                analysis=operator_output.analysis,
+                metadata=metadata,
+            )
 
-        return output
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def summarize(
         self,
@@ -767,28 +704,22 @@ class AsyncTheTool:
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output summary
             user_prompt: Additional instructions for summarization
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (str): The summary text
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-            output = await self._operator.run(
+            operator_output = await self._operator.run(
                 # User parameters
                 text=text,
                 with_analysis=with_analysis,
@@ -801,26 +732,28 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file="summarize.yaml",
+                prompt_file=prompt_file,
                 output_model=Models.Str,
                 mode=None,
             )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+            metadata = Models.ToolOutputMetadata(
+                tool_name=tool_name, execution_time=perf_counter() - start
+            )
+            tool_output = Models.ToolOutput(
+                result=operator_output.result,
+                logprobs=operator_output.logprobs,
+                analysis=operator_output.analysis,
+                metadata=metadata,
+            )
 
-        return output
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def translate(
         self,
@@ -847,38 +780,29 @@ class AsyncTheTool:
             use_chunker: Whether to use text chunker for text length bigger than 1500
             with_analysis: Whether to include detailed reasoning analysis
             user_prompt: Additional instructions for translation
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (str): The translated text
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-
             if len(text.split(" ")) > 1500 and use_chunker:
                 chunks = text_to_chunks(text, 1200, 0)
-
                 translation = ""
                 analysis = ""
-                logprobs = []
+                logprobs_list = []
 
-                # Run translation for each chunk
                 for chunk in chunks:
-                    chunk_output = await self._operator.run(
+                    chunk_operator_output = await self._operator.run(
                         # User parameters
                         text=chunk,
                         target_language=target_language,
@@ -891,38 +815,31 @@ class AsyncTheTool:
                         max_validation_retries=max_validation_retries,
                         priority=priority,
                         # Internal parameters
-                        prompt_file="translate.yaml",
+                        prompt_file=prompt_file,
                         output_model=Models.Str,
                         mode=None,
                         output_lang=None,
                     )
 
-                    # Check for errors from operator
-                    if chunk_output.errors:
-                        output.errors.extend(chunk_output.errors)
-                        end = datetime.now()
-                        output.execution_time = (end - start).total_seconds()
-                        return output
+                    translation += chunk_operator_output.result + "\n"
 
-                    # Concatenate the outputs
-                    translation += chunk_output.result + "\n"
                     if with_analysis:
-                        analysis += chunk_output.analysis
+                        analysis += chunk_operator_output.analysis
                     if logprobs:
-                        logprobs += chunk_output.logprobs
+                        logprobs_list.extend(chunk_operator_output.logprobs)
 
-                end = datetime.now()
-                output = Models.ToolOutput(
-                    result=translation,
-                    logprobs=logprobs,
-                    analysis=analysis,
-                    process="translate",
-                    execution_time=(end - start).total_seconds(),
+                metadata = Models.ToolOutputMetadata(
+                    tool_name=tool_name, execution_time=perf_counter() - start
                 )
-                return output
+                tool_output = Models.ToolOutput(
+                    result=translation,
+                    logprobs=logprobs_list,
+                    analysis=analysis,
+                    metadata=metadata,
+                )
 
             else:
-                output = await self._operator.run(
+                operator_output = await self._operator.run(
                     # User parameters
                     text=text,
                     target_language=target_language,
@@ -935,27 +852,29 @@ class AsyncTheTool:
                     max_validation_retries=max_validation_retries,
                     priority=priority,
                     # Internal parameters
-                    prompt_file="translate.yaml",
+                    prompt_file=prompt_file,
                     output_model=Models.Str,
                     mode=None,
                     output_lang=None,
                 )
-                end = datetime.now()
-                output.execution_time = (end - start).total_seconds()
-                return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+                metadata = Models.ToolOutputMetadata(
+                    tool_name=tool_name, execution_time=perf_counter() - start
+                )
+                tool_output = Models.ToolOutput(
+                    result=operator_output.result,
+                    logprobs=operator_output.logprobs,
+                    analysis=operator_output.analysis,
+                    metadata=metadata,
+                )
 
-        return output
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def propositionize(
         self,
@@ -980,28 +899,22 @@ class AsyncTheTool:
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output summary
             user_prompt: Additional instructions for summarization
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (list[str]): The propositions
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-            output = await self._operator.run(
+            operator_output = await self._operator.run(
                 # User parameters
                 text=text,
                 with_analysis=with_analysis,
@@ -1014,26 +927,28 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file="propositionize.yaml",
+                prompt_file=prompt_file,
                 output_model=Models.ListStr,
                 mode=None,
             )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+            metadata = Models.ToolOutputMetadata(
+                tool_name=tool_name, execution_time=perf_counter() - start
+            )
+            tool_output = Models.ToolOutput(
+                result=operator_output.result,
+                logprobs=operator_output.logprobs,
+                analysis=operator_output.analysis,
+                metadata=metadata,
+            )
 
-        return output
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def check_fact(
         self,
@@ -1060,28 +975,22 @@ class AsyncTheTool:
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output summary
             user_prompt: Additional instructions for summarization
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (bool): statement is relevant to source text or not
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-            output = await self._operator.run(
+            operator_output = await self._operator.run(
                 # User parameters
                 text=text,
                 with_analysis=with_analysis,
@@ -1094,26 +1003,29 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file="check_fact.yaml",
+                prompt_file=prompt_file,
                 output_model=Models.Bool,
                 mode=None,
                 source_text=source_text,
             )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
 
-        return output
+            metadata = Models.ToolOutputMetadata(
+                tool_name=tool_name, execution_time=perf_counter() - start
+            )
+            tool_output = Models.ToolOutput(
+                result=operator_output.result,
+                logprobs=operator_output.logprobs,
+                analysis=operator_output.analysis,
+                metadata=metadata,
+            )
+
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output
 
     async def run_custom(
         self,
@@ -1140,28 +1052,22 @@ class AsyncTheTool:
             with_analysis: Whether to include detailed reasoning analysis
             analyze_template: The analyze template used for reasoning analysis
             output_lang: Language for the output summary
-            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and model)
+            priority: Task execution priority (if enabled by vLLM and the model)
 
         Returns:
-            ToolOutput: Object containing:
-                - result (str): The translated text
-                - logprobs (list | None): Probability data if logprobs enabled
-                - analysis (str | None): Detailed reasoning if with_analysis enabled
-                - process (str | None): Description of the process used
-                - processed_at (datetime): Timestamp when the processing occurred
-                - execution_time (float): Time taken for execution in seconds (-1.0 if not measured)
-                - errors (list(str) | None): Errors occured during tool call
+            ToolOutput
         """
-        output = Models.ToolOutput()
+        tool_name = sys._getframe().f_code.co_name
+        prompt_file = tool_name + ".yaml"
+        start = perf_counter()
 
         try:
-            start = datetime.now()
-            output = await self._operator.run(
+            operator_output = await self._operator.run(
                 # User paramaeters
                 text=prompt,
                 output_model=output_model,
@@ -1176,23 +1082,25 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file="run_custom.yaml",
+                prompt_file=prompt_file,
                 user_prompt=None,
                 mode=None,
             )
-            end = datetime.now()
-            output.execution_time = (end - start).total_seconds()
-            return output
 
-        except PromptError as e:
-            output.errors.append(f"Prompt error: {e}")
-        except LLMError as e:
-            output.errors.append(f"LLM error: {e}")
-        except ValidationError as e:
-            output.errors.append(f"Validation error: {e}")
-        except TextToolsError as e:
-            output.errors.append(f"TextTools error: {e}")
-        except Exception as e:
-            output.errors.append(f"Unexpected error: {e}")
+            metadata = Models.ToolOutputMetadata(
+                tool_name=tool_name, execution_time=perf_counter() - start
+            )
+            tool_output = Models.ToolOutput(
+                result=operator_output.result,
+                logprobs=operator_output.logprobs,
+                analysis=operator_output.analysis,
+                metadata=metadata,
+            )
 
-        return output
+        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
+            tool_output = Models.ToolOutput(
+                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
+            )
+
+        return tool_output

@@ -12,7 +12,7 @@ main_template:
     - Respond only in JSON format:
     {{"result": ["keyword1", "keyword2", etc.]}}
     Here is the text:
-    {input}
+    {text}
 
   threshold: |
     You are an expert keyword extractor specialized in fine-grained concept identification.
@@ -32,7 +32,7 @@ main_template:
     - Respond only in JSON format:
     {{"result": ["keyword1", "keyword2", etc.]}}
     Here is the text:
-    {input}
+    {text}
 
   count: |
     You are an expert keyword extractor with precise output requirements.
@@ -49,20 +49,20 @@ main_template:
     {{"result": ["keyword1", "keyword2", "keyword3", ...]}}
     
     Here is the text:
-    {input}
+    {text}
 
 analyze_template:
   auto: |
     Analyze the following text to identify its main topics, concepts, and important terms.
     Provide a concise summary of your findings that will help in extracting relevant keywords.
-    {input}
+    {text}
 
   threshold: |
     Analyze the following text to identify its main topics, concepts, and important terms.
     Provide a concise summary of your findings that will help in extracting relevant keywords.
-    {input}
+    {text}
 
   count: |
     Analyze the following text to identify its main topics, concepts, and important terms.
     Provide a concise summary of your findings that will help in extracting relevant keywords.
-    {input}
+    {text}

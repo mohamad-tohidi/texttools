@@ -4,11 +4,11 @@ main_template: |
   Respond only in JSON format (Output should be a boolean):
   {{"result": True/False}}
   Here is the text:
-  {input}
+  {text}
 
 analyze_template: |
   We want to analyze this text snippet to see if it contains any question or request of some kind or not.
   Read the text, and reason about it being a request or not.
   Summerized, short answer.
-  {input}
+  {text}
   

@@ -15,7 +15,7 @@ It provides ready-to-use utilities for **translation, question detection, keywor
 TextTools provides a rich collection of high-level NLP utilities,
 Each tool is designed to work with structured outputs (JSON / Pydantic).
 
-- **`categorize()`** - Classifies text into given categories (You have to create a category tree)
+- **`categorize()`** - Classifies text into given categories
 - **`extract_keywords()`** - Extracts keywords from text
 - **`extract_entities()`** - Named Entity Recognition (NER) system
 - **`is_question()`** - Binary detection of whether input is a question
@@ -26,7 +26,7 @@ Each tool is designed to work with structured outputs (JSON / Pydantic).
 - **`summarize()`** - Text summarization
 - **`translate()`** - Text translation between languages
 - **`propositionize()`** - Convert text to atomic independence meaningful sentences 
-- **`check_fact()`** - Check a statement is relevant to source text or not 
+- **`check_fact()`** - Check whether a statement is relevant to the source text
 - **`run_custom()`** - Allows users to define a custom tool with an arbitrary BaseModel
 
 ---
@@ -90,11 +90,12 @@ TextTools provides several optional flags to customize LLM behavior:
 Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel with attributes:
 - **`result: Any`** → The output of LLM
 - **`analysis: str`** → The reasoning step before generating the final output
-- **`logprobs: list`** → Token-level probabilities for the generated output 
-- **`process: str`** → The tool name which processed the input
-- **`processed_at: datetime`** → The process time
-- **`execution_time: float`** → The execution time (seconds)
+- **`logprobs: list`** → Token-level probabilities for the generated output
 - **`errors: list[str]`** → Any error that have occured during calling LLM
+- **`ToolOutputMetadata`** →
+    - **`tool_name: str`** → The tool name which processed the input
+    - **`processed_at: datetime`** → The process time
+    - **`execution_time: float`** → The execution time (seconds)
 
 **Note:** You can use `repr(ToolOutput)` to see details of your ToolOutput.
 
@@ -186,26 +187,6 @@ Use **TextTools** when you need to:
 - 🌍 **Translate** and process multilingual corpora with ease  
 - 🧩 **Integrate** LLMs into production pipelines (structured outputs)  
 - 📊 **Analyze** large text collections using embeddings and categorization  
-
----
-
-## 🔍 Logging
-
-TextTools uses Python's standard `logging` module. The library's default logger level is `WARNING`, so if you want to modify it, follow instructions:
-
-
-```python
-import logging
-
-# Default: warnings and errors only
-logging.basicConfig(level=logging.WARNING)
-
-# Debug everything (verbose)
-logging.basicConfig(level=logging.DEBUG)
-
-# Complete silence
-logging.basicConfig(level=logging.CRITICAL)
-```
 
 ---
 

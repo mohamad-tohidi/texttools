@@ -5,7 +5,7 @@ main_template: |
   Respond only in JSON format (Output should be a boolean):
   {{"result": True/False}}
   The statement is:
-  {input}
+  {text}
   The source text is:
   {source_text}
 
@@ -14,6 +14,6 @@ analyze_template: |
   summarized analysis that could help in determining that can the statement
   be concluded from the source or not.
   The statement is:
-  {input}
+  {text}
   The source text is:
   {source_text}
