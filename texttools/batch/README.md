@@ -1,7 +1,7 @@
 # Batch
 
 ## Overview
-`BatchRunner` is a lightweight Python utility that simplifies working with the [OpenAI Batch API](https://platform.openai.com/docs/guides/batch). It allows you to:
+`BatchRunner` is a lightweight Python utility that simplifies working with the OpenAI Batch API. It allows you to:
 
 - Efficiently submit **large volumes of prompts** for processing.  
 - Automatically manage **job state** (saving, resuming, clearing).  

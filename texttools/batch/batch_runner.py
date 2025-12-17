@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.batch.internals.batch_manager import BatchManager
+from texttools.batch.batch_manager import BatchManager
 from texttools.batch.batch_config import BatchConfig
 from texttools.internals.models import Str
 from texttools.internals.exceptions import TextToolsError, ConfigurationError
