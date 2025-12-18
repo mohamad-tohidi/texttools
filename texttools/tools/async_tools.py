@@ -40,7 +40,7 @@ class AsyncTheTool:
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Categorize a text into a category / category tree.
@@ -175,7 +175,7 @@ class AsyncTheTool:
         number_of_keywords: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Extract salient keywords from text.
@@ -248,7 +248,7 @@ class AsyncTheTool:
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Perform Named Entity Recognition (NER) over the input text.
@@ -321,7 +321,7 @@ class AsyncTheTool:
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Detect if the input is phrased as a question.
@@ -393,7 +393,7 @@ class AsyncTheTool:
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Generate a single question from the given text.
@@ -467,7 +467,7 @@ class AsyncTheTool:
         mode: Literal["default", "reason"] = "default",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Merge multiple questions into a single unified question.
@@ -540,7 +540,7 @@ class AsyncTheTool:
         mode: Literal["positive", "negative", "hard_negative"] = "positive",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Rewrite a text with different modes.
@@ -612,7 +612,7 @@ class AsyncTheTool:
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Generate a list of questions about a subject.
@@ -685,7 +685,7 @@ class AsyncTheTool:
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Summarize the given subject text.
@@ -757,7 +757,7 @@ class AsyncTheTool:
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Translate text between languages.
@@ -876,7 +876,7 @@ class AsyncTheTool:
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Proposition input text to meaningful sentences.
@@ -950,7 +950,7 @@ class AsyncTheTool:
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Checks wheather a statement is relevant to the source text or not.
@@ -1026,7 +1026,7 @@ class AsyncTheTool:
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
-        priority: int | None = 0,
+        priority: int | None = None,
     ) -> Models.ToolOutput:
         """
         Custom tool that can do almost anything!

@@ -17,8 +17,7 @@ t = TheTool(client=client, model=MODEL)
 
 # Categorizer: list mode
 category = t.categorize(
-    "سلام حالت چطوره؟",
-    categories=["هیچکدام", "دینی", "فلسفه"],
+    "سلام حالت چطوره؟", categories=["هیچکدام", "دینی", "فلسفه"], priority=3
 )
 print(repr(category))
 

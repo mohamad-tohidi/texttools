@@ -56,7 +56,7 @@ class Operator:
         temperature: float,
         logprobs: bool,
         top_logprobs: int,
-        priority: int,
+        priority: int | None,
     ) -> tuple[T, Any]:
         """
         Parses a chat completion using OpenAI's structured output format.
@@ -74,7 +74,7 @@ class Operator:
                 request_kwargs["logprobs"] = True
                 request_kwargs["top_logprobs"] = top_logprobs
 
-            if priority:
+            if priority is not None:
                 request_kwargs["extra_body"] = {"priority": priority}
 
             completion = self._client.beta.chat.completions.parse(**request_kwargs)
@@ -106,7 +106,7 @@ class Operator:
         top_logprobs: int,
         validator: Callable[[Any], bool] | None,
         max_validation_retries: int | None,
-        priority: int,
+        priority: int | None,
         # Internal parameters
         tool_name: str,
         output_model: Type[T],
