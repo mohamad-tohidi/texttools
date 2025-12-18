@@ -23,7 +23,7 @@ category = t.categorize(
     "سلام حالت چطوره؟",
     categories=["هیچکدام", "دینی", "فلسفه"],
     logprobs=True,
-    top_logprobs=-1,
+    top_logprobs=3,
 )
 print(repr(category))
 

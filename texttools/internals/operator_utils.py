@@ -42,7 +42,7 @@ class OperatorUtils:
 
         for choice in completion.choices:
             if not getattr(choice, "logprobs", None):
-                return []
+                raise ValueError("Your model does not support logprobs")
 
             for logprob_item in choice.logprobs.content:
                 if ignore_pattern.match(logprob_item.token):

@@ -20,7 +20,7 @@ T = TypeVar("T", bound=BaseModel)
 logger = logging.getLogger("texttools.batch_runner")
 
 
-class BatchJobRunner:
+class BatchRunner:
     """
     Handles running batch jobs using a batch manager and configuration.
     """

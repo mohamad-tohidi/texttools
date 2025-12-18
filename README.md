@@ -8,6 +8,8 @@ It provides both **sync (`TheTool`)** and **async (`AsyncTheTool`)** APIs for ma
 
 It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER extraction, and more** - designed to help you integrate AI-powered text processing into your applications with minimal effort.
 
+**Note:** Most features of `texttools` are reliable when you use `google/gemma-3n-e4b-it` model.
+
 ---
 
 ## ✨ Features
@@ -31,31 +33,22 @@ Each tool is designed to work with structured outputs.
 
 ---
 
+## 🚀 Installation
+
+Install the latest release via PyPI:
+
+```bash
+pip install -U hamtaa-texttools
+```
+
+---
+
 ## 📊 Tool Quality Tiers
 
-| Status | Meaning | Use in Production? |
-|--------|---------|-------------------|
-| **✅ Production** | Evaluated, tested, stable. | **Yes** - ready for reliable use. |
-| **🧪 Experimental** | Added to the package but **not fully evaluated**. Functional, but quality may vary. | **Use with caution** - outputs not yet validated. |
-
-### Current Status
-**Production Tools:**
-- `categorize()` (list mode)
-- `extract_keywords()`
-- `extract_entities()`
-- `is_question()`
-- `text_to_question()`
-- `merge_questions()`
-- `rewrite()`
-- `subject_to_question()`
-- `summarize()`
-- `run_custom()` (fine in most cases)
-
-**Experimental Tools:**
-- `categorize()` (tree mode)
-- `translate()`
-- `propositionize()`
-- `check_fact()`
+| Status | Meaning | Tools | Use in Production? |
+|--------|---------|----------|-------------------|
+| **✅ Production** | Evaluated, tested, stable. | `categorize()` (list mode), `extract_keywords()`, `extract_entities()`, `is_question()`, `text_to_question()`, `merge_questions()`, `rewrite()`, `subject_to_question()`, `summarize()`, `run_custom()` | **Yes** - ready for reliable use. |
+| **🧪 Experimental** | Added to the package but **not fully evaluated**. Functional, but quality may vary. | `categorize()` (tree mode), `translate()`, `propositionize()`, `check_fact()` | **Use with caution** - outputs not yet validated. |
 
 ---
 
@@ -94,17 +87,7 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
     - **`processed_at: datetime`**
     - **`execution_time: float`**
 
-**Note:** You can use `repr(ToolOutput)` to see details of your ToolOutput.
-
----
-
-## 🚀 Installation
-
-Install the latest release via PyPI:
-
-```bash
-pip install -U hamtaa-texttools
-```
+**Note:** You can use `repr(ToolOutput)` to print your output with all the details.
 
 ---
 
@@ -122,26 +105,13 @@ pip install -U hamtaa-texttools
 from openai import OpenAI
 from texttools import TheTool
 
-# Create your OpenAI client
 client = OpenAI(base_url = "your_url", API_KEY = "your_api_key")
+model = "model_name"
 
-# Specify the model
-model = "gpt-4o-mini"
-
-# Create an instance of TheTool
 the_tool = TheTool(client=client, model=model)
 
-# Example: Question Detection
-detection = the_tool.is_question("Is this project open source?", logprobs=True, top_logprobs=2)
-print(detection.result)
-print(detection.logprobs)
-# Output: True + logprobs
-
-# Example: Translation
-translation = the_tool.translate("سلام، حالت چطوره؟" target_language="English", with_analysis=True)
-print(translation.result)
-print(translation.analysis)
-# Output: "Hi! How are you?"  + analysis
+detection = the_tool.is_question("Is this project open source?")
+print(repr(detection))
 ```
 
 ---
@@ -154,22 +124,17 @@ from openai import AsyncOpenAI
 from texttools import AsyncTheTool
 
 async def main():
-    # Create your AsyncOpenAI client
     async_client = AsyncOpenAI(base_url="your_url", api_key="your_api_key")
+    model = "model_name"
 
-    # Specify the model
-    model = "gpt-4o-mini"
-
-    # Create an instance of AsyncTheTool
     async_the_tool = AsyncTheTool(client=async_client, model=model)
     
-    # Example: Async Translation and Keyword Extraction
     translation_task = async_the_tool.translate("سلام، حالت چطوره؟", target_language="English")
     keywords_task = async_the_tool.extract_keywords("Tomorrow, we will be dead by the car crash")
 
     (translation, keywords) = await asyncio.gather(translation_task, keywords_task)
-    print(translation.result)
-    print(keywords.result)
+    print(repr(translation))
+    print(repr(keywords))
 
 asyncio.run(main())
 ```
@@ -191,13 +156,12 @@ Use **TextTools** when you need to:
 
 Process large datasets efficiently using OpenAI's batch API.
 
-## ⚡ Quick Start (Batch)
+## ⚡ Quick Start (Batch Runner)
 
 ```python
 from pydantic import BaseModel
-from texttools import BatchJobRunner, BatchConfig
+from texttools import BatchRunner, BatchConfig
 
-# Configure your batch job
 config = BatchConfig(
     system_prompt="Extract entities from the text",
     job_name="entity_extraction",
@@ -206,12 +170,10 @@ config = BatchConfig(
     model="gpt-4o-mini"
 )
 
-# Define your output schema
 class Output(BaseModel):
     entities: list[str]
 
-# Run the batch job
-runner = BatchJobRunner(config, output_model=Output)
+runner = BatchRunner(config, output_model=Output)
 runner.run()
 ```
 
