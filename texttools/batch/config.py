@@ -1,6 +1,6 @@
-from typing import Any
-from dataclasses import dataclass
 from collections.abc import Callable
+from dataclasses import dataclass
+from typing import Any
 
 
 def export_data(data) -> list[dict[str, str]]:

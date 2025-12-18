@@ -1,4 +1,4 @@
-from typing import Type, Literal, Any
+from typing import Any, Literal, Type
 
 from pydantic import BaseModel, Field, create_model
 

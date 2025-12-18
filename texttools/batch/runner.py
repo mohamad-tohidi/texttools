@@ -1,18 +1,18 @@
 import json
+import logging
 import os
 import time
 from pathlib import Path
-from typing import Type, TypeVar, Any
-import logging
+from typing import Any, Type, TypeVar
 
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 
-from Hamtaa.texttools.texttools.batch.manager import BatchManager
-from Hamtaa.texttools.texttools.batch.config import BatchConfig
-from texttools.internals.models import Str
-from texttools.internals.exceptions import TextToolsError
+from ..core.exceptions import TextToolsError
+from ..core.internal_models import Str
+from .config import BatchConfig
+from .manager import BatchManager
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)

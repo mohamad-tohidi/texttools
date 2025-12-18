@@ -1,19 +1,22 @@
 import sys
-from time import perf_counter
-from typing import Literal, Any
 from collections.abc import Callable
+from time import perf_counter
+from typing import Any, Literal
 
 from openai import AsyncOpenAI
 
-from texttools.internals.async_operator import AsyncOperator
-import texttools.internals.models as Models
-from texttools.internals.exceptions import (
-    TextToolsError,
-    PromptError,
-    LLMError,
-    ValidationError,
+from ..core.engine import text_to_chunks
+from ..core.exceptions import LLMError, PromptError, TextToolsError, ValidationError
+from ..core.internal_models import (
+    Bool,
+    ListDictStrStr,
+    ListStr,
+    ReasonListStr,
+    Str,
+    create_dynamic_model,
 )
-from texttools.internals.text_to_chunks import text_to_chunks
+from ..core.operators.async_operator import AsyncOperator
+from ..models import CategoryTree, ToolOutput, ToolOutputMetadata
 
 
 class AsyncTheTool:
@@ -32,7 +35,7 @@ class AsyncTheTool:
     async def categorize(
         self,
         text: str,
-        categories: list[str] | Models.CategoryTree,
+        categories: list[str] | CategoryTree,
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
@@ -41,7 +44,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Categorize a text into a category / category tree.
 
@@ -82,15 +85,15 @@ class AsyncTheTool:
                     priority=priority,
                     # Internal parameters
                     tool_name=tool_name,
-                    output_model=Models.create_dynamic_model(categories),
+                    output_model=create_dynamic_model(categories),
                     mode=None,
                     output_lang=None,
                 )
 
-                metadata = Models.ToolOutputMetadata(
+                metadata = ToolOutputMetadata(
                     tool_name=tool_name, execution_time=perf_counter() - start
                 )
-                tool_output = Models.ToolOutput(
+                tool_output = ToolOutput(
                     result=operator_output.result,
                     analysis=operator_output.analysis,
                     logprobs=operator_output.logprobs,
@@ -128,7 +131,7 @@ class AsyncTheTool:
                         priority=priority,
                         # Internal parameters
                         tool_name=tool_name,
-                        output_model=Models.create_dynamic_model(category_names),
+                        output_model=create_dynamic_model(category_names),
                         mode=None,
                         output_lang=None,
                     )
@@ -144,10 +147,10 @@ class AsyncTheTool:
                     if logprobs:
                         logprobs_list.extend(level_operator_output.logprobs)
 
-                metadata = Models.ToolOutputMetadata(
+                metadata = ToolOutputMetadata(
                     tool_name=tool_name, execution_time=(perf_counter() - start)
                 )
-                tool_output = Models.ToolOutput(
+                tool_output = ToolOutput(
                     result=final_categories,
                     analysis=analysis,
                     logprobs=logprobs_list,
@@ -155,8 +158,8 @@ class AsyncTheTool:
                 )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -176,7 +179,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Extract salient keywords from text.
 
@@ -215,13 +218,13 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 tool_name=tool_name,
-                output_model=Models.ListStr,
+                output_model=ListStr,
             )
 
-            metadata = Models.ToolOutputMetadata(
+            metadata = ToolOutputMetadata(
                 tool_name=tool_name, execution_time=perf_counter() - start
             )
-            tool_output = Models.ToolOutput(
+            tool_output = ToolOutput(
                 result=operator_output.result,
                 logprobs=operator_output.logprobs,
                 analysis=operator_output.analysis,
@@ -229,8 +232,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -249,7 +252,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Perform Named Entity Recognition (NER) over the input text.
 
@@ -289,14 +292,14 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 tool_name=tool_name,
-                output_model=Models.ListDictStrStr,
+                output_model=ListDictStrStr,
                 mode=None,
             )
 
-            metadata = Models.ToolOutputMetadata(
+            metadata = ToolOutputMetadata(
                 tool_name=tool_name, execution_time=perf_counter() - start
             )
-            tool_output = Models.ToolOutput(
+            tool_output = ToolOutput(
                 result=operator_output.result,
                 logprobs=operator_output.logprobs,
                 analysis=operator_output.analysis,
@@ -304,8 +307,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -322,7 +325,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Detect if the input is phrased as a question.
 
@@ -358,15 +361,15 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 tool_name=tool_name,
-                output_model=Models.Bool,
+                output_model=Bool,
                 mode=None,
                 output_lang=None,
             )
 
-            metadata = Models.ToolOutputMetadata(
+            metadata = ToolOutputMetadata(
                 tool_name=tool_name, execution_time=perf_counter() - start
             )
-            tool_output = Models.ToolOutput(
+            tool_output = ToolOutput(
                 result=operator_output.result,
                 logprobs=operator_output.logprobs,
                 analysis=operator_output.analysis,
@@ -374,8 +377,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -394,7 +397,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Generate a single question from the given text.
 
@@ -433,14 +436,14 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 tool_name=tool_name,
-                output_model=Models.ReasonListStr,
+                output_model=ReasonListStr,
                 mode=None,
             )
 
-            metadata = Models.ToolOutputMetadata(
+            metadata = ToolOutputMetadata(
                 tool_name=tool_name, execution_time=perf_counter() - start
             )
-            tool_output = Models.ToolOutput(
+            tool_output = ToolOutput(
                 result=operator_output.result,
                 logprobs=operator_output.logprobs,
                 analysis=operator_output.analysis,
@@ -448,8 +451,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -468,7 +471,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Merge multiple questions into a single unified question.
 
@@ -506,14 +509,14 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 tool_name=tool_name,
-                output_model=Models.Str,
+                output_model=Str,
                 mode=mode,
             )
 
-            metadata = Models.ToolOutputMetadata(
+            metadata = ToolOutputMetadata(
                 tool_name=tool_name, execution_time=perf_counter() - start
             )
-            tool_output = Models.ToolOutput(
+            tool_output = ToolOutput(
                 result=operator_output.result,
                 logprobs=operator_output.logprobs,
                 analysis=operator_output.analysis,
@@ -521,8 +524,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -541,7 +544,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Rewrite a text with different modes.
 
@@ -578,14 +581,14 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 tool_name=tool_name,
-                output_model=Models.Str,
+                output_model=Str,
                 mode=mode,
             )
 
-            metadata = Models.ToolOutputMetadata(
+            metadata = ToolOutputMetadata(
                 tool_name=tool_name, execution_time=perf_counter() - start
             )
-            tool_output = Models.ToolOutput(
+            tool_output = ToolOutput(
                 result=operator_output.result,
                 logprobs=operator_output.logprobs,
                 analysis=operator_output.analysis,
@@ -593,8 +596,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -613,7 +616,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Generate a list of questions about a subject.
 
@@ -652,14 +655,14 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 tool_name=tool_name,
-                output_model=Models.ReasonListStr,
+                output_model=ReasonListStr,
                 mode=None,
             )
 
-            metadata = Models.ToolOutputMetadata(
+            metadata = ToolOutputMetadata(
                 tool_name=tool_name, execution_time=perf_counter() - start
             )
-            tool_output = Models.ToolOutput(
+            tool_output = ToolOutput(
                 result=operator_output.result,
                 logprobs=operator_output.logprobs,
                 analysis=operator_output.analysis,
@@ -667,8 +670,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -686,7 +689,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Summarize the given subject text.
 
@@ -723,14 +726,14 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 tool_name=tool_name,
-                output_model=Models.Str,
+                output_model=Str,
                 mode=None,
             )
 
-            metadata = Models.ToolOutputMetadata(
+            metadata = ToolOutputMetadata(
                 tool_name=tool_name, execution_time=perf_counter() - start
             )
-            tool_output = Models.ToolOutput(
+            tool_output = ToolOutput(
                 result=operator_output.result,
                 logprobs=operator_output.logprobs,
                 analysis=operator_output.analysis,
@@ -738,8 +741,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -758,7 +761,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Translate text between languages.
 
@@ -805,7 +808,7 @@ class AsyncTheTool:
                         priority=priority,
                         # Internal parameters
                         tool_name=tool_name,
-                        output_model=Models.Str,
+                        output_model=Str,
                         mode=None,
                         output_lang=None,
                     )
@@ -817,10 +820,10 @@ class AsyncTheTool:
                     if logprobs:
                         logprobs_list.extend(chunk_operator_output.logprobs)
 
-                metadata = Models.ToolOutputMetadata(
+                metadata = ToolOutputMetadata(
                     tool_name=tool_name, execution_time=perf_counter() - start
                 )
-                tool_output = Models.ToolOutput(
+                tool_output = ToolOutput(
                     result=translation,
                     logprobs=logprobs_list,
                     analysis=analysis,
@@ -842,15 +845,15 @@ class AsyncTheTool:
                     priority=priority,
                     # Internal parameters
                     tool_name=tool_name,
-                    output_model=Models.Str,
+                    output_model=Str,
                     mode=None,
                     output_lang=None,
                 )
 
-                metadata = Models.ToolOutputMetadata(
+                metadata = ToolOutputMetadata(
                     tool_name=tool_name, execution_time=perf_counter() - start
                 )
-                tool_output = Models.ToolOutput(
+                tool_output = ToolOutput(
                     result=operator_output.result,
                     logprobs=operator_output.logprobs,
                     analysis=operator_output.analysis,
@@ -858,8 +861,8 @@ class AsyncTheTool:
                 )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -877,7 +880,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Proposition input text to meaningful sentences.
 
@@ -916,14 +919,14 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 tool_name=tool_name,
-                output_model=Models.ListStr,
+                output_model=ListStr,
                 mode=None,
             )
 
-            metadata = Models.ToolOutputMetadata(
+            metadata = ToolOutputMetadata(
                 tool_name=tool_name, execution_time=perf_counter() - start
             )
-            tool_output = Models.ToolOutput(
+            tool_output = ToolOutput(
                 result=operator_output.result,
                 logprobs=operator_output.logprobs,
                 analysis=operator_output.analysis,
@@ -931,8 +934,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -951,7 +954,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Checks wheather a statement is relevant to the source text or not.
 
@@ -991,15 +994,15 @@ class AsyncTheTool:
                 priority=priority,
                 # Internal parameters
                 tool_name=tool_name,
-                output_model=Models.Bool,
+                output_model=Bool,
                 mode=None,
                 source_text=source_text,
             )
 
-            metadata = Models.ToolOutputMetadata(
+            metadata = ToolOutputMetadata(
                 tool_name=tool_name, execution_time=perf_counter() - start
             )
-            tool_output = Models.ToolOutput(
+            tool_output = ToolOutput(
                 result=operator_output.result,
                 logprobs=operator_output.logprobs,
                 analysis=operator_output.analysis,
@@ -1007,8 +1010,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
@@ -1027,7 +1030,7 @@ class AsyncTheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
-    ) -> Models.ToolOutput:
+    ) -> ToolOutput:
         """
         Custom tool that can do almost anything!
 
@@ -1071,10 +1074,10 @@ class AsyncTheTool:
                 mode=None,
             )
 
-            metadata = Models.ToolOutputMetadata(
+            metadata = ToolOutputMetadata(
                 tool_name=tool_name, execution_time=perf_counter() - start
             )
-            tool_output = Models.ToolOutput(
+            tool_output = ToolOutput(
                 result=operator_output.result,
                 logprobs=operator_output.logprobs,
                 analysis=operator_output.analysis,
@@ -1082,8 +1085,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = Models.ToolOutputMetadata(tool_name=tool_name)
-            tool_output = Models.ToolOutput(
+            metadata = ToolOutputMetadata(tool_name=tool_name)
+            tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
             )
 
