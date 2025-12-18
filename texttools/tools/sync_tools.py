@@ -48,11 +48,11 @@ class TheTool:
         Important Note: category_tree mode is EXPERIMENTAL, you can use it but it isn't reliable.
 
         Arguments:
-            text: The input text to categorize
+            text: The input text
             categories: The category list / category tree
             with_analysis: Whether to include detailed reasoning analysis
-            user_prompt: Additional instructions for the categorization
-            temperature: Controls randomness
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -182,11 +182,11 @@ class TheTool:
         Extract salient keywords from text.
 
         Arguments:
-            text: The input text to extract keywords from
+            text: The input text
             with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output response
-            user_prompt: Additional instructions for keyword extraction
-            temperature: Controls randomness
+            output_lang: Language for the output
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -256,12 +256,12 @@ class TheTool:
         Perform Named Entity Recognition (NER) over the input text.
 
         Arguments:
-            text: The input text to extract entities from
-            entities: List of entities provided by user (Optional)
+            text: The input text
+            entities: List of entities provided by user
             with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output response
-            user_prompt: Additional instructions for entity extraction
-            temperature: Controls randomness
+            output_lang: Language for the output
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -330,10 +330,10 @@ class TheTool:
         Detect if the input is phrased as a question.
 
         Arguments:
-            text: The input text to analyze
+            text: The input text
             with_analysis: Whether to include detailed reasoning analysis
-            user_prompt: Additional instructions for question detection
-            temperature: Controls randomness
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -402,12 +402,12 @@ class TheTool:
         Generate a single question from the given text.
 
         Arguments:
-            text: The input text to generate a question from
+            text: The input text
             number_of_questions: Number of questions to generate
             with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output question
-            user_prompt: Additional instructions for question generation
-            temperature: Controls randomness
+            output_lang: Language for the output
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -479,12 +479,11 @@ class TheTool:
         Arguments:
             text: List of questions to merge
             with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output merged question
-            user_prompt: Additional instructions for question merging
-            temperature: Controls randomness
+            output_lang: Language for the output
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
-            mode: Merging strategy - 'default' for direct merge, 'reason' for reasoned merge
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -552,14 +551,13 @@ class TheTool:
         Rewrite a text with different modes.
 
         Arguments:
-            text: The input text to rewrite
+            text: The input text
             with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output rewritten text
-            user_prompt: Additional instructions for rewriting
-            temperature: Controls randomness
+            output_lang: Language for the output
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
-            mode: Rewriting mode - 'positive', 'negative', or 'hard_negative'
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -629,9 +627,9 @@ class TheTool:
             text: The subject text to generate questions about
             number_of_questions: Number of questions to generate
             with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output questions
-            user_prompt: Additional instructions for question generation
-            temperature: Controls randomness
+            output_lang: Language for the output
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -700,11 +698,11 @@ class TheTool:
         Summarize the given subject text.
 
         Arguments:
-            text: The input text to summarize
+            text: The input text
             with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output summary
-            user_prompt: Additional instructions for summarization
-            temperature: Controls randomness
+            output_lang: Language for the output
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -775,12 +773,12 @@ class TheTool:
         Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
 
         Arguments:
-            text: The input text to translate
+            text: The input text
             target_language: The target language for translation
             use_chunker: Whether to use text chunker for text length bigger than 1500
             with_analysis: Whether to include detailed reasoning analysis
-            user_prompt: Additional instructions for translation
-            temperature: Controls randomness
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -897,9 +895,9 @@ class TheTool:
         Arguments:
             text: The input text
             with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output summary
-            user_prompt: Additional instructions for summarization
-            temperature: Controls randomness
+            output_lang: Language for the output
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -973,9 +971,9 @@ class TheTool:
             text: The input text
             source_text: the source text that we want to check relation of text to it
             with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output summary
-            user_prompt: Additional instructions for summarization
-            temperature: Controls randomness
+            output_lang: Language for the output
+            user_prompt: Additional instructions
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -1049,8 +1047,8 @@ class TheTool:
             output_model: Pydantic BaseModel used for structured output
             with_analysis: Whether to include detailed reasoning analysis
             analyze_template: The analyze template used for reasoning analysis
-            output_lang: Language for the output summary
-            temperature: Controls randomness
+            output_lang: Language for the output
+            temperature: Controls randomness (0.0 - 2.0)
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
