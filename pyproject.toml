@@ -6,22 +6,33 @@ build-backend = "setuptools.build_meta"
 name = "hamtaa-texttools"
 version = "1.1.23"
 authors = [
-  { name = "Tohidi", email = "the.mohammad.tohidi@gmail.com" },
-  { name = "Montazer", email = "montazerh82@gmail.com" },
-  { name = "Givechi", email = "mohamad.m.givechi@gmail.com" },
-  { name = "MoosaviNejad", email = "erfanmoosavi84@gmail.com" },
-  { name = "Zareshahi", email = "a.zareshahi1377@gmail.com" },
+  {name = "Tohidi", email = "the.mohammad.tohidi@gmail.com"},
+  {name = "Erfan Moosavi", email = "erfanmoosavi84@gmail.com"},
+  {name = "Montazer", email = "montazerh82@gmail.com"},
+  {name = "Givechi", email = "mohamad.m.givechi@gmail.com"},
+  {name = "Zareshahi", email = "a.zareshahi1377@gmail.com"},
+]
+maintainers = [
+    {name = "Erfan Moosavi", email = "erfanmoosavi84@gmail.com"},
+    {name = "Tohidi", email = "the.mohammad.tohidi@gmail.com"},
 ]
 description = "A high-level NLP toolkit built on top of modern LLMs."
 readme = "README.md"
-license = {file = "LICENSE"}
-requires-python = ">=3.8"
+license = {text = "MIT"}
+requires-python = ">=3.9"
 dependencies = [
-  "openai==1.97.1",
+  "openai>=1.97.1",
   "pydantic>=2.0.0",
   "pyyaml>=6.0",
 ]
 keywords = ["nlp", "llm", "text-processing", "openai"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing",
+    "Operating System :: OS Independent",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -31,4 +42,4 @@ include = ["texttools*"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-"texttools" = ["prompts/*.yaml", "prompts/*.yml"]
+"texttools" = ["prompts/*.yaml"]
