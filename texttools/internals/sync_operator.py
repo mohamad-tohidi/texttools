@@ -122,11 +122,13 @@ class Operator:
         **extra_kwargs,
     ) -> OperatorOutput:
         """
-        Execute the LLM pipeline with the given input text. (Sync)
+        Execute the LLM pipeline with the given input text.
         """
         try:
-            prompt_loader = PromptLoader()
+            if logprobs and (not isinstance(top_logprobs, int) or top_logprobs < 2):
+                raise ValueError("top_logprobs should be an int greater than 1")
 
+            prompt_loader = PromptLoader()
             prompt_configs = prompt_loader.load(
                 prompt_file=prompt_file,
                 text=text.strip(),
@@ -151,9 +153,6 @@ class Operator:
 
             main_prompt += prompt_configs["main_template"]
 
-            if logprobs and (not isinstance(top_logprobs, int) or top_logprobs < 2):
-                raise ValueError("top_logprobs should be an integer greater than 1")
-
             parsed, completion = self._parse_completion(
                 main_prompt, output_model, temperature, logprobs, top_logprobs, priority
             )
@@ -164,9 +163,7 @@ class Operator:
                     not isinstance(max_validation_retries, int)
                     or max_validation_retries < 1
                 ):
-                    raise ValueError(
-                        "max_validation_retries should be a positive integer"
-                    )
+                    raise ValueError("max_validation_retries should be a positive int")
 
                 succeeded = False
                 for _ in range(max_validation_retries):
