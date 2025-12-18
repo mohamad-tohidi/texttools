@@ -67,9 +67,6 @@ class OperatorUtils:
 
     @staticmethod
     def get_retry_temp(base_temp: float) -> float:
-        """
-        Calculate temperature for retry attempts.
-        """
         delta_temp = random.choice([-1, 1]) * random.uniform(0.1, 0.9)
         new_temp = base_temp + delta_temp
 

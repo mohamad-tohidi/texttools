@@ -23,7 +23,7 @@ main_template: |
   Available categories with their descriptions:
   {category_list}
 
-  The text that has to be categorized:
+  Here is the text:
   {text}
 
 analyze_template: |
@@ -31,5 +31,6 @@ analyze_template: |
   To improve categorization, we need an analysis of the text.
   Analyze the given text and write its main idea and a short analysis of that.
   Analysis should be very short.
-  Text:
+
+  Here is the text:
   {text}

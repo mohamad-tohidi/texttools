@@ -8,11 +8,6 @@ from texttools.internals.exceptions import PromptError
 class PromptLoader:
     """
     Utility for loading and formatting YAML prompt templates.
-
-    Responsibilities:
-    - Load and parse YAML prompt definitions.
-    - Select the right template (by mode, if applicable).
-    - Inject variables (`{text}`, plus any extra kwargs) into the templates.
     """
 
     MAIN_TEMPLATE = "main_template"

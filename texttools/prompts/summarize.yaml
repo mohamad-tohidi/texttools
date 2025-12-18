@@ -1,8 +1,10 @@
 main_template: |
   You are a summarizer.
   You must summarize the given text, preserving its meaning.
+
   Respond only in JSON format:
   {{"result": "string"}}
+
   Provide a concise summary of the following text:
   {text}
 
@@ -10,5 +12,7 @@ main_template: |
 analyze_template: |
   Read the following text and identify its main points, key arguments, and overall purpose.
   Provide a brief, summarized analysis that will help in generating an accurate and concise summary.
+  
+  Here is the text:
   {text}
   

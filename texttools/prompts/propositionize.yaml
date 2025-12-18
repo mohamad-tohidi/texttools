@@ -19,4 +19,6 @@ analyze_template: |
   An atomic proposition is a single, self-contained fact that is concise,
   verifiable, and does not rely on external context.
   You just have to think around the possible propositions in the text and how a proposition can be made.
+  
+  Here is the text:
   {text}

@@ -1,8 +1,10 @@
 main_template: |
   You are a question detector.
   Determine that if the given text contains any question or not.
+
   Respond only in JSON format (Output should be a boolean):
   {{"result": True/False}}
+
   Here is the text:
   {text}
 
@@ -10,5 +12,7 @@ analyze_template: |
   We want to analyze this text snippet to see if it contains any question or request of some kind or not.
   Read the text, and reason about it being a request or not.
   Summerized, short answer.
+
+  Here is the text:
   {text}
   

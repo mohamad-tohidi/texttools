@@ -2,6 +2,7 @@ main_template: |
   You are a Named Entity Recognition (NER) extractor.
   Identify and extract {entities} from the given text.
   For each entity, provide its text and a clear type.
+
   Respond only in JSON format:
   {{
     "result": [
@@ -11,10 +12,13 @@ main_template: |
       }}
     ]
   }}
+
   Here is the text:
   {text}
 
 analyze_template: |
   Read the following text and identify any proper nouns, key concepts, or specific mentions that might represent named entities.
   Provide a brief, summarized analysis that could help in categorizing these entities.
+  
+  Here is the text:
   {text}

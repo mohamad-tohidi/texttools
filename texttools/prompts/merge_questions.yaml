@@ -4,13 +4,16 @@ main_template:
     You are a language expert.
     I will give you a list of questions that are semantically similar.
     Your task is to merge them into one unified question.
+    
     Guidelines:
     - Preserves all the information and intent from the original questions.
     - Sounds natural, fluent, and concise.
     - Avoids redundancy or unnecessary repetition.
     - Does not omit any unique idea from the originals.
-    - Respond only in JSON format:
+    
+    Respond only in JSON format:
     {{"result": "string"}}
+
     Here is the questions:
     {text}
 
@@ -20,8 +23,10 @@ main_template:
     Then, write one merged question that combines all their content clearly and naturally, without redundancy.
     Step 1: Extract key ideas.
     Step 2: Write the final merged question.
+
     Respond only in JSON format:
     {{"result": "string"}}
+
     Here is the questions:
     {text}
 
@@ -33,6 +38,7 @@ analyze_template:
     and the specific information they are seeking.
     Provide a brief, summarized understanding of the questions' meaning that
     will help in merging and rephrasing it accurately without changing its intent.        
+    
     Here is the question:
     {text}
 
@@ -41,6 +47,7 @@ analyze_template:
     and the literal meaning it conveys.
     Provide a brief, summarized analysis of their linguistic structure and current meaning,
     which will then be used to create a new question containing all of their contents.
+    
     Here is the question:
     {text}
     

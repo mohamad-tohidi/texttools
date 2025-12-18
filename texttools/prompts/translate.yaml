@@ -1,9 +1,12 @@
 main_template: |
   You are a {target_language} translator.
   Output only the translated text.
+
   Respond only in JSON format:
   {{"result": "string"}}
+
   Don't translate proper name, only transliterate them to {target_language}
+  
   Translate the following text to {target_language}:
   {text}
 
@@ -11,5 +14,7 @@ analyze_template: |
   Analyze the following text and identify important linguistic considerations for translation.
   Point out any idioms, cultural references, or complex structures that need special attention.
   Also, list all proper nouns that should not be translated. Write your analysis in the {target_language}.
+  
+  Here is the text:
   {text}
   

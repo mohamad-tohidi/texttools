@@ -52,7 +52,6 @@ main_template:
       - Make it Challenging: The difference should be subtle enough that it requires a deep understanding of the text to identify, not just a simple keyword mismatch.
       - Maintain Similar Length: The generated sentence should be of roughly the same length and level of detail as the Anchor.
 
-
       Respond only in JSON format:
       {{"result": "str"}}
 
@@ -73,7 +72,7 @@ analyze_template:
     
     Your analysis should capture the ESSENTIAL MEANING that must be preserved in any paraphrase.
     
-    Text:
+    Here is the text:
     {text}
 
   negative: |
@@ -87,7 +86,7 @@ analyze_template:
     
     The goal is to find topics that are in the same domain but semantically unrelated to this specific text.
     
-    Text:
+    Here is the text:
     {text}
 
   hard_negative: |
@@ -106,6 +105,6 @@ analyze_template:
     - Sentence structure
     - 80-90% of the vocabulary
     
-    Text:
+    Here is the text:
     {text}
     

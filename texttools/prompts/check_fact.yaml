@@ -2,10 +2,13 @@ main_template: |
   You are an expert in determining whether a statement can be concluded from the source text or not.
   You must return a boolean value: True or False.
   Return True if the statement can be concluded from the source, and False otherwise.
+  
   Respond only in JSON format (Output should be a boolean):
   {{"result": True/False}}
+
   The statement is:
   {text}
+
   The source text is:
   {source_text}
 
@@ -13,7 +16,9 @@ analyze_template: |
   You should analyze a statement and a source text and provide a brief,
   summarized analysis that could help in determining that can the statement
   be concluded from the source or not.
+
   The statement is:
   {text}
+  
   The source text is:
   {source_text}

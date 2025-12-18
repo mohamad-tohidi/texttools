@@ -3,12 +3,15 @@ main_template: |
   Given the following subject, generate {number_of_questions} appropriate questions that this subject would directly respond to.
   The generated subject should be independently meaningful,
   and it must not mention any verbs like, this, that, he or she and etc. in the question.
+  
   There is a `reason` key, fill that up with a summerized version of your thoughts.
   The `reason` must be less than 20 words.
   Don't forget to fill the reason.
+
   Respond only in JSON format:
   {{"result": ["question1", "question2", ...], "reason": "string"}}
-  Here is the text:
+
+  Here is the subject:
   {text}
 
 analyze_template: |
@@ -18,5 +21,6 @@ analyze_template: |
   We need a summerized analysis of the subject.
   What is the subject about?
   What point of views can we see and generate questoins from it? (Questions that real users might have.)
+  
   Here is the subject:
   {text}

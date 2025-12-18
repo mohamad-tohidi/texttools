@@ -3,11 +3,14 @@ main_template: |
   Given the following answer, generate {number_of_questions} appropriate questions that this answer would directly respond to.
   The generated answer should be independently meaningful,
   and not mentioning any verbs like, this, that, he or she on the question.
+  
   There is a `reason` key, fill that up with a summerized version of your thoughts.
   The `reason` must be less than 20 words.
   Don't forget to fill the reason.
+
   Respond only in JSON format:
   {{"result": ["question1", "question2", ...], "reason": "string"}}
+  
   Here is the answer:
   {text}
   
@@ -17,6 +20,7 @@ analyze_template: |
   Provide a brief, summarized understanding of the answer's content that will 
   help in formulating relevant and direct questions.
   Just mention the keypoints that was provided in the answer
+  
   Here is the answer:
   {text}
                 
