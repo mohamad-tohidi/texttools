@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from texttools.batch.batch_manager import BatchManager
 from texttools.batch.batch_config import BatchConfig
 from texttools.internals.models import Str
-from texttools.internals.exceptions import TextToolsError, ConfigurationError
+from texttools.internals.exceptions import TextToolsError
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
@@ -47,7 +47,7 @@ class BatchRunner:
             Path(self._config.BASE_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
 
         except Exception as e:
-            raise ConfigurationError(f"Batch runner initialization failed: {e}")
+            raise TextToolsError(f"Batch runner initialization failed: {e}")
 
     def _init_manager(self) -> BatchManager:
         load_dotenv()

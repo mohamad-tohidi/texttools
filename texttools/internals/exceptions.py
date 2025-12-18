@@ -20,9 +20,3 @@ class ValidationError(TextToolsError):
     """Errors from output validation."""
 
     pass
-
-
-class ConfigurationError(TextToolsError):
-    """Errors from misconfiguration."""
-
-    pass
