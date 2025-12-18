@@ -119,9 +119,6 @@ class AsyncOperator:
         Execute the LLM pipeline with the given input text.
         """
         try:
-            if logprobs and (not isinstance(top_logprobs, int) or top_logprobs < 2):
-                raise ValueError("top_logprobs should be an int greater than 1")
-
             prompt_loader = PromptLoader()
             prompt_configs = prompt_loader.load(
                 prompt_file=tool_name + ".yaml",
