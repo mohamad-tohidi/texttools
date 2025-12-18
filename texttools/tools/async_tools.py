@@ -64,7 +64,6 @@ class AsyncTheTool:
 
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -82,7 +81,7 @@ class AsyncTheTool:
                     max_validation_retries=max_validation_retries,
                     priority=priority,
                     # Internal parameters
-                    prompt_file=prompt_file,
+                    tool_name=tool_name,
                     output_model=Models.create_dynamic_model(categories),
                     mode=None,
                     output_lang=None,
@@ -128,7 +127,7 @@ class AsyncTheTool:
                         max_validation_retries=max_validation_retries,
                         priority=priority,
                         # Internal parameters
-                        prompt_file=prompt_file,
+                        tool_name=tool_name,
                         output_model=Models.create_dynamic_model(category_names),
                         mode=None,
                         output_lang=None,
@@ -197,7 +196,6 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -216,7 +214,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file=prompt_file,
+                tool_name=tool_name,
                 output_model=Models.ListStr,
             )
 
@@ -272,7 +270,6 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -291,7 +288,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file=prompt_file,
+                tool_name=tool_name,
                 output_model=Models.ListDictStrStr,
                 mode=None,
             )
@@ -344,7 +341,7 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
+
         start = perf_counter()
 
         try:
@@ -360,7 +357,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file=prompt_file,
+                tool_name=tool_name,
                 output_model=Models.Bool,
                 mode=None,
                 output_lang=None,
@@ -418,7 +415,6 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -436,7 +432,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file=prompt_file,
+                tool_name=tool_name,
                 output_model=Models.ReasonListStr,
                 mode=None,
             )
@@ -492,7 +488,6 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -510,7 +505,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file=prompt_file,
+                tool_name=tool_name,
                 output_model=Models.Str,
                 mode=mode,
             )
@@ -566,7 +561,6 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -583,7 +577,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file=prompt_file,
+                tool_name=tool_name,
                 output_model=Models.Str,
                 mode=mode,
             )
@@ -640,7 +634,6 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -658,7 +651,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file=prompt_file,
+                tool_name=tool_name,
                 output_model=Models.ReasonListStr,
                 mode=None,
             )
@@ -713,7 +706,6 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -730,7 +722,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file=prompt_file,
+                tool_name=tool_name,
                 output_model=Models.Str,
                 mode=None,
             )
@@ -789,7 +781,6 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -813,7 +804,7 @@ class AsyncTheTool:
                         max_validation_retries=max_validation_retries,
                         priority=priority,
                         # Internal parameters
-                        prompt_file=prompt_file,
+                        tool_name=tool_name,
                         output_model=Models.Str,
                         mode=None,
                         output_lang=None,
@@ -850,7 +841,7 @@ class AsyncTheTool:
                     max_validation_retries=max_validation_retries,
                     priority=priority,
                     # Internal parameters
-                    prompt_file=prompt_file,
+                    tool_name=tool_name,
                     output_model=Models.Str,
                     mode=None,
                     output_lang=None,
@@ -908,7 +899,6 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -925,7 +915,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file=prompt_file,
+                tool_name=tool_name,
                 output_model=Models.ListStr,
                 mode=None,
             )
@@ -984,7 +974,6 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -1001,7 +990,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file=prompt_file,
+                tool_name=tool_name,
                 output_model=Models.Bool,
                 mode=None,
                 source_text=source_text,
@@ -1059,7 +1048,6 @@ class AsyncTheTool:
             ToolOutput
         """
         tool_name = sys._getframe().f_code.co_name
-        prompt_file = tool_name + ".yaml"
         start = perf_counter()
 
         try:
@@ -1078,7 +1066,7 @@ class AsyncTheTool:
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
-                prompt_file=prompt_file,
+                tool_name=tool_name,
                 user_prompt=None,
                 mode=None,
             )

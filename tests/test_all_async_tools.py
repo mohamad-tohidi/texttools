@@ -6,16 +6,13 @@ from openai import AsyncOpenAI
 
 from texttools import AsyncTheTool
 
-# Load environment variables from .env
 load_dotenv()
-API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 BASE_URL = os.getenv("BASE_URL")
 MODEL = os.getenv("MODEL")
 
-# Create AsyncOpenAI client
-client = AsyncOpenAI(base_url=BASE_URL, api_key=API_KEY)
+client = AsyncOpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
 
-# Create an instance of TheTool
 t = AsyncTheTool(client=client, model=MODEL)
 
 

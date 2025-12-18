@@ -6,24 +6,19 @@ from pydantic import BaseModel
 
 from texttools import TheTool, CategoryTree
 
-# Load environment variables from .env
 load_dotenv()
-API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 BASE_URL = os.getenv("BASE_URL")
 MODEL = os.getenv("MODEL")
 
-# Create OpenAI client
-client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
+client = OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
 
-# Create an instance of TheTool
 t = TheTool(client=client, model=MODEL)
 
 # Categorizer: list mode
 category = t.categorize(
     "سلام حالت چطوره؟",
     categories=["هیچکدام", "دینی", "فلسفه"],
-    logprobs=True,
-    top_logprobs=3,
 )
 print(repr(category))
 
@@ -56,7 +51,6 @@ entities = t.extract_entities(
     "Ali will be dead by the car crash",
     entities=["EVENT"],
     with_analysis=True,
-    logprobs=True,
 )
 print(repr(entities))
 

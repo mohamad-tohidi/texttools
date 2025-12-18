@@ -110,7 +110,7 @@ class AsyncOperator:
         max_validation_retries: int | None,
         priority: int,
         # Internal parameters
-        prompt_file: str,
+        tool_name: str,
         output_model: Type[T],
         mode: str | None,
         **extra_kwargs,
@@ -124,7 +124,7 @@ class AsyncOperator:
 
             prompt_loader = PromptLoader()
             prompt_configs = prompt_loader.load(
-                prompt_file=prompt_file,
+                prompt_file=tool_name + ".yaml",
                 text=text.strip(),
                 mode=mode,
                 **extra_kwargs,
