@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, create_model
 
 class ToolOutputMetadata(BaseModel):
     tool_name: str
-    processed_at: datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    processed_at: datetime = datetime.now()
     execution_time: float | None = None
 
 
@@ -20,14 +20,7 @@ class ToolOutput(BaseModel):
     metadata: ToolOutputMetadata | None = None
 
     def __repr__(self) -> str:
-        base = f"""ToolOutput(result='{self.result}', result_type='{type(self.result)}', analysis='{self.analysis}', logprobs='{self.logprobs}', errors='{self.errors}'"""
-
-        if self.metadata:
-            base += f""", tool_name='{self.metadata.tool_name}', 
-            processed_at='{self.metadata.processed_at}', execution_time='{self.metadata.execution_time}'
-            """
-
-        return base
+        return f"ToolOutput({self.model_dump_json(indent=2)})"
 
 
 class OperatorOutput(BaseModel):
