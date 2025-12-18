@@ -1,3 +1,4 @@
+from typing import Any
 from dataclasses import dataclass
 from collections.abc import Callable
 
@@ -10,7 +11,7 @@ def export_data(data) -> list[dict[str, str]]:
     return data
 
 
-def import_data(data) -> object:
+def import_data(data) -> Any:
     """
     Takes the output and adds and aggregates it to the original structure.
     """

@@ -1,4 +1,4 @@
-from typing import TypeVar, Type
+from typing import TypeVar, Type, Any
 from collections.abc import Callable
 
 from openai import AsyncOpenAI
@@ -57,10 +57,10 @@ class AsyncOperator:
         logprobs: bool,
         top_logprobs: int,
         priority: int,
-    ) -> tuple[T, object]:
+    ) -> tuple[T, Any]:
         """
         Parses a chat completion using OpenAI's structured output format.
-        Returns both the parsed object and the raw completion for logprobs.
+        Returns both the parsed Any and the raw completion for logprobs.
         """
         try:
             request_kwargs = {
@@ -106,7 +106,7 @@ class AsyncOperator:
         temperature: float,
         logprobs: bool,
         top_logprobs: int,
-        validator: Callable[[object], bool] | None,
+        validator: Callable[[Any], bool] | None,
         max_validation_retries: int | None,
         priority: int,
         # Internal parameters

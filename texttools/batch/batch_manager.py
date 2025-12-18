@@ -1,7 +1,7 @@
 import json
 import uuid
 from pathlib import Path
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Any
 import logging
 
 from pydantic import BaseModel
@@ -31,7 +31,7 @@ class BatchManager:
         prompt_template: str,
         state_dir: Path = Path(".batch_jobs"),
         custom_json_schema_obj_str: dict | None = None,
-        **client_kwargs: object,
+        **client_kwargs: Any,
     ):
         self._client = client
         self._model = model
@@ -51,7 +51,7 @@ class BatchManager:
     def _state_file(self, job_name: str) -> Path:
         return self._state_dir / f"{job_name}.json"
 
-    def _load_state(self, job_name: str) -> list[dict[str, object]]:
+    def _load_state(self, job_name: str) -> list[dict[str, Any]]:
         """
         Loads the state (job information) from the state file for the given job name.
         Returns an empty list if the state file does not exist.
@@ -62,7 +62,7 @@ class BatchManager:
                 return json.load(f)
         return []
 
-    def _save_state(self, job_name: str, jobs: list[dict[str, object]]) -> None:
+    def _save_state(self, job_name: str, jobs: list[dict[str, Any]]) -> None:
         """
         Saves the job state to the state file for the given job name.
         """
@@ -77,11 +77,11 @@ class BatchManager:
         if path.exists():
             path.unlink()
 
-    def _build_task(self, text: str, idx: str) -> dict[str, object]:
+    def _build_task(self, text: str, idx: str) -> dict[str, Any]:
         """
         Builds a single task dictionary for the batch job, including the prompt, model, and response format configuration.
         """
-        response_format_config: dict[str, object]
+        response_format_config: dict[str, Any]
 
         if self._custom_json_schema_obj_str:
             response_format_config = {
