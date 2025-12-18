@@ -32,7 +32,7 @@ class Operator:
             if not analyze_prompt:
                 raise PromptError("Analyze template is empty")
 
-            analyze_message = OperatorUtils.build_user_message(analyze_prompt)
+            analyze_message = OperatorUtils.build_messages(analyze_prompt)
 
             completion = self._client.chat.completions.create(
                 model=self._model,
@@ -69,7 +69,7 @@ class Operator:
         Returns both the parsed object and the raw completion for logprobs.
         """
         try:
-            main_message = OperatorUtils.build_user_message(main_prompt)
+            main_message = OperatorUtils.build_messages(main_prompt)
 
             request_kwargs = {
                 "model": self._model,
@@ -136,22 +136,16 @@ class Operator:
                 **extra_kwargs,
             )
 
-            main_prompt = ""
-            analysis = ""
+            analysis: str | None = None
 
             if with_analysis:
                 analysis = self._analyze_completion(
                     prompt_configs["analyze_template"], temperature
                 )
-                main_prompt += f"Based on this analysis:\n{analysis}\n"
 
-            if output_lang:
-                main_prompt += f"Respond only in the {output_lang} language.\n"
-
-            if user_prompt:
-                main_prompt += f"Consider this instruction {user_prompt}\n"
-
-            main_prompt += prompt_configs["main_template"]
+            main_prompt = OperatorUtils.build_main_prompt(
+                prompt_configs["main_template"], analysis, output_lang, user_prompt
+            )
 
             parsed, completion = self._parse_completion(
                 main_prompt, output_model, temperature, logprobs, top_logprobs, priority

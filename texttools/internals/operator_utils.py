@@ -5,7 +5,27 @@ import random
 
 class OperatorUtils:
     @staticmethod
-    def build_user_message(prompt: str) -> list[dict[str, str]]:
+    def build_main_prompt(
+        main_template: str,
+        analysis: str | None,
+        output_lang: str | None,
+        user_prompt: str | None,
+    ) -> str:
+        main_prompt = ""
+
+        if analysis:
+            main_prompt += f"Based on this analysis:\n{analysis}\n"
+
+        if output_lang:
+            main_prompt += f"Respond only in the {output_lang} language.\n"
+
+        if user_prompt:
+            main_prompt += f"Consider this instruction {user_prompt}\n"
+
+        main_prompt += main_template
+
+    @staticmethod
+    def build_messages(prompt: str) -> list[dict[str, str]]:
         return [{"role": "user", "content": prompt}]
 
     @staticmethod
