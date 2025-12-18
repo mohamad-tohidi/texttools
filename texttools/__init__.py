@@ -1,10 +1,6 @@
-"""
-hamtaa-texttools - A high-level NLP toolkit built on top of modern LLMs.
-"""
-
 from .tools.sync_tools import TheTool
 from .tools.async_tools import AsyncTheTool
-from .internals.models import CategoryTree
+from .models import CategoryTree
 from .batch.batch_runner import BatchRunner
 from .batch.batch_config import BatchConfig
 
