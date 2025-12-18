@@ -42,4 +42,4 @@ include = ["texttools*"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-"texttools" = ["prompts/*.yaml"]
+"texttools" = ["prompts/*.yaml", "py.typed"]
