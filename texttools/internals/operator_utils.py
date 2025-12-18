@@ -24,6 +24,8 @@ class OperatorUtils:
 
         main_prompt += main_template
 
+        return main_prompt
+
     @staticmethod
     def build_messages(prompt: str) -> list[dict[str, str]]:
         return [{"role": "user", "content": prompt}]
