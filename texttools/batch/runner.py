@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.batch.batch_manager import BatchManager
-from texttools.batch.batch_config import BatchConfig
+from Hamtaa.texttools.texttools.batch.manager import BatchManager
+from Hamtaa.texttools.texttools.batch.config import BatchConfig
 from texttools.internals.models import Str
 from texttools.internals.exceptions import TextToolsError
 
