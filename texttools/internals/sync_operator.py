@@ -27,17 +27,11 @@ class Operator:
         self._client = client
         self._model = model
 
-    def _analyze_completion(self, analyze_prompt: str, temperature: float) -> str:
+    def _analyze_completion(self, analyze_message: list[dict[str, str]]) -> str:
         try:
-            if not analyze_prompt:
-                raise PromptError("Analyze template is empty")
-
-            analyze_message = OperatorUtils.build_messages(analyze_prompt)
-
             completion = self._client.chat.completions.create(
                 model=self._model,
                 messages=analyze_message,
-                temperature=temperature,
             )
 
             if not completion.choices:
@@ -57,7 +51,7 @@ class Operator:
 
     def _parse_completion(
         self,
-        main_prompt: str,
+        main_message: list[dict[str, str]],
         output_model: Type[T],
         temperature: float,
         logprobs: bool,
@@ -69,8 +63,6 @@ class Operator:
         Returns both the parsed object and the raw completion for logprobs.
         """
         try:
-            main_message = OperatorUtils.build_messages(main_prompt)
-
             request_kwargs = {
                 "model": self._model,
                 "messages": main_message,
@@ -139,16 +131,24 @@ class Operator:
             analysis: str | None = None
 
             if with_analysis:
-                analysis = self._analyze_completion(
-                    prompt_configs["analyze_template"], temperature
+                analyze_message = OperatorUtils.build_message(
+                    prompt_configs["analyze_template"]
                 )
+                analysis = self._analyze_completion(analyze_message)
 
-            main_prompt = OperatorUtils.build_main_prompt(
-                prompt_configs["main_template"], analysis, output_lang, user_prompt
+            main_message = OperatorUtils.build_message(
+                OperatorUtils.build_main_prompt(
+                    prompt_configs["main_template"], analysis, output_lang, user_prompt
+                )
             )
 
             parsed, completion = self._parse_completion(
-                main_prompt, output_model, temperature, logprobs, top_logprobs, priority
+                main_message,
+                output_model,
+                temperature,
+                logprobs,
+                top_logprobs,
+                priority,
             )
 
             # Retry logic if validation fails
@@ -166,7 +166,7 @@ class Operator:
 
                     try:
                         parsed, completion = self._parse_completion(
-                            main_prompt,
+                            main_message,
                             output_model,
                             retry_temperature,
                             logprobs,
