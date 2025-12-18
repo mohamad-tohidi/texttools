@@ -2,17 +2,17 @@ import json
 import os
 import time
 from pathlib import Path
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Any
 import logging
 
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.batch.internals.batch_manager import BatchManager
+from texttools.batch.batch_manager import BatchManager
 from texttools.batch.batch_config import BatchConfig
 from texttools.internals.models import Str
-from texttools.internals.exceptions import TextToolsError, ConfigurationError
+from texttools.internals.exceptions import TextToolsError
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
@@ -20,7 +20,7 @@ T = TypeVar("T", bound=BaseModel)
 logger = logging.getLogger("texttools.batch_runner")
 
 
-class BatchJobRunner:
+class BatchRunner:
     """
     Handles running batch jobs using a batch manager and configuration.
     """
@@ -38,7 +38,7 @@ class BatchJobRunner:
             self._output_model = output_model
             self._manager = self._init_manager()
             self._data = self._load_data()
-            self._parts: list[list[dict[str, object]]] = []
+            self._parts: list[list[dict[str, Any]]] = []
             # Map part index to job name
             self._part_idx_to_job_name: dict[int, str] = {}
             # Track retry attempts per part
@@ -47,7 +47,7 @@ class BatchJobRunner:
             Path(self._config.BASE_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
 
         except Exception as e:
-            raise ConfigurationError(f"Batch runner initialization failed: {e}")
+            raise TextToolsError(f"Batch runner initialization failed: {e}")
 
     def _init_manager(self) -> BatchManager:
         load_dotenv()
@@ -130,8 +130,8 @@ class BatchJobRunner:
 
     def _save_results(
         self,
-        output_data: list[dict[str, object]] | dict[str, object],
-        log: list[object],
+        output_data: list[dict[str, Any]] | dict[str, Any],
+        log: list[Any],
         part_idx: int,
     ):
         part_suffix = f"_part_{part_idx + 1}" if len(self._parts) > 1 else ""

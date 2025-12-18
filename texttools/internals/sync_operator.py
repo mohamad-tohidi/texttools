@@ -1,11 +1,10 @@
-from typing import TypeVar, Type
+from typing import TypeVar, Type, Any
 from collections.abc import Callable
-import logging
 
 from openai import OpenAI
 from pydantic import BaseModel
 
-from texttools.internals.models import ToolOutput
+from texttools.internals.models import OperatorOutput
 from texttools.internals.operator_utils import OperatorUtils
 from texttools.internals.prompt_loader import PromptLoader
 from texttools.internals.exceptions import (
@@ -18,39 +17,21 @@ from texttools.internals.exceptions import (
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
 
-logger = logging.getLogger("texttools.sync_operator")
-
 
 class Operator:
     """
-    Core engine for running text-processing operations with an LLM (Sync).
-
-    It wires together:
-    - `PromptLoader` → loads YAML prompt templates.
-    - `UserMergeFormatter` → applies formatting to messages (e.g., merging).
-    - OpenAI client → executes completions/parsed completions.
+    Core engine for running text-processing operations with an LLM.
     """
 
     def __init__(self, client: OpenAI, model: str):
         self._client = client
         self._model = model
 
-    def _analyze(self, prompt_configs: dict[str, str], temperature: float) -> str:
-        """
-        Calls OpenAI API for analysis using the configured prompt template.
-        Returns the analyzed content as a string.
-        """
+    def _analyze_completion(self, analyze_message: list[dict[str, str]]) -> str:
         try:
-            analyze_prompt = prompt_configs["analyze_template"]
-
-            if not analyze_prompt:
-                raise PromptError("Analyze template is empty")
-
-            analyze_message = [OperatorUtils.build_user_message(analyze_prompt)]
             completion = self._client.chat.completions.create(
                 model=self._model,
                 messages=analyze_message,
-                temperature=temperature,
             )
 
             if not completion.choices:
@@ -61,7 +42,7 @@ class Operator:
             if not analysis:
                 raise LLMError("Empty analysis response")
 
-            return analysis.strip()
+            return analysis
 
         except Exception as e:
             if isinstance(e, (PromptError, LLMError)):
@@ -70,21 +51,21 @@ class Operator:
 
     def _parse_completion(
         self,
-        message: list[dict[str, str]],
+        main_message: list[dict[str, str]],
         output_model: Type[T],
         temperature: float,
-        logprobs: bool = False,
-        top_logprobs: int = 3,
-        priority: int | None = 0,
-    ) -> tuple[T, object]:
+        logprobs: bool,
+        top_logprobs: int,
+        priority: int | None,
+    ) -> tuple[T, Any]:
         """
         Parses a chat completion using OpenAI's structured output format.
-        Returns both the parsed object and the raw completion for logprobs.
+        Returns both the parsed Any and the raw completion for logprobs.
         """
         try:
             request_kwargs = {
                 "model": self._model,
-                "messages": message,
+                "messages": main_message,
                 "response_format": output_model,
                 "temperature": temperature,
             }
@@ -92,8 +73,10 @@ class Operator:
             if logprobs:
                 request_kwargs["logprobs"] = True
                 request_kwargs["top_logprobs"] = top_logprobs
-            if priority:
+
+            if priority is not None:
                 request_kwargs["extra_body"] = {"priority": priority}
+
             completion = self._client.beta.chat.completions.parse(**request_kwargs)
 
             if not completion.choices:
@@ -120,92 +103,67 @@ class Operator:
         user_prompt: str | None,
         temperature: float,
         logprobs: bool,
-        top_logprobs: int | None,
-        validator: Callable[[object], bool] | None,
+        top_logprobs: int,
+        validator: Callable[[Any], bool] | None,
         max_validation_retries: int | None,
+        priority: int | None,
         # Internal parameters
-        prompt_file: str,
+        tool_name: str,
         output_model: Type[T],
         mode: str | None,
-        priority: int | None = 0,
         **extra_kwargs,
-    ) -> ToolOutput:
+    ) -> OperatorOutput:
         """
-        Execute the LLM pipeline with the given input text. (Sync)
+        Execute the LLM pipeline with the given input text.
         """
         try:
             prompt_loader = PromptLoader()
-            output = ToolOutput()
-
-            # Prompt configs contain two keys: main_template and analyze template, both are string
             prompt_configs = prompt_loader.load(
-                prompt_file=prompt_file,
+                prompt_file=tool_name + ".yaml",
                 text=text.strip(),
                 mode=mode,
                 **extra_kwargs,
             )
 
-            messages = []
+            analysis: str | None = None
 
             if with_analysis:
-                analysis = self._analyze(prompt_configs, temperature)
-                messages.append(
-                    OperatorUtils.build_user_message(
-                        f"Based on this analysis: {analysis}"
-                    )
+                analyze_message = OperatorUtils.build_message(
+                    prompt_configs["analyze_template"]
                 )
+                analysis = self._analyze_completion(analyze_message)
 
-            if output_lang:
-                messages.append(
-                    OperatorUtils.build_user_message(
-                        f"Respond only in the {output_lang} language."
-                    )
+            main_message = OperatorUtils.build_message(
+                OperatorUtils.build_main_prompt(
+                    prompt_configs["main_template"], analysis, output_lang, user_prompt
                 )
-
-            if user_prompt:
-                messages.append(
-                    OperatorUtils.build_user_message(
-                        f"Consider this instruction {user_prompt}"
-                    )
-                )
-
-            messages.append(
-                OperatorUtils.build_user_message(prompt_configs["main_template"])
             )
-
-            messages = OperatorUtils.user_merge_format(messages)
-
-            if logprobs and (not isinstance(top_logprobs, int) or top_logprobs < 2):
-                raise ValueError("top_logprobs should be an integer greater than 1")
 
             parsed, completion = self._parse_completion(
-                messages, output_model, temperature, logprobs, top_logprobs, priority
+                main_message,
+                output_model,
+                temperature,
+                logprobs,
+                top_logprobs,
+                priority,
             )
 
-            output.result = parsed.result
-
             # Retry logic if validation fails
-            if validator and not validator(output.result):
+            if validator and not validator(parsed.result):
                 if (
                     not isinstance(max_validation_retries, int)
                     or max_validation_retries < 1
                 ):
-                    raise ValueError(
-                        "max_validation_retries should be a positive integer"
-                    )
+                    raise ValueError("max_validation_retries should be a positive int")
 
                 succeeded = False
-                for attempt in range(max_validation_retries):
-                    logger.warning(
-                        f"Validation failed, retrying for the {attempt + 1} time."
-                    )
-
-                    # Generate new temperature for retry
+                for _ in range(max_validation_retries):
+                    # Generate a new temperature to retry
                     retry_temperature = OperatorUtils.get_retry_temp(temperature)
 
                     try:
                         parsed, completion = self._parse_completion(
-                            messages,
+                            main_message,
                             output_model,
                             retry_temperature,
                             logprobs,
@@ -213,30 +171,26 @@ class Operator:
                             priority=priority,
                         )
 
-                        output.result = parsed.result
-
                         # Check if retry was successful
-                        if validator(output.result):
+                        if validator(parsed.result):
                             succeeded = True
                             break
 
-                    except LLMError as e:
-                        logger.error(f"Retry attempt {attempt + 1} failed: {e}")
+                    except LLMError:
+                        pass
 
                 if not succeeded:
-                    raise ValidationError(
-                        f"Validation failed after {max_validation_retries} retries"
-                    )
+                    raise ValidationError("Validation failed after all retries")
 
-            if logprobs:
-                output.logprobs = OperatorUtils.extract_logprobs(completion)
+            operator_output = OperatorOutput(
+                result=parsed.result,
+                analysis=analysis if with_analysis else None,
+                logprobs=OperatorUtils.extract_logprobs(completion)
+                if logprobs
+                else None,
+            )
 
-            if with_analysis:
-                output.analysis = analysis
-
-            output.process = prompt_file[:-5]
-
-            return output
+            return operator_output
 
         except (PromptError, LLMError, ValidationError):
             raise

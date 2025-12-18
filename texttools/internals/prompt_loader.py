@@ -12,19 +12,11 @@ class PromptLoader:
     Responsibilities:
     - Load and parse YAML prompt definitions.
     - Select the right template (by mode, if applicable).
-    - Inject variables (`{input}`, plus any extra kwargs) into the templates.
+    - Inject variables (`{text}`, plus any extra kwargs) into the templates.
     """
 
     MAIN_TEMPLATE = "main_template"
     ANALYZE_TEMPLATE = "analyze_template"
-
-    @staticmethod
-    def _build_format_args(text: str, **extra_kwargs) -> dict[str, str]:
-        # Base formatting args
-        format_args = {"input": text}
-        # Merge extras
-        format_args.update(extra_kwargs)
-        return format_args
 
     # Use lru_cache to load each file once
     @lru_cache(maxsize=32)
@@ -69,16 +61,6 @@ class PromptLoader:
                     + (f" for mode '{mode}'" if mode else "")
                 )
 
-            if (
-                not analyze_template
-                or not analyze_template.strip()
-                or analyze_template.strip() in ["{analyze_template}", "{}"]
-            ):
-                raise PromptError(
-                    "analyze_template cannot be empty"
-                    + (f" for mode '{mode}'" if mode else "")
-                )
-
             return {
                 self.MAIN_TEMPLATE: main_template,
                 self.ANALYZE_TEMPLATE: analyze_template,
@@ -94,7 +76,8 @@ class PromptLoader:
     ) -> dict[str, str]:
         try:
             template_configs = self._load_templates(prompt_file, mode)
-            format_args = self._build_format_args(text, **extra_kwargs)
+            format_args = {"text": text}
+            format_args.update(extra_kwargs)
 
             # Inject variables inside each template
             for key in template_configs.keys():

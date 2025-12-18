@@ -5,8 +5,30 @@ import random
 
 class OperatorUtils:
     @staticmethod
-    def build_user_message(prompt: str) -> dict[str, str]:
-        return {"role": "user", "content": prompt}
+    def build_main_prompt(
+        main_template: str,
+        analysis: str | None,
+        output_lang: str | None,
+        user_prompt: str | None,
+    ) -> str:
+        main_prompt = ""
+
+        if analysis:
+            main_prompt += f"Based on this analysis:\n{analysis}\n"
+
+        if output_lang:
+            main_prompt += f"Respond only in the {output_lang} language.\n"
+
+        if user_prompt:
+            main_prompt += f"Consider this instruction {user_prompt}\n"
+
+        main_prompt += main_template
+
+        return main_prompt
+
+    @staticmethod
+    def build_message(prompt: str) -> list[dict[str, str]]:
+        return [{"role": "user", "content": prompt}]
 
     @staticmethod
     def extract_logprobs(completion: dict) -> list[dict]:
@@ -20,7 +42,7 @@ class OperatorUtils:
 
         for choice in completion.choices:
             if not getattr(choice, "logprobs", None):
-                return []
+                raise ValueError("Your model does not support logprobs")
 
             for logprob_item in choice.logprobs.content:
                 if ignore_pattern.match(logprob_item.token):
@@ -52,27 +74,3 @@ class OperatorUtils:
         new_temp = base_temp + delta_temp
 
         return max(0.0, min(new_temp, 1.5))
-
-    @staticmethod
-    def user_merge_format(messages: list[dict[str, str]]) -> list[dict[str, str]]:
-        """
-        Merges consecutive user messages into a single message, separated by newlines.
-
-        This is useful for condensing a multi-turn user input into a single
-        message for the LLM. Assistant and system messages are left unchanged and
-        act as separators between user message groups.
-        """
-        merged = []
-
-        for message in messages:
-            role, content = message["role"], message["content"].strip()
-
-            # Merge with previous user turn
-            if merged and role == "user" and merged[-1]["role"] == "user":
-                merged[-1]["content"] += "\n" + content
-
-            # Otherwise, start a new turn
-            else:
-                merged.append({"role": role, "content": content})
-
-        return merged

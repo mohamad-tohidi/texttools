@@ -9,7 +9,7 @@ main_template: |
   Respond only in JSON format:
   {{"result": ["question1", "question2", ...], "reason": "string"}}
   Here is the text:
-  {input}
+  {text}
 
 analyze_template: |
   Our goal is to generate questions from the given subject.
@@ -19,4 +19,4 @@ analyze_template: |
   What is the subject about?
   What point of views can we see and generate questoins from it? (Questions that real users might have.)
   Here is the subject:
-  {input}
+  {text}

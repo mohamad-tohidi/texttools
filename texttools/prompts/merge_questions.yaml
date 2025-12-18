@@ -12,7 +12,7 @@ main_template:
     - Respond only in JSON format:
     {{"result": "string"}}
     Here is the questions:
-    {input}
+    {text}
 
   reason: |
     You are an AI assistant helping to unify semantically similar questions.
@@ -23,7 +23,7 @@ main_template:
     Respond only in JSON format:
     {{"result": "string"}}
     Here is the questions:
-    {input}
+    {text}
 
 analyze_template:
 
@@ -34,7 +34,7 @@ analyze_template:
     Provide a brief, summarized understanding of the questions' meaning that
     will help in merging and rephrasing it accurately without changing its intent.        
     Here is the question:
-    {input}
+    {text}
 
   reason: |
     Analyze the following questions to identify their exact wording, phrasing,
@@ -42,5 +42,5 @@ analyze_template:
     Provide a brief, summarized analysis of their linguistic structure and current meaning,
     which will then be used to create a new question containing all of their contents.
     Here is the question:
-    {input}
+    {text}
     

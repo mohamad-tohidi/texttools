@@ -1,25 +1,39 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Type, Literal
+from typing import Type, Literal, Any
 
 from pydantic import BaseModel, Field, create_model
 
 
-class ToolOutput(BaseModel):
-    result: object = None
-    logprobs: list[dict[str, object]] = []
-    analysis: str = ""
-    process: str | None = None
-    processed_at: datetime = datetime.now()
+class ToolOutputMetadata(BaseModel):
+    tool_name: str
+    processed_at: datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     execution_time: float | None = None
+
+
+class ToolOutput(BaseModel):
+    result: Any = None
+    analysis: str | None = None
+    logprobs: list[dict[str, Any]] | None = None
     errors: list[str] = []
+    metadata: ToolOutputMetadata | None = None
 
     def __repr__(self) -> str:
-        return f"""
-        ToolOutput(process='{self.process}', result_type='{type(self.result)}', 
-        result='{self.result}', analysis='{self.analysis}', 
-        logprobs='{self.logprobs}', errors='{self.errors}', 
-        processed_at='{self.processed_at}', execution_time='{self.execution_time}'
-        """
+        base = f"""ToolOutput(result='{self.result}', result_type='{type(self.result)}', analysis='{self.analysis}', logprobs='{self.logprobs}', errors='{self.errors}'"""
+
+        if self.metadata:
+            base += f""", tool_name='{self.metadata.tool_name}', 
+            processed_at='{self.metadata.processed_at}', execution_time='{self.metadata.execution_time}'
+            """
+
+        return base
+
+
+class OperatorOutput(BaseModel):
+    result: Any
+    analysis: str | None
+    logprobs: list[dict[str, Any]] | None
 
 
 class Str(BaseModel):
@@ -53,114 +67,69 @@ class ReasonListStr(BaseModel):
     )
 
 
-class Node(BaseModel):
-    node_id: int
-    name: str
-    level: int
-    parent_id: int | None
-    description: str
+class Node:
+    def __init__(self, name: str, description: str, level: int, parent: Node | None):
+        self.name = name
+        self.description = description
+        self.level = level
+        self.parent = parent
+        self.children = {}
 
 
 class CategoryTree:
-    def __init__(self, tree_name):
-        self._root = Node(
-            node_id=0, name=tree_name, level=0, parent_id=None, description="Root node"
-        )
-        self._all_nodes: list[Node] = [self._root]
-        self._new_id = 1
+    def __init__(self):
+        self._root = Node(name="root", description="root", level=0, parent=None)
+        self._all_nodes = {"root": self._root}
 
-    def get_all_nodes(self) -> list[Node]:
+    def get_all_nodes(self) -> dict[str, Node]:
         return self._all_nodes
 
     def get_level_count(self) -> int:
-        return max([item.level for item in self._all_nodes])
+        return max(node.level for node in self._all_nodes.values())
 
-    def get_node(self, identifier: int | str) -> Node | None:
-        if isinstance(identifier, str):
-            for node in self.get_all_nodes():
-                if node.name == identifier:
-                    return node
-            return None
-        elif isinstance(identifier, int):
-            for node in self.get_all_nodes():
-                if node.node_id == identifier:
-                    return node
-            return None
-        else:
-            return None
-
-    def get_children(self, parent_node: Node) -> list[Node] | None:
-        children = [
-            node
-            for node in self.get_all_nodes()
-            if parent_node.node_id == node.parent_id
-        ]
-        return children if children else None
+    def get_node(self, name: str) -> Node | None:
+        return self._all_nodes.get(name)
 
     def add_node(
         self,
-        node_name: str,
-        parent_name: str | None = None,
+        name: str,
+        parent_name: str,
         description: str | None = None,
     ) -> None:
-        if self.get_node(node_name):
-            raise ValueError(f"{node_name} has been chosen for another category before")
+        if self.get_node(name):
+            raise ValueError(f"Cannot add {name} category twice")
 
-        if parent_name:
-            parent_node = self.get_node(parent_name)
-            if not parent_node:
-                raise ValueError(f"Parent category '{parent_name}' not found")
-            parent_id = parent_node.node_id
-            level = parent_node.level + 1
-        else:
-            level = 1
-            parent_id = 0
+        parent = self.get_node(parent_name)
+
+        if not parent:
+            raise ValueError(f"Parent category '{parent_name}' not found")
 
         node_data = {
-            "node_id": self._new_id,
-            "name": node_name,
-            "level": level,
-            "parent_id": parent_id,
+            "name": name,
             "description": description if description else "No description provided",
+            "level": parent.level + 1,
+            "parent": parent,
         }
 
-        self._all_nodes.append(Node(**node_data))
-        self._new_id += 1
+        new_node = Node(**node_data)
+        parent.children[name] = new_node
+        self._all_nodes[name] = new_node
 
-    def remove_node(self, identifier: int | str) -> None:
-        node = self.get_node(identifier)
+    def remove_node(self, name: str) -> None:
+        if name == "root":
+            raise ValueError("Cannot remove the root node")
 
-        if node:
-            # Remove node's children recursively
-            children = self.get_children(node)
+        node = self.get_node(name)
+        if not node:
+            raise ValueError(f"Category: '{name}' not found")
 
-            if not children:
-                self._all_nodes.remove(node)
-                return
+        for child_name in list(node.children.keys()):
+            self.remove_node(child_name)
 
-            for child in children:
-                self.remove_node(child.name)
+        if node.parent:
+            del node.parent.children[name]
 
-            self._all_nodes.remove(node)
-        else:
-            raise ValueError(f"Node with identifier: '{identifier}' not found.")
-
-    def dump_tree(self) -> dict:
-        def build_dict(node: Node) -> dict:
-            children = [
-                build_dict(child)
-                for child in self._all_nodes
-                if child.parent_id == node.node_id
-            ]
-            return {
-                "node_id": node.node_id,
-                "name": node.name,
-                "level": node.level,
-                "parent_id": node.parent_id,
-                "children": children,
-            }
-
-        return {"category_tree": build_dict(self._root)["children"]}
+        del self._all_nodes[name]
 
 
 # This function is needed to create CategorizerOutput with dynamic categories
