@@ -52,7 +52,7 @@ pip install -U hamtaa-texttools
 
 ---
 
-## ⚙️ `with_analysis`, `logprobs`, `output_lang`, `user_prompt`, `temperature`, `validator` and `priority` parameters
+## ⚙️ `with_analysis`, `logprobs`, `output_lang`, `user_prompt`, `temperature`, `validator`, `priority` and `timeout` parameters
 
 TextTools provides several optional flags to customize LLM behavior:
 
@@ -72,6 +72,10 @@ TextTools provides several optional flags to customize LLM behavior:
 
 - **`priority: int (Experimental)`** → Task execution priority level. Affects processing order in queues.
 **Note:** This feature works if it's supported by the model and vLLM.
+
+- **`timeout: float`** → Maximum time in seconds to wait for the response before raising a timeout error
+**Note:** This feature only exists in `AsyncTheTool`.
+
 
 ---
 
