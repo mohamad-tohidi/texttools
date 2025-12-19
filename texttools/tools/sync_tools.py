@@ -210,7 +210,6 @@ class TheTool:
                 temperature=temperature,
                 logprobs=logprobs,
                 top_logprobs=top_logprobs,
-                mode=mode,
                 number_of_keywords=number_of_keywords,
                 validator=validator,
                 max_validation_retries=max_validation_retries,
@@ -218,6 +217,7 @@ class TheTool:
                 # Internal parameters
                 tool_name=tool_name,
                 output_model=ListStr,
+                mode=mode,
             )
 
             metadata = ToolOutputMetadata(
@@ -960,7 +960,7 @@ class TheTool:
 
         Arguments:
             text: The input text
-            source_text: the source text that we want to check relation of text to it
+            source_text: The source text that we want to check relation of text to it
             with_analysis: Whether to include detailed reasoning analysis
             output_lang: Language for the output
             user_prompt: Additional instructions
@@ -981,6 +981,7 @@ class TheTool:
             operator_output = self._operator.run(
                 # User parameters
                 text=text,
+                source_text=source_text,
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -994,7 +995,6 @@ class TheTool:
                 tool_name=tool_name,
                 output_model=Bool,
                 mode=None,
-                source_text=source_text,
             )
 
             metadata = ToolOutputMetadata(

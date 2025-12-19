@@ -1,3 +1,4 @@
+import asyncio
 import math
 import random
 import re
@@ -252,3 +253,12 @@ def text_to_chunks(text: str, size: int, overlap: int) -> list[str]:
         return final_chunks
 
     return _split_text(text, separators)
+
+
+async def run_with_timeout(coro, timeout: float | None):
+    if timeout is None:
+        return await coro
+    try:
+        return await asyncio.wait_for(coro, timeout=timeout)
+    except asyncio.TimeoutError:
+        raise TimeoutError(f"Operation exceeded timeout of {timeout} seconds")

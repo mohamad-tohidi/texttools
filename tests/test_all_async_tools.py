@@ -20,16 +20,19 @@ async def main():
     category_task = t.categorize(
         "سلام حالت چطوره؟",
         categories=["هیچکدام", "دینی", "فلسفه"],
-        logprobs=True,
+        timeout=0.5,
     )
     keywords_task = t.extract_keywords("Tomorrow, we will be dead by the car crash")
-    entities_task = t.extract_entities("We will be dead by the car crash")
+    entities_task = t.extract_entities(
+        "We will be dead by the car crash", entities=["EVENT"]
+    )
     detection_task = t.is_question("We will be dead by the car crash")
     question_task = t.text_to_question("We will be dead by the car crash", 2)
     merged_task = t.merge_questions(
         ["چرا ما موجوداتی اجتماعی هستیم؟", "چرا باید در کنار هم زندگی کنیم؟"],
         mode="default",
         with_analysis=True,
+        timeout=5.8,
     )
     rewritten_task = t.rewrite(
         "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
