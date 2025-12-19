@@ -1,4 +1,3 @@
-import sys
 from collections.abc import Callable
 from time import perf_counter
 from typing import Any, Literal
@@ -66,7 +65,7 @@ class TheTool:
             ToolOutput
 
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "categorize"
         start = perf_counter()
 
         try:
@@ -198,7 +197,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "extract_keywords"
         start = perf_counter()
 
         try:
@@ -272,7 +271,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "extract_entities"
         start = perf_counter()
 
         try:
@@ -343,7 +342,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "is_question"
         start = perf_counter()
 
         try:
@@ -416,7 +415,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "text_to_question"
         start = perf_counter()
 
         try:
@@ -489,7 +488,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "merge_questions"
         start = perf_counter()
 
         try:
@@ -562,7 +561,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "rewrite"
         start = perf_counter()
 
         try:
@@ -635,7 +634,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "subject_to_question"
         start = perf_counter()
 
         try:
@@ -707,7 +706,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "summarize"
         start = perf_counter()
 
         try:
@@ -782,7 +781,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "translate"
         start = perf_counter()
 
         try:
@@ -900,7 +899,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "propositionize"
         start = perf_counter()
 
         try:
@@ -975,7 +974,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "check_fact"
         start = perf_counter()
 
         try:
@@ -1049,7 +1048,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = sys._getframe().f_code.co_name
+        tool_name = "run_custom"
         start = perf_counter()
 
         try:
