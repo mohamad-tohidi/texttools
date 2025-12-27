@@ -1,5 +1,8 @@
 # TextTools
 
+![PyPI](https://img.shields.io/pypi/v/hamtaa-texttools)
+![License](https://img.shields.io/pypi/l/hamtaa-texttools)
+
 ## 📌 Overview
 
 **TextTools** is a high-level **NLP toolkit** built on top of **LLMs**.  
@@ -23,11 +26,11 @@ Each tool is designed to work with structured outputs.
 - **`is_question()`** - Binary question detection
 - **`text_to_question()`** - Generates questions from text
 - **`merge_questions()`** - Merges multiple questions into one
-- **`rewrite()`** - Rewrites text in a diffrent way
-- **`subject_to_question()`** - Generates questions about a specific subject
+- **`rewrite()`** - Rewrites text in a different way
+- **`subject_to_question()`** - Generates questions about a given subject
 - **`summarize()`** - Text summarization
 - **`translate()`** - Text translation
-- **`propositionize()`** - Convert text to atomic independence meaningful sentences 
+- **`propositionize()`** - Convert text to atomic independent meaningful sentences 
 - **`check_fact()`** - Check whether a statement is relevant to the source text
 - **`run_custom()`** - Allows users to define a custom tool with an arbitrary BaseModel
 
@@ -45,7 +48,7 @@ pip install -U hamtaa-texttools
 
 ## 📊 Tool Quality Tiers
 
-| Status | Meaning | Tools | Use in Production? |
+| Status | Meaning | Tools | Safe for Production? |
 |--------|---------|----------|-------------------|
 | **✅ Production** | Evaluated, tested, stable. | `categorize()` (list mode), `extract_keywords()`, `extract_entities()`, `is_question()`, `text_to_question()`, `merge_questions()`, `rewrite()`, `subject_to_question()`, `summarize()`, `run_custom()` | **Yes** - ready for reliable use. |
 | **🧪 Experimental** | Added to the package but **not fully evaluated**. Functional, but quality may vary. | `categorize()` (tree mode), `translate()`, `propositionize()`, `check_fact()` | **Use with caution** - outputs not yet validated. |
@@ -160,9 +163,3 @@ Use **TextTools** when you need to:
 
 Contributions are welcome!  
 Feel free to **open issues, suggest new features, or submit pull requests**.  
-
----
-
-## 🌿 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
