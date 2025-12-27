@@ -21,7 +21,9 @@ class Bool(BaseModel):
 
 class ListStr(BaseModel):
     result: list[str] = Field(
-        ..., description="The output list of strings", example=["text_1", "text_2"]
+        ...,
+        description="The output list of strings",
+        example=["text_1", "text_2", "text_3"],
     )
 
 
@@ -36,11 +38,13 @@ class ListDictStrStr(BaseModel):
 class ReasonListStr(BaseModel):
     reason: str = Field(..., description="Thinking process that led to the output")
     result: list[str] = Field(
-        ..., description="The output list of strings", example=["text_1", "text_2"]
+        ...,
+        description="The output list of strings",
+        example=["text_1", "text_2", "text_3"],
     )
 
 
-# This function is needed to create CategorizerOutput with dynamic categories
+# Create CategorizerOutput with dynamic categories
 def create_dynamic_model(allowed_values: list[str]) -> Type[BaseModel]:
     literal_type = Literal[*allowed_values]
 
