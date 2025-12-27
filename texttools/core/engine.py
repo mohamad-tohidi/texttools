@@ -4,6 +4,7 @@ import random
 import re
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -20,9 +21,6 @@ class PromptLoader:
 
     @lru_cache(maxsize=32)
     def _load_templates(self, prompt_file: str, mode: str | None) -> dict[str, str]:
-        """
-        Loads prompt templates from YAML file with optional mode selection.
-        """
         try:
             base_dir = Path(__file__).parent.parent / Path("prompts")
             prompt_path = base_dir / prompt_file
@@ -73,13 +71,12 @@ class PromptLoader:
         self, prompt_file: str, text: str, mode: str, **extra_kwargs
     ) -> dict[str, str]:
         try:
-            template_configs = self._load_templates(prompt_file, mode)
             format_args = {"text": text}
             format_args.update(extra_kwargs)
 
-            # Inject variables inside each template
-            for key in template_configs.keys():
-                template_configs[key] = template_configs[key].format(**format_args)
+            template_configs = self._load_templates(prompt_file, mode)
+            for key, value in template_configs.items():
+                template_configs[key] = value.format(**format_args)
 
             return template_configs
 
@@ -97,30 +94,27 @@ class OperatorUtils:
         output_lang: str | None,
         user_prompt: str | None,
     ) -> str:
-        main_prompt = ""
+        parts = []
 
         if analysis:
-            main_prompt += f"Based on this analysis:\n{analysis}\n"
-
+            parts.append(f"Based on this analysis: {analysis}")
         if output_lang:
-            main_prompt += f"Respond only in the {output_lang} language.\n"
-
+            parts.append(f"Respond only in the {output_lang} language.")
         if user_prompt:
-            main_prompt += f"Consider this instruction {user_prompt}\n"
+            parts.append(f"Consider this instruction: {user_prompt}")
 
-        main_prompt += main_template
-
-        return main_prompt
+        parts.append(main_template)
+        return "\n".join(parts)
 
     @staticmethod
     def build_message(prompt: str) -> list[dict[str, str]]:
         return [{"role": "user", "content": prompt}]
 
     @staticmethod
-    def extract_logprobs(completion: dict) -> list[dict]:
+    def extract_logprobs(completion: Any) -> list[dict]:
         """
-        Extracts and filters token probabilities from completion logprobs.
-        Skips punctuation and structural tokens, returns cleaned probability data.
+        Extracts and filters logprobs from completion.
+        Skips punctuation and structural tokens.
         """
         logprobs_data = []
 
@@ -153,16 +147,17 @@ class OperatorUtils:
 
     @staticmethod
     def get_retry_temp(base_temp: float) -> float:
-        delta_temp = random.choice([-1, 1]) * random.uniform(0.1, 0.9)
-        new_temp = base_temp + delta_temp
-
+        new_temp = base_temp + random.choice([-1, 1]) * random.uniform(0.1, 0.9)
         return max(0.0, min(new_temp, 1.5))
 
 
 def text_to_chunks(text: str, size: int, overlap: int) -> list[str]:
+    """
+    Utility for chunking large texts. Used for translation tool
+    """
     separators = ["\n\n", "\n", " ", ""]
     is_separator_regex = False
-    keep_separator = True  # Equivalent to 'start'
+    keep_separator = True
     length_function = len
     strip_whitespace = True
     chunk_size = size
@@ -256,6 +251,9 @@ def text_to_chunks(text: str, size: int, overlap: int) -> list[str]:
 
 
 async def run_with_timeout(coro, timeout: float | None):
+    """
+    Utility for timeout logic defined in AsyncTheTool
+    """
     if timeout is None:
         return await coro
     try:
