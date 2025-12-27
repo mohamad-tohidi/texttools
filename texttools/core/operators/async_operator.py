@@ -54,7 +54,7 @@ class AsyncOperator:
     ) -> tuple[T, Any]:
         """
         Parses a chat completion using OpenAI's structured output format.
-        Returns both the parsed Any and the raw completion for logprobs.
+        Returns both the parsed and the completion for logprobs.
         """
         try:
             request_kwargs = {
@@ -92,7 +92,6 @@ class AsyncOperator:
 
     async def run(
         self,
-        # User parameters
         text: str,
         with_analysis: bool,
         output_lang: str | None,
@@ -103,7 +102,6 @@ class AsyncOperator:
         validator: Callable[[Any], bool] | None,
         max_validation_retries: int | None,
         priority: int | None,
-        # Internal parameters
         tool_name: str,
         output_model: Type[T],
         mode: str | None,
