@@ -58,7 +58,7 @@ class CategoryTree:
         parent = self.get_node(parent_name)
 
         if not parent:
-            raise ValueError(f"Parent category '{parent_name}' not found")
+            raise ValueError(f"Parent category {parent_name} not found")
 
         node_data = {
             "name": name,
