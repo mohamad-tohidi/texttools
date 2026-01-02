@@ -149,7 +149,6 @@ class Operator:
 
                 succeeded = False
                 for _ in range(max_validation_retries):
-                    # Generate a new temperature to retry
                     retry_temperature = OperatorUtils.get_retry_temp(temperature)
 
                     try:
