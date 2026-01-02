@@ -141,7 +141,7 @@ class AsyncOperator:
                 priority,
             )
 
-            # Retry logic if validation fails
+            # Retry logic in case output validation fails
             if validator and not validator(parsed.result):
                 if (
                     not isinstance(max_validation_retries, int)
