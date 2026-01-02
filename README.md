@@ -9,9 +9,7 @@
 
 It provides both **sync (`TheTool`)** and **async (`AsyncTheTool`)** APIs for maximum flexibility.
 
-It provides ready-to-use utilities for **translation, question detection, keyword extraction, categorization, NER extraction, and more** - designed to help you integrate AI-powered text processing into your applications with minimal effort.
-
-**Note:** Most features of `texttools` are reliable when you use `google/gemma-3n-e4b-it` model.
+It provides ready-to-use utilities for **translation, question detection, categorization, NER extraction, and more** - designed to help you integrate AI-powered text processing into your applications with minimal effort.
 
 ---
 
@@ -55,7 +53,7 @@ pip install -U hamtaa-texttools
 
 ---
 
-## ⚙️ `with_analysis`, `logprobs`, `output_lang`, `user_prompt`, `temperature`, `validator`, `priority` and `timeout` parameters
+## ⚙️ Additional Parameters
 
 TextTools provides several optional flags to customize LLM behavior:
 
