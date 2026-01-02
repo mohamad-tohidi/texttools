@@ -250,7 +250,7 @@ def text_to_chunks(text: str, size: int, overlap: int) -> list[str]:
     return _split_text(text, separators)
 
 
-async def run_with_timeout(coro, timeout: float | None):
+async def run_with_timeout(coro: Any, timeout: float | None) -> Any:
     """
     Utility for timeout logic defined in AsyncTheTool
     """
