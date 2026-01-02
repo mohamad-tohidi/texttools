@@ -58,7 +58,7 @@ class CategoryTree:
         parent = self.get_node(parent_name)
 
         if not parent:
-            raise ValueError(f"Parent category '{parent_name}' not found")
+            raise ValueError(f"Parent category {parent_name} not found")
 
         node_data = {
             "name": name,
@@ -77,7 +77,7 @@ class CategoryTree:
 
         node = self.get_node(name)
         if not node:
-            raise ValueError(f"Category: '{name}' not found")
+            raise ValueError(f"Category: {name} not found")
 
         for child_name in list(node.children.keys()):
             self.remove_node(child_name)
