@@ -127,11 +127,10 @@ class AsyncOperator:
                 )
                 analysis = await self._analyze_completion(analyze_message)
 
-            main_message = OperatorUtils.build_message(
-                OperatorUtils.build_main_prompt(
-                    prompt_configs["main_template"], analysis, output_lang, user_prompt
-                )
+            main_prompt = OperatorUtils.build_main_prompt(
+                prompt_configs["main_template"], analysis, output_lang, user_prompt
             )
+            main_message = OperatorUtils.build_message(main_prompt)
 
             parsed, completion = await self._parse_completion(
                 main_message,
