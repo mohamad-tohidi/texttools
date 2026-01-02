@@ -10,12 +10,16 @@ class OperatorOutput(BaseModel):
 
 
 class Str(BaseModel):
-    result: str = Field(..., description="The output string", example="text")
+    result: str = Field(
+        ..., description="The output string", json_schema_extra={"example": "text"}
+    )
 
 
 class Bool(BaseModel):
     result: bool = Field(
-        ..., description="Boolean indicating the output state", example=True
+        ...,
+        description="Boolean indicating the output state",
+        json_schema_extra={"example": True},
     )
 
 
@@ -23,7 +27,7 @@ class ListStr(BaseModel):
     result: list[str] = Field(
         ...,
         description="The output list of strings",
-        example=["text_1", "text_2", "text_3"],
+        json_schema_extra={"example": ["text_1", "text_2", "text_3"]},
     )
 
 
@@ -31,7 +35,12 @@ class ListDictStrStr(BaseModel):
     result: list[dict[str, str]] = Field(
         ...,
         description="List of dictionaries containing string key-value pairs",
-        example=[{"text": "Mohammad", "type": "PER"}, {"text": "Iran", "type": "LOC"}],
+        json_schema_extra={
+            "example": [
+                {"text": "Mohammad", "type": "PER"},
+                {"text": "Iran", "type": "LOC"},
+            ]
+        },
     )
 
 
@@ -40,7 +49,7 @@ class ReasonListStr(BaseModel):
     result: list[str] = Field(
         ...,
         description="The output list of strings",
-        example=["text_1", "text_2", "text_3"],
+        json_schema_extra={"example": ["text_1", "text_2", "text_3"]},
     )
 
 
