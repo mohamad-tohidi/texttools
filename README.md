@@ -49,13 +49,11 @@ pip install -U hamtaa-texttools
 | Status | Meaning | Tools | Safe for Production? |
 |--------|---------|----------|-------------------|
 | **✅ Production** | Evaluated, tested, stable. | `categorize()` (list mode), `extract_keywords()`, `extract_entities()`, `is_question()`, `text_to_question()`, `merge_questions()`, `rewrite()`, `subject_to_question()`, `summarize()`, `run_custom()` | **Yes** - ready for reliable use. |
-| **🧪 Experimental** | Added to the package but **not fully evaluated**. Functional, but quality may vary. | `categorize()` (tree mode), `translate()`, `propositionize()`, `check_fact()` | **Use with caution** - outputs not yet validated. |
+| **🧪 Experimental** | Added to the package but **not fully evaluated**. | `categorize()` (tree mode), `translate()`, `propositionize()`, `check_fact()` | **Use with caution** |
 
 ---
 
 ## ⚙️ Additional Parameters
-
-TextTools provides several optional flags to customize LLM behavior:
 
 - **`with_analysis: bool`** → Adds a reasoning step before generating the final output.
 **Note:** This doubles token usage per call.
@@ -69,7 +67,7 @@ TextTools provides several optional flags to customize LLM behavior:
 
 - **`temperature: float`** → Determines how creative the model should respond. Takes a float number from `0.0` to `2.0`.
 
-- **`validator: Callable (Experimental)`** → Forces TheTool to validate the output result based on your custom validator. Validator should return a boolean. If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can also specify `max_validation_retries=<N>`.
+- **`validator: Callable (Experimental)`** → Forces TheTool to validate the output result based on your validator function. Validator should return a boolean. If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can also specify `max_validation_retries=<N>`.
 
 - **`priority: int (Experimental)`** → Task execution priority level. Affects processing order in queues.
 **Note:** This feature works if it's supported by the model and vLLM.
@@ -110,7 +108,7 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
 from openai import OpenAI
 from texttools import TheTool
 
-client = OpenAI(base_url = "your_url", API_KEY = "your_api_key")
+client = OpenAI(base_url="your_url", API_KEY="your_api_key")
 model = "model_name"
 
 the_tool = TheTool(client=client, model=model)
@@ -138,6 +136,7 @@ async def main():
     keywords_task = async_the_tool.extract_keywords("Tomorrow, we will be dead by the car crash")
 
     (translation, keywords) = await asyncio.gather(translation_task, keywords_task)
+    
     print(repr(translation))
     print(repr(keywords))
 
