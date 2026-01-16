@@ -9,7 +9,7 @@ main_template: |
   Don't forget to fill the reason.
 
   Respond only in JSON format:
-  {{"result": ["question1", "question2", ...], "reason": "string"}}
+  {{"result": ["question1", "question2", ...], "reason": "explanation"}}
   
   Here is the answer:
   {text}
