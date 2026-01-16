@@ -19,7 +19,7 @@ maintainers = [
 description = "A high-level NLP toolkit built on top of modern LLMs."
 readme = "README.md"
 license = {text = "MIT"}
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
   "openai>=1.97.1",
   "pydantic>=2.0.0",
