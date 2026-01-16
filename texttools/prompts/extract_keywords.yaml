@@ -12,7 +12,7 @@ main_template:
     - Output between 3 and 7 keywords based on the input length.
 
     Respond only in JSON format:
-    {{"result": ["keyword1", "keyword2", etc.]}}
+    {{"result": ["keyword1", "keyword2", ...]}}
 
     Here is the text:
     {text}
@@ -34,7 +34,7 @@ main_template:
       - Long texts (more than 4 paragraphs): 6–7 keywords
     
     Respond only in JSON format:
-    {{"result": ["keyword1", "keyword2", etc.]}}
+    {{"result": ["keyword1", "keyword2", ...]}}
 
     Here is the text:
     {text}
