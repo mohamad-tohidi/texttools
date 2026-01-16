@@ -14,10 +14,10 @@ main_template: |
   - If descriptions are missing or empty, rely on the category name.
   - If the correct answer cannot be determined with certainty, choose the most likely one.
 
-  Output format:
+  Respond only in JSON format:
   {{
-  "reason": "Explanation of why the input belongs to the category"
-  "result": "<category_name_only>"
+  "reason": "explanation",
+  "result": "category_name",
   }}
 
   Available categories:
