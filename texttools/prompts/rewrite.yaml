@@ -15,7 +15,7 @@ main_template:
     - Avoid Minor Changes: Do not just add/remove a few words or swap names. Create a fundamentally different sentence.
 
     Respond only in JSON format:
-    {{"result": "str"}}
+    {{"result": "rewriteen_text"}}
 
     Anchor Text:
     "{text}"
@@ -32,7 +32,7 @@ main_template:
     - Maintain Similar Length: The generated sentence should be of roughly the same length and level of detail as the Anchor.
 
     Respond only in JSON format:
-    {{"result": "str"}}
+    {{"result": "rewriteen_text"}}
 
     Anchor Text:
     "{text}"
@@ -53,7 +53,7 @@ main_template:
       - Maintain Similar Length: The generated sentence should be of roughly the same length and level of detail as the Anchor.
 
       Respond only in JSON format:
-      {{"result": "str"}}
+      {{"result": "rewriteen_text"}}
 
       Anchor Text:
       "{text}"
