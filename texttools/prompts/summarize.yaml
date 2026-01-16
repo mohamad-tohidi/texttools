@@ -1,11 +1,11 @@
 main_template: |
-  You are a summarizer.
+  You are an expert summarizer.
   You must summarize the given text, preserving its meaning.
 
   Respond only in JSON format:
-  {{"result": "string"}}
+  {{"result": "summary"}}
 
-  Provide a concise summary of the following text:
+  Here is the text:
   {text}
 
 
