@@ -13,12 +13,13 @@ main_template: |
   {source_text}
 
 analyze_template: |
-  You should analyze a statement and a source text and provide a brief,
-  summarized analysis that could help in determining that can the statement
-  be concluded from the source or not.
+  You must analyze a statement and a source text and provide a brief,
+  summarized analysis that could help in determining whether the statement
+  can be concluded from the source or not.
 
   The statement is:
   {text}
   
   The source text is:
   {source_text}
+  
