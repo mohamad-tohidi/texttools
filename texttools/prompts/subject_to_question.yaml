@@ -9,18 +9,20 @@ main_template: |
   Don't forget to fill the reason.
 
   Respond only in JSON format:
-  {{"result": ["question1", "question2", ...], "reason": "string"}}
+  {{"result": ["question1", "question2", ...], "reason": "explanation"}}
 
   Here is the subject:
   {text}
 
 analyze_template: |
-  Our goal is to generate questions from the given subject.
+  The task is to generate questions from the given subject.
   The questions must be meaningfull, some of them should be specific and some should be general.
-  But first, in this step we want to analyze the subject that I asked to generate questions for it.
-  We need a summerized analysis of the subject.
-  What is the subject about?
-  What point of views can we see and generate questoins from it? (Questions that real users might have.)
+  To improve this process you must analyze the subject.
+  Your analysis must be summerized.
+
+  Mention:
+  - What is the subject about?
+  - Which points of the subject have potential for generating questoins?
   
   Here is the subject:
   {text}
