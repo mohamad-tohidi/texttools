@@ -6,19 +6,23 @@ main_template: |
   A single, self-contained statement of fact that is concise and verifiable.
 
   Strict Guidelines:
-  1. Remove Meta-Data: STRICTLY EXCLUDE all citations, references, URLs, source attributions (e.g., "Source: makarem.ir"), and conversational fillers (e.g., "Based on the documents...", "In conclusion...").
-  2. Resolve Context: Replace pronouns ("it", "this", "they") with the specific nouns they refer to. Each proposition must make sense in isolation.
-  3. Preserve Logic: Keep conditions attached to their facts. Do not split a rule from its condition (e.g., "If X, then Y" should be one proposition).
-  4. No Redundancy: Do not extract summary statements that merely repeat facts already listed.
+  - Remove Meta-Data: STRICTLY EXCLUDE all citations, references, URLs, source attributions (e.g., "Source: makarem.ir"), and conversational fillers (e.g., "Based on the documents...", "In conclusion...").
+  - Resolve Context: Replace pronouns ("it", "this", "they") with the specific nouns they refer to. Each proposition must make sense in isolation.
+  - Preserve Logic: Keep conditions attached to their facts. Do not split a rule from its condition (e.g., "If X, then Y" should be one proposition).
+  - No Redundancy: Do not extract summary statements that merely repeat facts already listed.
 
-  Extract the atomic propositions from the following text:
+    Respond only in JSON format:
+    {{"result": ["text1", "text2", ...]}}
+
+  Here is the text:
   {text}
 
 analyze_template: |
-  We want to analyze this text snippet and think about where we can split sentence to atomic meaningful propositions.
+  You must analyze this text snippet and think about where we can split sentence to atomic meaningful propositions.
   An atomic proposition is a single, self-contained fact that is concise,
   verifiable, and does not rely on external context.
   You just have to think around the possible propositions in the text and how a proposition can be made.
   
   Here is the text:
   {text}
+  
