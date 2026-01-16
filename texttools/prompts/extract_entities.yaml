@@ -7,8 +7,8 @@ main_template: |
   {{
     "result": [
       {{
-        "text": "string",
-        "type": "string",
+        "text": "original_text",
+        "type": "ne_of_text",
       }}
     ]
   }}
