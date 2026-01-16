@@ -4,7 +4,7 @@ from typing import Any, Literal
 
 from openai import AsyncOpenAI
 
-from ..core.engine import text_to_chunks, run_with_timeout
+from ..core.engine import run_with_timeout, text_to_chunks
 from ..core.exceptions import LLMError, PromptError, TextToolsError, ValidationError
 from ..core.internal_models import (
     Bool,
