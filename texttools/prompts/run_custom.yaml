@@ -1,7 +1,9 @@
 main_template: |
   {text}
+  
   Respond only in JSON format:
   {output_model_str}
 
 analyze_template: |
   {analyze_template}
+  
