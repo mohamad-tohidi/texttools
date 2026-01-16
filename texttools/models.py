@@ -71,7 +71,7 @@ class CategoryTree:
         parent.children[name] = new_node
         self._all_nodes[name] = new_node
 
-    def remove_node(self, name: str) -> None:
+    def remove_node(self, name: str, remove_children: bool = True) -> None:
         if name == "root":
             raise ValueError("Cannot remove the root node")
 
@@ -79,10 +79,15 @@ class CategoryTree:
         if not node:
             raise ValueError(f"Category: {name} not found")
 
-        for child_name in list(node.children.keys()):
-            self.remove_node(child_name)
+        if remove_children:
+            # Recursively remove children
+            for child_name in list(node.children.keys()):
+                self.remove_node(child_name)
 
-        if node.parent:
-            del node.parent.children[name]
+        else:
+            for child in list(node.children.values()):
+                node.parent.children[child.name] = child
+                child.parent = node.parent
 
+        del node.parent.children[name]
         del self._all_nodes[name]
