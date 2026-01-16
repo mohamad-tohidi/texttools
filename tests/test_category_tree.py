@@ -1,5 +1,5 @@
-from texttools.models import CategoryTree, Node
 import pytest
+from texttools.models import CategoryTree, Node
 
 
 @pytest.fixture
