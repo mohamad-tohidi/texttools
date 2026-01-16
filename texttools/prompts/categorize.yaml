@@ -20,17 +20,16 @@ main_template: |
   "result": "<category_name_only>"
   }}
 
-  Available categories with their descriptions:
+  Available categories:
   {category_list}
 
   Here is the text:
   {text}
 
 analyze_template: |
-  We want to categorize the given text.
-  To improve categorization, we need an analysis of the text.
-  Analyze the given text and write its main idea and a short analysis of that.
-  Analysis should be very short.
+  The task is to categorize the given text.
+  To improve categorization, you must write an analysis of the text.
+  Analyze the given text and write its main idea and a short analysis of it.
 
   Here is the text:
   {text}
