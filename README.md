@@ -20,17 +20,17 @@ Each tool is designed to work with structured outputs.
 
 - **`categorize()`** - Classifies text into given categories
 - **`extract_keywords()`** - Extracts keywords from the text
-- **`extract_entities()`** - Named Entity Recognition (NER) system
+- **`extract_entities()`** - Named Entity Recognition (NER) tool
 - **`is_question()`** - Binary question detection
-- **`text_to_question()`** - Generates questions from text
+- **`text_to_question()`** - Generates questions from a given text
 - **`merge_questions()`** - Merges multiple questions into one
-- **`rewrite()`** - Rewrites text in a different way
+- **`rewrite()`** - Rewrites text in different augmentations
 - **`subject_to_question()`** - Generates questions about a given subject
 - **`summarize()`** - Text summarization
-- **`translate()`** - Text translation
-- **`propositionize()`** - Convert text to atomic independent meaningful sentences 
+- **`translate()`** - Translates text from one to another langauge
+- **`propositionize()`** - Converts text to atomic independent meaningful sentences 
 - **`check_fact()`** - Check whether a statement is relevant to the source text
-- **`run_custom()`** - Allows users to define a custom tool with an arbitrary BaseModel
+- **`run_custom()`** - Allows users to define a custom tool with an arbitrary structured output
 
 ---
 
@@ -69,11 +69,11 @@ pip install -U hamtaa-texttools
 
 - **`validator: Callable (Experimental)`** → Forces TheTool to validate the output result based on your validator function. Validator should return a boolean. If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can also specify `max_validation_retries=<N>`.
 
-- **`priority: int (Experimental)`** → Task execution priority level. Affects processing order in queues.
+- **`priority: int (Experimental)`** → Task execution priority level. Affects processing order in queues.  
 **Note:** This feature works if it's supported by the model and vLLM.
 
-- **`timeout: float`** → Maximum time in seconds to wait for the response before raising a timeout error
-**Note:** This feature only exists in `AsyncTheTool`.
+- **`timeout: float`** → Maximum time in seconds to wait for the response before raising a timeout error  
+**Note:** This feature is only available in `AsyncTheTool`.
 
 
 ---
@@ -133,7 +133,7 @@ async def main():
     async_the_tool = AsyncTheTool(client=async_client, model=model)
     
     translation_task = async_the_tool.translate("سلام، حالت چطوره؟", target_language="English")
-    keywords_task = async_the_tool.extract_keywords("Tomorrow, we will be dead by the car crash")
+    keywords_task = async_the_tool.extract_keywords("This open source project is great for processing large datasets!")
 
     (translation, keywords) = await asyncio.gather(translation_task, keywords_task)
     
