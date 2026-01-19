@@ -18,19 +18,18 @@ It provides ready-to-use utilities for **translation, question detection, catego
 TextTools provides a rich collection of high-level NLP utilities,
 Each tool is designed to work with structured outputs.
 
-- **`categorize()`** - Classifies text into given categories
-- **`extract_keywords()`** - Extracts keywords from the text
-- **`extract_entities()`** - Named Entity Recognition (NER) tool
-- **`is_question()`** - Binary question detection
-- **`text_to_question()`** - Generates questions from a given text
-- **`merge_questions()`** - Merges multiple questions into one
-- **`rewrite()`** - Rewrites text in different augmentations
-- **`subject_to_question()`** - Generates questions about a given subject
-- **`summarize()`** - Text summarization
-- **`translate()`** - Translates text from one to another langauge
-- **`propositionize()`** - Converts a text into atomic, independent, meaningful sentences 
+- **`categorize()`** - Classify text into given categories
+- **`extract_keywords()`** - Extract keywords from the text
+- **`extract_entities()`** - Perform Named Entity Recognition (NER)
+- **`is_question()`** - Detect if the input is phrased as a question
+- **`to_question()`** - Generate questions from the given text / subject
+- **`merge_questions()`** - Merge multiple questions into one
+- **`rewrite()`** - Rewrite text in different augmentations
+- **`summarize()`** - Summarize the given text
+- **`translate()`** - Translate text between languages
+- **`propositionize()`** - Convert a text into atomic, independent, meaningful sentences 
 - **`check_fact()`** - Check whether a statement is a fact based on the source text
-- **`run_custom()`** - Allows users to define a custom tool with an arbitrary structured output
+- **`run_custom()`** - Custom tool that can do almost anything
 
 ---
 
