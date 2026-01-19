@@ -24,11 +24,11 @@ Each tool is designed to work with structured outputs.
 - **`is_question()`** - Detect if the input is phrased as a question
 - **`to_question()`** - Generate questions from the given text / subject
 - **`merge_questions()`** - Merge multiple questions into one
-- **`rewrite()`** - Rewrite text in different augmentations
+- **`augment()`** - Rewrite text in different augmentations
 - **`summarize()`** - Summarize the given text
 - **`translate()`** - Translate text between languages
 - **`propositionize()`** - Convert a text into atomic, independent, meaningful sentences 
-- **`check_fact()`** - Check whether a statement is a fact based on the source text
+- **`is_fact()`** - Check whether a statement is a fact based on the source text
 - **`run_custom()`** - Custom tool that can do almost anything
 
 ---
