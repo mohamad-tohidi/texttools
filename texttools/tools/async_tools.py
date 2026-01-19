@@ -558,7 +558,7 @@ class AsyncTheTool:
 
         return tool_output
 
-    async def rewrite(
+    async def augment(
         self,
         text: str,
         with_analysis: bool = False,
@@ -592,7 +592,7 @@ class AsyncTheTool:
         Returns:
             ToolOutput
         """
-        tool_name = "rewrite"
+        tool_name = "augment"
         start = perf_counter()
 
         try:
@@ -917,7 +917,7 @@ class AsyncTheTool:
 
         return tool_output
 
-    async def check_fact(
+    async def is_fact(
         self,
         text: str,
         source_text: str,
@@ -954,7 +954,7 @@ class AsyncTheTool:
         Returns:
             ToolOutput
         """
-        tool_name = "check_fact"
+        tool_name = "is_fact"
         start = perf_counter()
 
         try:
