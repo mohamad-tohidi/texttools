@@ -28,8 +28,8 @@ Each tool is designed to work with structured outputs.
 - **`subject_to_question()`** - Generates questions about a given subject
 - **`summarize()`** - Text summarization
 - **`translate()`** - Translates text from one to another langauge
-- **`propositionize()`** - Converts text to atomic independent meaningful sentences 
-- **`check_fact()`** - Check whether a statement is relevant to the source text
+- **`propositionize()`** - Converts a text into atomic, independent, meaningful sentences 
+- **`check_fact()`** - Check whether a statement is a fact based on the source text
 - **`run_custom()`** - Allows users to define a custom tool with an arbitrary structured output
 
 ---
@@ -63,16 +63,16 @@ pip install -U hamtaa-texttools
 
 - **`output_lang: str`** → Forces the model to respond in a specific language.
 
-- **`user_prompt: str`** → Allows you to inject a custom instruction or into the model alongside the main template. This gives you fine-grained control over how the model interprets or modifies the input text.
+- **`user_prompt: str`** → Allows you to inject a custom instruction into the model alongside the main template.
 
-- **`temperature: float`** → Determines how creative the model should respond. Takes a float number from `0.0` to `2.0`.
+- **`temperature: float`** → Determines how creative the model should respond. Takes a float number between `0.0` and `2.0`.
 
-- **`validator: Callable (Experimental)`** → Forces TheTool to validate the output result based on your validator function. Validator should return a boolean. If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can also specify `max_validation_retries=<N>`.
+- **`validator: Callable (Experimental)`** → Forces the tool to validate the output result based on your validator function. Validator should return a boolean. If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can also specify `max_validation_retries=<N>`.
 
-- **`priority: int (Experimental)`** → Task execution priority level. Affects processing order in queues.  
+- **`priority: int (Experimental)`** → Affects processing order in queues.  
 **Note:** This feature works if it's supported by the model and vLLM.
 
-- **`timeout: float`** → Maximum time in seconds to wait for the response before raising a timeout error  
+- **`timeout: float`** → Maximum time in seconds to wait for the response before raising a timeout error.  
 **Note:** This feature is only available in `AsyncTheTool`.
 
 
@@ -85,7 +85,7 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
 - **`analysis: str`**
 - **`logprobs: list`**
 - **`errors: list[str]`**
-- **`ToolOutputMetadata`** →
+- **`ToolOutputMetadata`**  
     - **`tool_name: str`**
     - **`processed_at: datetime`**
     - **`execution_time: float`**
@@ -149,8 +149,7 @@ asyncio.run(main())
 
 Use **TextTools** when you need to:
 
-- 🔍 **Classify** large datasets quickly without model training  
-- 🌍 **Translate** and process multilingual corpora with ease  
+- 🔍 **Classify** large datasets quickly without model training   
 - 🧩 **Integrate** LLMs into production pipelines (structured outputs)  
 - 📊 **Analyze** large text collections using embeddings and categorization  
 
