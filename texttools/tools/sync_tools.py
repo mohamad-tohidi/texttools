@@ -4,7 +4,6 @@ from typing import Any, Literal
 
 from openai import OpenAI
 
-from ..core.engine import to_chunks
 from ..core.exceptions import LLMError, PromptError, TextToolsError, ValidationError
 from ..core.internal_models import (
     Bool,
@@ -15,6 +14,7 @@ from ..core.internal_models import (
     create_dynamic_model,
 )
 from ..core.operators.sync_operator import Operator
+from ..core.utils import TheToolUtils
 from ..models import CategoryTree, ToolOutput, ToolOutputMetadata
 
 
@@ -713,7 +713,7 @@ class TheTool:
 
         try:
             if len(text.split(" ")) > 1500 and use_chunker:
-                chunks = to_chunks(text, 1200, 0)
+                chunks = TheToolUtils.to_chunks(text, 1200, 0)
                 translation = ""
                 analysis = ""
                 logprobs_list = []
