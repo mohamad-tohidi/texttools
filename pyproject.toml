@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hamtaa-texttools"
-version = "1.3.3"
+version = "1.4.0"
 authors = [
   {name = "Tohidi", email = "the.mohammad.tohidi@gmail.com"},
   {name = "Erfan Moosavi", email = "erfanmoosavi84@gmail.com"},
