@@ -4,9 +4,9 @@ from typing import Any, Type, TypeVar
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
-from ..engine import OperatorUtils, PromptLoader
 from ..exceptions import LLMError, PromptError, TextToolsError, ValidationError
 from ..internal_models import OperatorOutput
+from ..utils import OperatorUtils
 
 # Base Model type for output models
 T = TypeVar("T", bound=BaseModel)
@@ -111,8 +111,7 @@ class AsyncOperator:
         Execute the LLM pipeline with the given input text.
         """
         try:
-            prompt_loader = PromptLoader()
-            prompt_configs = prompt_loader.load(
+            prompt_configs = OperatorUtils.load_prompt(
                 prompt_file=tool_name + ".yaml",
                 text=text.strip(),
                 mode=mode,
