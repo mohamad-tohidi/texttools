@@ -162,14 +162,14 @@ class TheTool:
     def extract_keywords(
         self,
         text: str,
+        mode: Literal["auto", "threshold", "count"],
+        number_of_keywords: int | None = None,
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        mode: Literal["auto", "threshold", "count"] = "auto",
-        number_of_keywords: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
@@ -199,20 +199,20 @@ class TheTool:
             operator_output = self._operator.run(
                 # User parameters
                 text=text,
+                number_of_keywords=number_of_keywords,
+                mode=mode,
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
                 temperature=temperature,
                 logprobs=logprobs,
                 top_logprobs=top_logprobs,
-                number_of_keywords=number_of_keywords,
                 validator=validator,
                 max_validation_retries=max_validation_retries,
                 priority=priority,
                 # Internal parameters
                 tool_name=tool_name,
                 output_model=ListStr,
-                mode=mode,
             )
 
             metadata = ToolOutputMetadata(
@@ -381,13 +381,13 @@ class TheTool:
         self,
         text: str,
         number_of_questions: int,
+        mode: Literal["from_text", "from_subject"],
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        mode: Literal["from_text", "from_subject"] = "from_text",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
@@ -419,6 +419,7 @@ class TheTool:
                 # User parameters
                 text=text,
                 number_of_questions=number_of_questions,
+                mode=mode,
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -431,7 +432,6 @@ class TheTool:
                 # Internal parameters
                 tool_name=tool_name,
                 output_model=ReasonListStr,
-                mode=mode,
             )
 
             metadata = ToolOutputMetadata(
@@ -455,13 +455,13 @@ class TheTool:
     def merge_questions(
         self,
         text: list[str],
+        mode: Literal["simple", "stepwise"],
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        mode: Literal["default", "reason"] = "default",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
@@ -492,6 +492,7 @@ class TheTool:
             operator_output = self._operator.run(
                 # User parameters
                 text=text,
+                mode=mode,
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -504,7 +505,6 @@ class TheTool:
                 # Internal parameters
                 tool_name=tool_name,
                 output_model=Str,
-                mode=mode,
             )
 
             metadata = ToolOutputMetadata(
@@ -528,13 +528,13 @@ class TheTool:
     def augment(
         self,
         text: str,
+        mode: Literal["positive", "negative", "hard_negative"],
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
-        mode: Literal["positive", "negative", "hard_negative"] = "positive",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
@@ -564,6 +564,7 @@ class TheTool:
             operator_output = self._operator.run(
                 # User parameters
                 text=text,
+                mode=mode,
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -576,7 +577,6 @@ class TheTool:
                 # Internal parameters
                 tool_name=tool_name,
                 output_model=Str,
-                mode=mode,
             )
 
             metadata = ToolOutputMetadata(
