@@ -54,7 +54,9 @@ def main():
     detection = t.is_question("We will be dead by the car crash")
     print(repr(detection))
 
-    question = t.text_to_question("We will be dead by the car crash", 2)
+    question = t.to_question(
+        "We will be dead by the car crash", mode="from_text", number_of_questions=2
+    )
     print(repr(question))
 
     merged = t.merge_questions(
@@ -62,18 +64,15 @@ def main():
             "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
             "چرا ما باید در کنار هم زندگی کنیم؟",
         ],
-        mode="default",
+        mode="simple",
     )
     print(repr(merged))
 
-    rewritten = t.rewrite(
+    augmentation = t.augment(
         "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
         mode="positive",
     )
-    print(repr(rewritten))
-
-    questions = t.subject_to_question("Friendship", 3)
-    print(repr(questions))
+    print(repr(augmentation))
 
     summary = t.summarize("Tomorrow, we will be dead by the car crash")
     print(repr(summary))
@@ -87,7 +86,7 @@ def main():
     )
     print(repr(propositionize))
 
-    check_fact = t.check_fact(
+    check_fact = t.is_fact(
         text="امام نهم در ایران به خاک سپرده شد",
         source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست",
     )
