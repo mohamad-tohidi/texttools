@@ -4,7 +4,6 @@ from typing import Any, Literal
 
 from openai import AsyncOpenAI
 
-from ..core.engine import run_with_timeout, to_chunks
 from ..core.exceptions import LLMError, PromptError, TextToolsError, ValidationError
 from ..core.internal_models import (
     Bool,
@@ -15,6 +14,7 @@ from ..core.internal_models import (
     create_dynamic_model,
 )
 from ..core.operators.async_operator import AsyncOperator
+from ..core.utils import TheToolUtils
 from ..models import CategoryTree, ToolOutput, ToolOutputMetadata
 
 
@@ -67,7 +67,7 @@ class AsyncTheTool:
 
         try:
             if isinstance(categories, list):
-                operator_output = await run_with_timeout(
+                operator_output = await TheToolUtils.run_with_timeout(
                     self._operator.run(
                         # User parameters
                         text=text,
@@ -116,7 +116,7 @@ class AsyncTheTool:
                     ]
                     category_names = list(parent_node.children.keys())
 
-                    level_operator_output = await run_with_timeout(
+                    level_operator_output = await TheToolUtils.run_with_timeout(
                         self._operator.run(
                             # User parameters
                             text=text,
@@ -208,7 +208,7 @@ class AsyncTheTool:
         start = perf_counter()
 
         try:
-            operator_output = await run_with_timeout(
+            operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # User parameters
                     text=text,
@@ -287,7 +287,7 @@ class AsyncTheTool:
         start = perf_counter()
 
         try:
-            operator_output = await run_with_timeout(
+            operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # User parameters
                     text=text,
@@ -363,7 +363,7 @@ class AsyncTheTool:
         start = perf_counter()
 
         try:
-            operator_output = await run_with_timeout(
+            operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # User parameters
                     text=text,
@@ -443,7 +443,7 @@ class AsyncTheTool:
         start = perf_counter()
 
         try:
-            operator_output = await run_with_timeout(
+            operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # User parameters
                     text=text,
@@ -523,7 +523,7 @@ class AsyncTheTool:
 
         try:
             text = ", ".join(text)
-            operator_output = await run_with_timeout(
+            operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # User parameters
                     text=text,
@@ -601,7 +601,7 @@ class AsyncTheTool:
         start = perf_counter()
 
         try:
-            operator_output = await run_with_timeout(
+            operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # User parameters
                     text=text,
@@ -677,7 +677,7 @@ class AsyncTheTool:
         start = perf_counter()
 
         try:
-            operator_output = await run_with_timeout(
+            operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # User parameters
                     text=text,
@@ -758,13 +758,13 @@ class AsyncTheTool:
 
         try:
             if len(text.split(" ")) > 1500 and use_chunker:
-                chunks = to_chunks(text, 1200, 0)
+                chunks = TheToolUtils.to_chunks(text, 1200, 0)
                 translation = ""
                 analysis = ""
                 logprobs_list = []
 
                 for chunk in chunks:
-                    chunk_operator_output = await run_with_timeout(
+                    chunk_operator_output = await TheToolUtils.run_with_timeout(
                         self._operator.run(
                             # User parameters
                             text=chunk,
@@ -804,7 +804,7 @@ class AsyncTheTool:
                 )
 
             else:
-                operator_output = await run_with_timeout(
+                operator_output = await TheToolUtils.run_with_timeout(
                     self._operator.run(
                         # User parameters
                         text=text,
@@ -883,7 +883,7 @@ class AsyncTheTool:
         start = perf_counter()
 
         try:
-            operator_output = await run_with_timeout(
+            operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # User parameters
                     text=text,
@@ -963,7 +963,7 @@ class AsyncTheTool:
         start = perf_counter()
 
         try:
-            operator_output = await run_with_timeout(
+            operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # User parameters
                     text=text,
@@ -1042,7 +1042,7 @@ class AsyncTheTool:
         start = perf_counter()
 
         try:
-            operator_output = await run_with_timeout(
+            operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # User paramaeters
                     text=prompt,
