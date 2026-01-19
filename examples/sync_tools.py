@@ -3,8 +3,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
-
-from texttools import TheTool, CategoryTree
+from texttools import CategoryTree, TheTool
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
