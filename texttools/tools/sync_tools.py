@@ -525,7 +525,7 @@ class TheTool:
 
         return tool_output
 
-    def rewrite(
+    def augment(
         self,
         text: str,
         with_analysis: bool = False,
@@ -557,7 +557,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = "rewrite"
+        tool_name = "augment"
         start = perf_counter()
 
         try:
@@ -861,7 +861,7 @@ class TheTool:
 
         return tool_output
 
-    def check_fact(
+    def is_fact(
         self,
         text: str,
         source_text: str,
@@ -896,7 +896,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = "check_fact"
+        tool_name = "is_fact"
         start = perf_counter()
 
         try:
