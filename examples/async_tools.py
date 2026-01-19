@@ -22,76 +22,52 @@ async def main():
         categories=["هیچکدام", "دینی", "فلسفه"],
         timeout=0.5,
     )
-    keywords_task = t.extract_keywords("Tomorrow, we will be dead by the car crash")
+    keywords_task = t.extract_keywords(
+        "Tomorrow, we will be dead by the car crash", mode="auto"
+    )
     entities_task = t.extract_entities(
         "We will be dead by the car crash", entities=["EVENT"]
     )
     detection_task = t.is_question("We will be dead by the car crash")
-    question_task = t.text_to_question("We will be dead by the car crash", 2)
+    question_task = t.to_question(
+        "We will be dead by the car crash", mode="from_text", number_of_questions=2
+    )
     merged_task = t.merge_questions(
         ["چرا ما موجوداتی اجتماعی هستیم؟", "چرا باید در کنار هم زندگی کنیم؟"],
-        mode="default",
+        mode="stepwise",
         with_analysis=True,
         timeout=5.8,
     )
-    rewritten_task = t.rewrite(
+    augmentations_task = t.augment(
         "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
         mode="positive",
         user_prompt="Be carefull",
     )
-    questions_task = t.subject_to_question("Friendship", 3)
     summary_task = t.summarize("Tomorrow, we will be dead by the car crash")
     translation_task = t.translate("سلام حالت چطوره؟", target_language="English")
     propositionize_task = t.propositionize(
         "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.",
         output_lang="Persian",
     )
-    check_fact_task = t.check_fact(
+    is_fact_task = t.is_fact(
         text="امام نهم در ایران به خاک سپرده شد",
         source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست",
     )
-    (
-        category,
-        keywords,
-        entities,
-        detection,
-        question,
-        merged,
-        rewritten,
-        questions,
-        summary,
-        translation,
-        propositionize,
-        check_fact,
-    ) = await asyncio.gather(
+    results = await asyncio.gather(
         category_task,
         keywords_task,
         entities_task,
         detection_task,
         question_task,
         merged_task,
-        rewritten_task,
-        questions_task,
+        augmentations_task,
         summary_task,
         translation_task,
         propositionize_task,
-        check_fact_task,
+        is_fact_task,
     )
 
-    for tool_output in (
-        category,
-        keywords,
-        entities,
-        detection,
-        question,
-        merged,
-        rewritten,
-        questions,
-        summary,
-        translation,
-        propositionize,
-        check_fact,
-    ):
+    for tool_output in results:
         print(repr(tool_output))
 
 
