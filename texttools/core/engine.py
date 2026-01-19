@@ -151,7 +151,7 @@ class OperatorUtils:
         return max(0.0, min(new_temp, 1.5))
 
 
-def text_to_chunks(text: str, size: int, overlap: int) -> list[str]:
+def to_chunks(text: str, size: int, overlap: int) -> list[str]:
     """
     Utility for chunking large texts. Used for translation tool
     """
