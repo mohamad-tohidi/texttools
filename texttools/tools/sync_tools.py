@@ -377,7 +377,7 @@ class TheTool:
 
         return tool_output
 
-    def text_to_question(
+    def to_question(
         self,
         text: str,
         number_of_questions: int,
@@ -387,12 +387,13 @@ class TheTool:
         temperature: float | None = 0.0,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        mode: Literal["from_text", "from_subject"] = "from_text",
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
     ) -> ToolOutput:
         """
-        Generate a single question from the given text
+        Generate questions from the given text / subject
 
         Arguments:
             text: The input text
@@ -410,7 +411,7 @@ class TheTool:
         Returns:
             ToolOutput
         """
-        tool_name = "text_to_question"
+        tool_name = "to_question"
         start = perf_counter()
 
         try:
@@ -430,7 +431,7 @@ class TheTool:
                 # Internal parameters
                 tool_name=tool_name,
                 output_model=ReasonListStr,
-                mode=None,
+                mode=mode,
             )
 
             metadata = ToolOutputMetadata(
@@ -576,80 +577,6 @@ class TheTool:
                 tool_name=tool_name,
                 output_model=Str,
                 mode=mode,
-            )
-
-            metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
-            )
-            tool_output = ToolOutput(
-                result=operator_output.result,
-                logprobs=operator_output.logprobs,
-                analysis=operator_output.analysis,
-                metadata=metadata,
-            )
-
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
-            metadata = ToolOutputMetadata(tool_name=tool_name)
-            tool_output = ToolOutput(
-                errors=[f"{type(e).__name__}: {e}"], metadata=metadata
-            )
-
-        return tool_output
-
-    def subject_to_question(
-        self,
-        text: str,
-        number_of_questions: int,
-        with_analysis: bool = False,
-        output_lang: str | None = None,
-        user_prompt: str | None = None,
-        temperature: float | None = 0.0,
-        logprobs: bool = False,
-        top_logprobs: int = 3,
-        validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
-        priority: int | None = None,
-    ) -> ToolOutput:
-        """
-        Generate a list of questions about a subject
-
-        Arguments:
-            text: The subject text to generate questions about
-            number_of_questions: Number of questions to generate
-            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
-            output_lang: Forces the model to respond in a specific language
-            user_prompt: Additional instructions
-            temperature: Controls randomness
-            logprobs: Whether to return token probability information
-            top_logprobs: Number of top token alternatives to return if logprobs enabled
-            validator: Custom validation function to validate the output
-            max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and the model)
-
-        Returns:
-            ToolOutput
-        """
-        tool_name = "subject_to_question"
-        start = perf_counter()
-
-        try:
-            operator_output = self._operator.run(
-                # User parameters
-                text=text,
-                number_of_questions=number_of_questions,
-                with_analysis=with_analysis,
-                output_lang=output_lang,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                tool_name=tool_name,
-                output_model=ReasonListStr,
-                mode=None,
             )
 
             metadata = ToolOutputMetadata(
