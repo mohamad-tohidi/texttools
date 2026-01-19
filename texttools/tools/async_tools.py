@@ -188,6 +188,8 @@ class AsyncTheTool:
 
         Arguments:
             text: The input text
+            mode: auto -> decide n of keywords automatically, threshold -> decide n of keywords by a threshold, count -> takes number of keywords as the parameter
+            number_of_keywords: Must be set only when using "count" mode
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
@@ -421,6 +423,7 @@ class AsyncTheTool:
 
         Arguments:
             text: The input text
+            mode: from_text -> generate questions from an answer, from_subject -> generate questions from a subject
             number_of_questions: Number of questions to generate
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             output_lang: Forces the model to respond in a specific language
@@ -500,6 +503,7 @@ class AsyncTheTool:
 
         Arguments:
             text: List of questions to merge
+            mode: simple -> regular question merging, stepwise -> merge questions in two steps
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
@@ -578,6 +582,7 @@ class AsyncTheTool:
 
         Arguments:
             text: The input text
+            mode: positive -> positive augmentation, negative -> negative augmentation, hard_negative -> hard negative augmentation
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
@@ -734,7 +739,7 @@ class AsyncTheTool:
         Arguments:
             text: The input text
             target_language: The target language for translation
-            use_chunker: Whether to use text chunker for text length bigger than 1500
+            use_chunker: Whether to use text chunker for large texts
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
             temperature: Controls randomness
@@ -939,7 +944,7 @@ class AsyncTheTool:
 
         Arguments:
             text: The input text
-            source_text: The source text that we want to check relation of text to it
+            source_text: The source text
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
