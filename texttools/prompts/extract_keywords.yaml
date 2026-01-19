@@ -59,6 +59,7 @@ main_template:
 
 
 analyze_template:
+  
   auto: |
     Analyze the following text to identify its main topics, concepts, and important terms.
     Provide a concise summary of your findings that will help in extracting relevant keywords.
