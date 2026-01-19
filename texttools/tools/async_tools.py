@@ -4,7 +4,7 @@ from typing import Any, Literal
 
 from openai import AsyncOpenAI
 
-from ..core.engine import run_with_timeout, text_to_chunks
+from ..core.engine import run_with_timeout, to_chunks
 from ..core.exceptions import LLMError, PromptError, TextToolsError, ValidationError
 from ..core.internal_models import (
     Bool,
@@ -19,11 +19,6 @@ from ..models import CategoryTree, ToolOutput, ToolOutputMetadata
 
 
 class AsyncTheTool:
-    """
-    Each method configures the operator with a specific YAML prompt,
-    output schema, and flags, then delegates execution to `operator.run()`.
-    """
-
     def __init__(
         self,
         client: AsyncOpenAI,
@@ -46,16 +41,16 @@ class AsyncTheTool:
         timeout: float | None = None,
     ) -> ToolOutput:
         """
-        Categorize a text into a category / category tree.
+        Classify text into given categories
 
         Important Note: category_tree mode is EXPERIMENTAL, you can use it but it isn't reliable.
 
         Arguments:
             text: The input text
             categories: The category list / category tree
-            with_analysis: Whether to include detailed reasoning analysis
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -189,14 +184,14 @@ class AsyncTheTool:
         timeout: float | None = None,
     ) -> ToolOutput:
         """
-        Extract salient keywords from text.
+        Extract keywords from the text
 
         Arguments:
             text: The input text
-            with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
+            output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -267,15 +262,15 @@ class AsyncTheTool:
         timeout: float | None = None,
     ) -> ToolOutput:
         """
-        Perform Named Entity Recognition (NER) over the input text.
+        Perform Named Entity Recognition (NER)
 
         Arguments:
             text: The input text
-            entities: List of entities provided by user (Optional)
-            with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output
+            entities: List of entities
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
+            output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -349,9 +344,9 @@ class AsyncTheTool:
 
         Arguments:
             text: The input text
-            with_analysis: Whether to include detailed reasoning analysis
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -421,15 +416,15 @@ class AsyncTheTool:
         timeout: float | None = None,
     ) -> ToolOutput:
         """
-        Generate a single question from the given text.
+        Generate questions from the given text
 
         Arguments:
             text: The input text
             number_of_questions: Number of questions to generate
-            with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
+            output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -500,14 +495,14 @@ class AsyncTheTool:
         timeout: float | None = None,
     ) -> ToolOutput:
         """
-        Merge multiple questions into a single unified question.
+        Merge multiple questions into a single unified question
 
         Arguments:
             text: List of questions to merge
-            with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
+            output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -578,14 +573,14 @@ class AsyncTheTool:
         timeout: float | None = None,
     ) -> ToolOutput:
         """
-        Rewrite a text with different modes.
+        Rewrite text in different augmentations
 
         Arguments:
             text: The input text
-            with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
+            output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -660,10 +655,10 @@ class AsyncTheTool:
         Arguments:
             text: The subject text to generate questions about
             number_of_questions: Number of questions to generate
-            with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
+            output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -733,14 +728,14 @@ class AsyncTheTool:
         timeout: float | None = None,
     ) -> ToolOutput:
         """
-        Summarize the given subject text.
+        Summarize the given text
 
         Arguments:
             text: The input text
-            with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
+            output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -810,7 +805,7 @@ class AsyncTheTool:
         timeout: float | None = None,
     ) -> ToolOutput:
         """
-        Translate text between languages.
+        Translate text between languages
 
         Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
 
@@ -818,9 +813,9 @@ class AsyncTheTool:
             text: The input text
             target_language: The target language for translation
             use_chunker: Whether to use text chunker for text length bigger than 1500
-            with_analysis: Whether to include detailed reasoning analysis
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -836,7 +831,7 @@ class AsyncTheTool:
 
         try:
             if len(text.split(" ")) > 1500 and use_chunker:
-                chunks = text_to_chunks(text, 1200, 0)
+                chunks = to_chunks(text, 1200, 0)
                 translation = ""
                 analysis = ""
                 logprobs_list = []
@@ -937,16 +932,16 @@ class AsyncTheTool:
         timeout: float | None = None,
     ) -> ToolOutput:
         """
-        Proposition input text to meaningful sentences.
+        Convert a text into atomic, independent, meaningful sentences
 
         Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
 
         Arguments:
             text: The input text
-            with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
+            output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -1016,17 +1011,17 @@ class AsyncTheTool:
         timeout: float | None = None,
     ) -> ToolOutput:
         """
-        Checks wheather a statement is relevant to the source text or not.
+        Check whether a statement is a fact based on the source text
 
         Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
 
         Arguments:
             text: The input text
             source_text: The source text that we want to check relation of text to it
-            with_analysis: Whether to include detailed reasoning analysis
-            output_lang: Language for the output
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
+            output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
-            temperature: Controls randomness (0.0 - 2.0)
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -1097,15 +1092,15 @@ class AsyncTheTool:
         timeout: float | None = None,
     ) -> ToolOutput:
         """
-        Custom tool that can do almost anything!
+        Custom tool that can do almost anything
 
         Arguments:
             prompt: The user prompt
             output_model: Pydantic BaseModel used for structured output
-            with_analysis: Whether to include detailed reasoning analysis
+            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             analyze_template: The analyze template used for reasoning analysis
-            output_lang: Language for the output
-            temperature: Controls randomness (0.0 - 2.0)
+            output_lang: Forces the model to respond in a specific language
+            temperature: Controls randomness
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
