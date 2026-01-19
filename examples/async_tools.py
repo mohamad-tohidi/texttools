@@ -1,9 +1,8 @@
-import os
 import asyncio
+import os
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
-
 from texttools import AsyncTheTool
 
 load_dotenv()
