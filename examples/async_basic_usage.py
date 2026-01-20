@@ -12,36 +12,43 @@ MODEL = os.getenv("MODEL")
 
 client = AsyncOpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
 
-t = AsyncTheTool(client=client, model=MODEL)
+async_the_tool = AsyncTheTool(client=client, model=MODEL)
 
 
 async def main():
-    category_task = t.categorize(
+    category_task = async_the_tool.categorize(
         "سلام حالت چطوره؟",
         categories=["هیچکدام", "دینی", "فلسفه"],
+        timeout=4,
     )
-    keywords_task = t.extract_keywords(
-        "Tomorrow, we will be dead by the car crash", mode="auto"
+    keywords_task = async_the_tool.extract_keywords(
+        "Tomorrow, we will be dead by the car crash", mode="auto", timeout=3
     )
-    entities_task = t.extract_entities("We will be dead by the car crash")
-    detection_task = t.is_question("We will be dead by the car crash")
-    question_task = t.to_question(
+    entities_task = async_the_tool.extract_entities(
+        "We will be dead by the car crash", timeout=1
+    )
+    detection_task = async_the_tool.is_question("We will be dead by the car crash")
+    question_task = async_the_tool.to_question(
         "We will be dead by the car crash", mode="from_text", number_of_questions=2
     )
-    merged_task = t.merge_questions(
+    merged_task = async_the_tool.merge_questions(
         ["چرا ما موجوداتی اجتماعی هستیم؟", "چرا باید در کنار هم زندگی کنیم؟"],
         mode="stepwise",
     )
-    augmentations_task = t.augment(
+    augmentations_task = async_the_tool.augment(
         "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
         mode="positive",
     )
-    summary_task = t.summarize("Tomorrow, we will be dead by the car crash")
-    translation_task = t.translate("سلام حالت چطوره؟", target_lang="English")
-    propositionize_task = t.propositionize(
+    summary_task = async_the_tool.summarize(
+        "Tomorrow, we will be dead by the car crash"
+    )
+    translation_task = async_the_tool.translate(
+        "سلام حالت چطوره؟", target_lang="English"
+    )
+    propositionize_task = async_the_tool.propositionize(
         "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد."
     )
-    is_fact_task = t.is_fact(
+    is_fact_task = async_the_tool.is_fact(
         text="امام نهم در ایران به خاک سپرده شد",
         source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست",
     )
