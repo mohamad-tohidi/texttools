@@ -2,7 +2,7 @@ from collections.abc import Callable
 from time import perf_counter
 from typing import Any, Literal
 
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 from ..core.exceptions import LLMError, PromptError, TextToolsError, ValidationError
 from ..core.internal_models import (
@@ -13,20 +13,20 @@ from ..core.internal_models import (
     Str,
     create_dynamic_model,
 )
-from ..core.operators.sync_operator import Operator
+from ..core.operators.async_operator import AsyncOperator
 from ..core.utils import TheToolUtils
 from ..models import CategoryTree, ToolOutput, ToolOutputMetadata
 
 
-class TheTool:
+class AsyncTheTool:
     def __init__(
         self,
-        client: OpenAI,
+        client: AsyncOpenAI,
         model: str,
     ):
-        self._operator = Operator(client=client, model=model)
+        self._operator = AsyncOperator(client=client, model=model)
 
-    def categorize(
+    async def categorize(
         self,
         text: str,
         categories: list[str] | CategoryTree,
@@ -38,6 +38,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Classify text into given categories
@@ -55,6 +56,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -65,23 +67,26 @@ class TheTool:
 
         try:
             if isinstance(categories, list):
-                operator_output = self._operator.run(
-                    # User parameters
-                    text=text,
-                    category_list=categories,
-                    with_analysis=with_analysis,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    # Internal parameters
-                    tool_name=tool_name,
-                    output_model=create_dynamic_model(categories),
-                    mode=None,
-                    output_lang=None,
+                operator_output = await TheToolUtils.run_with_timeout(
+                    self._operator.run(
+                        # User parameters
+                        text=text,
+                        category_list=categories,
+                        with_analysis=with_analysis,
+                        user_prompt=user_prompt,
+                        temperature=temperature,
+                        logprobs=logprobs,
+                        top_logprobs=top_logprobs,
+                        validator=validator,
+                        max_validation_retries=max_validation_retries,
+                        priority=priority,
+                        # Internal parameters
+                        tool_name=tool_name,
+                        output_model=create_dynamic_model(categories),
+                        mode=None,
+                        output_lang=None,
+                    ),
+                    timeout=timeout,
                 )
 
                 metadata = ToolOutputMetadata(
@@ -111,23 +116,26 @@ class TheTool:
                     ]
                     category_names = list(parent_node.children.keys())
 
-                    level_operator_output = self._operator.run(
-                        # User parameters
-                        text=text,
-                        category_list=category_list,
-                        with_analysis=with_analysis,
-                        user_prompt=user_prompt,
-                        temperature=temperature,
-                        logprobs=logprobs,
-                        top_logprobs=top_logprobs,
-                        validator=validator,
-                        max_validation_retries=max_validation_retries,
-                        priority=priority,
-                        # Internal parameters
-                        tool_name=tool_name,
-                        output_model=create_dynamic_model(category_names),
-                        mode=None,
-                        output_lang=None,
+                    level_operator_output = await TheToolUtils.run_with_timeout(
+                        self._operator.run(
+                            # User parameters
+                            text=text,
+                            category_list=category_list,
+                            with_analysis=with_analysis,
+                            user_prompt=user_prompt,
+                            temperature=temperature,
+                            logprobs=logprobs,
+                            top_logprobs=top_logprobs,
+                            validator=validator,
+                            max_validation_retries=max_validation_retries,
+                            priority=priority,
+                            # Internal parameters
+                            tool_name=tool_name,
+                            output_model=create_dynamic_model(category_names),
+                            mode=None,
+                            output_lang=None,
+                        ),
+                        timeout=timeout,
                     )
 
                     chosen_category = level_operator_output.result
@@ -159,7 +167,7 @@ class TheTool:
 
         return tool_output
 
-    def extract_keywords(
+    async def extract_keywords(
         self,
         text: str,
         mode: Literal["auto", "threshold", "count"],
@@ -173,6 +181,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Extract keywords from the text
@@ -190,6 +199,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -198,23 +208,26 @@ class TheTool:
         start = perf_counter()
 
         try:
-            operator_output = self._operator.run(
-                # User parameters
-                text=text,
-                number_of_keywords=number_of_keywords,
-                mode=mode,
-                with_analysis=with_analysis,
-                output_lang=output_lang,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                tool_name=tool_name,
-                output_model=ListStr,
+            operator_output = await TheToolUtils.run_with_timeout(
+                self._operator.run(
+                    # User parameters
+                    text=text,
+                    with_analysis=with_analysis,
+                    number_of_keywords=number_of_keywords,
+                    mode=mode,
+                    output_lang=output_lang,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    priority=priority,
+                    # Internal parameters
+                    tool_name=tool_name,
+                    output_model=ListStr,
+                ),
+                timeout=timeout,
             )
 
             metadata = ToolOutputMetadata(
@@ -235,10 +248,10 @@ class TheTool:
 
         return tool_output
 
-    def extract_entities(
+    async def extract_entities(
         self,
         text: str,
-        entities: list[str] | None = None,
+        entities: list[str] = ["all named entities"],
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
@@ -248,6 +261,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Perform Named Entity Recognition (NER)
@@ -264,6 +278,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -272,24 +287,26 @@ class TheTool:
         start = perf_counter()
 
         try:
-            operator_output = self._operator.run(
-                # User parameters
-                text=text,
-                entities=entities
-                or "all named entities (e.g., PER, ORG, LOC, DAT, etc.)",
-                with_analysis=with_analysis,
-                output_lang=output_lang,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                tool_name=tool_name,
-                output_model=ListDictStrStr,
-                mode=None,
+            operator_output = await TheToolUtils.run_with_timeout(
+                self._operator.run(
+                    # User parameters
+                    text=text,
+                    entities=entities,
+                    with_analysis=with_analysis,
+                    output_lang=output_lang,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    priority=priority,
+                    # Internal parameters
+                    tool_name=tool_name,
+                    output_model=ListDictStrStr,
+                    mode=None,
+                ),
+                timeout=timeout,
             )
 
             metadata = ToolOutputMetadata(
@@ -310,7 +327,7 @@ class TheTool:
 
         return tool_output
 
-    def is_question(
+    async def is_question(
         self,
         text: str,
         with_analysis: bool = False,
@@ -321,6 +338,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Detect if the input is phrased as a question.
@@ -335,6 +353,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -343,22 +362,25 @@ class TheTool:
         start = perf_counter()
 
         try:
-            operator_output = self._operator.run(
-                # User parameters
-                text=text,
-                with_analysis=with_analysis,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                tool_name=tool_name,
-                output_model=Bool,
-                mode=None,
-                output_lang=None,
+            operator_output = await TheToolUtils.run_with_timeout(
+                self._operator.run(
+                    # User parameters
+                    text=text,
+                    with_analysis=with_analysis,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    priority=priority,
+                    # Internal parameters
+                    tool_name=tool_name,
+                    output_model=Bool,
+                    mode=None,
+                    output_lang=None,
+                ),
+                timeout=timeout,
             )
 
             metadata = ToolOutputMetadata(
@@ -379,7 +401,7 @@ class TheTool:
 
         return tool_output
 
-    def to_question(
+    async def to_question(
         self,
         text: str,
         number_of_questions: int,
@@ -393,6 +415,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Generate questions from the given text / subject
@@ -410,6 +433,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -418,23 +442,26 @@ class TheTool:
         start = perf_counter()
 
         try:
-            operator_output = self._operator.run(
-                # User parameters
-                text=text,
-                number_of_questions=number_of_questions,
-                mode=mode,
-                with_analysis=with_analysis,
-                output_lang=output_lang,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                tool_name=tool_name,
-                output_model=ReasonListStr,
+            operator_output = await TheToolUtils.run_with_timeout(
+                self._operator.run(
+                    # User parameters
+                    text=text,
+                    number_of_questions=number_of_questions,
+                    mode=mode,
+                    with_analysis=with_analysis,
+                    output_lang=output_lang,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    priority=priority,
+                    # Internal parameters
+                    tool_name=tool_name,
+                    output_model=ReasonListStr,
+                ),
+                timeout=timeout,
             )
 
             metadata = ToolOutputMetadata(
@@ -455,7 +482,7 @@ class TheTool:
 
         return tool_output
 
-    def merge_questions(
+    async def merge_questions(
         self,
         text: list[str],
         mode: Literal["simple", "stepwise"],
@@ -468,6 +495,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Merge multiple questions into a single unified question
@@ -484,6 +512,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -493,22 +522,25 @@ class TheTool:
 
         try:
             text = ", ".join(text)
-            operator_output = self._operator.run(
-                # User parameters
-                text=text,
-                mode=mode,
-                with_analysis=with_analysis,
-                output_lang=output_lang,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                tool_name=tool_name,
-                output_model=Str,
+            operator_output = await TheToolUtils.run_with_timeout(
+                self._operator.run(
+                    # User parameters
+                    text=text,
+                    mode=mode,
+                    with_analysis=with_analysis,
+                    output_lang=output_lang,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    priority=priority,
+                    # Internal parameters
+                    tool_name=tool_name,
+                    output_model=Str,
+                ),
+                timeout=timeout,
             )
 
             metadata = ToolOutputMetadata(
@@ -529,7 +561,7 @@ class TheTool:
 
         return tool_output
 
-    def augment(
+    async def augment(
         self,
         text: str,
         mode: Literal["positive", "negative", "hard_negative"],
@@ -542,6 +574,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Rewrite text in different augmentations
@@ -558,6 +591,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -566,22 +600,25 @@ class TheTool:
         start = perf_counter()
 
         try:
-            operator_output = self._operator.run(
-                # User parameters
-                text=text,
-                mode=mode,
-                with_analysis=with_analysis,
-                output_lang=output_lang,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                tool_name=tool_name,
-                output_model=Str,
+            operator_output = await TheToolUtils.run_with_timeout(
+                self._operator.run(
+                    # User parameters
+                    text=text,
+                    mode=mode,
+                    with_analysis=with_analysis,
+                    output_lang=output_lang,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    priority=priority,
+                    # Internal parameters
+                    tool_name=tool_name,
+                    output_model=Str,
+                ),
+                timeout=timeout,
             )
 
             metadata = ToolOutputMetadata(
@@ -602,7 +639,7 @@ class TheTool:
 
         return tool_output
 
-    def summarize(
+    async def summarize(
         self,
         text: str,
         with_analysis: bool = False,
@@ -614,6 +651,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Summarize the given text
@@ -629,6 +667,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -637,22 +676,25 @@ class TheTool:
         start = perf_counter()
 
         try:
-            operator_output = self._operator.run(
-                # User parameters
-                text=text,
-                with_analysis=with_analysis,
-                output_lang=output_lang,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                tool_name=tool_name,
-                output_model=Str,
-                mode=None,
+            operator_output = await TheToolUtils.run_with_timeout(
+                self._operator.run(
+                    # User parameters
+                    text=text,
+                    with_analysis=with_analysis,
+                    output_lang=output_lang,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    priority=priority,
+                    # Internal parameters
+                    tool_name=tool_name,
+                    output_model=Str,
+                    mode=None,
+                ),
+                timeout=timeout,
             )
 
             metadata = ToolOutputMetadata(
@@ -673,7 +715,7 @@ class TheTool:
 
         return tool_output
 
-    def translate(
+    async def translate(
         self,
         text: str,
         target_language: str,
@@ -686,6 +728,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Translate text between languages
@@ -704,6 +747,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -719,23 +763,26 @@ class TheTool:
                 logprobs_list = []
 
                 for chunk in chunks:
-                    chunk_operator_output = self._operator.run(
-                        # User parameters
-                        text=chunk,
-                        target_language=target_language,
-                        with_analysis=with_analysis,
-                        user_prompt=user_prompt,
-                        temperature=temperature,
-                        logprobs=logprobs,
-                        top_logprobs=top_logprobs,
-                        validator=validator,
-                        max_validation_retries=max_validation_retries,
-                        priority=priority,
-                        # Internal parameters
-                        tool_name=tool_name,
-                        output_model=Str,
-                        mode=None,
-                        output_lang=None,
+                    chunk_operator_output = await TheToolUtils.run_with_timeout(
+                        self._operator.run(
+                            # User parameters
+                            text=chunk,
+                            target_language=target_language,
+                            with_analysis=with_analysis,
+                            user_prompt=user_prompt,
+                            temperature=temperature,
+                            logprobs=logprobs,
+                            top_logprobs=top_logprobs,
+                            validator=validator,
+                            max_validation_retries=max_validation_retries,
+                            priority=priority,
+                            # Internal parameters
+                            tool_name=tool_name,
+                            output_model=Str,
+                            mode=None,
+                            output_lang=None,
+                        ),
+                        timeout=timeout,
                     )
 
                     translation += chunk_operator_output.result + "\n"
@@ -756,23 +803,26 @@ class TheTool:
                 )
 
             else:
-                operator_output = self._operator.run(
-                    # User parameters
-                    text=text,
-                    target_language=target_language,
-                    with_analysis=with_analysis,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    # Internal parameters
-                    tool_name=tool_name,
-                    output_model=Str,
-                    mode=None,
-                    output_lang=None,
+                operator_output = await TheToolUtils.run_with_timeout(
+                    self._operator.run(
+                        # User parameters
+                        text=text,
+                        target_language=target_language,
+                        with_analysis=with_analysis,
+                        user_prompt=user_prompt,
+                        temperature=temperature,
+                        logprobs=logprobs,
+                        top_logprobs=top_logprobs,
+                        validator=validator,
+                        max_validation_retries=max_validation_retries,
+                        priority=priority,
+                        # Internal parameters
+                        tool_name=tool_name,
+                        output_model=Str,
+                        mode=None,
+                        output_lang=None,
+                    ),
+                    timeout=timeout,
                 )
 
                 metadata = ToolOutputMetadata(
@@ -793,7 +843,7 @@ class TheTool:
 
         return tool_output
 
-    def propositionize(
+    async def propositionize(
         self,
         text: str,
         with_analysis: bool = False,
@@ -805,6 +855,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Convert a text into atomic, independent, meaningful sentences
@@ -822,6 +873,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -830,22 +882,25 @@ class TheTool:
         start = perf_counter()
 
         try:
-            operator_output = self._operator.run(
-                # User parameters
-                text=text,
-                with_analysis=with_analysis,
-                output_lang=output_lang,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                tool_name=tool_name,
-                output_model=ListStr,
-                mode=None,
+            operator_output = await TheToolUtils.run_with_timeout(
+                self._operator.run(
+                    # User parameters
+                    text=text,
+                    with_analysis=with_analysis,
+                    output_lang=output_lang,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    priority=priority,
+                    # Internal parameters
+                    tool_name=tool_name,
+                    output_model=ListStr,
+                    mode=None,
+                ),
+                timeout=timeout,
             )
 
             metadata = ToolOutputMetadata(
@@ -866,7 +921,7 @@ class TheTool:
 
         return tool_output
 
-    def is_fact(
+    async def is_fact(
         self,
         text: str,
         source_text: str,
@@ -879,6 +934,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Check whether a statement is a fact based on the source text
@@ -897,6 +953,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -905,23 +962,26 @@ class TheTool:
         start = perf_counter()
 
         try:
-            operator_output = self._operator.run(
-                # User parameters
-                text=text,
-                source_text=source_text,
-                with_analysis=with_analysis,
-                output_lang=output_lang,
-                user_prompt=user_prompt,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                tool_name=tool_name,
-                output_model=Bool,
-                mode=None,
+            operator_output = await TheToolUtils.run_with_timeout(
+                self._operator.run(
+                    # User parameters
+                    text=text,
+                    source_text=source_text,
+                    with_analysis=with_analysis,
+                    output_lang=output_lang,
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    priority=priority,
+                    # Internal parameters
+                    tool_name=tool_name,
+                    output_model=Bool,
+                    mode=None,
+                ),
+                timeout=timeout,
             )
 
             metadata = ToolOutputMetadata(
@@ -942,7 +1002,7 @@ class TheTool:
 
         return tool_output
 
-    def run_custom(
+    async def run_custom(
         self,
         prompt: str,
         output_model: Any,
@@ -955,6 +1015,7 @@ class TheTool:
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int | None = None,
         priority: int | None = None,
+        timeout: float | None = None,
     ) -> ToolOutput:
         """
         Custom tool that can do almost anything
@@ -971,6 +1032,7 @@ class TheTool:
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
+            timeout: Maximum time in seconds to wait for the response before raising a timeout error
 
         Returns:
             ToolOutput
@@ -979,24 +1041,27 @@ class TheTool:
         start = perf_counter()
 
         try:
-            operator_output = self._operator.run(
-                # User paramaeters
-                text=prompt,
-                output_model=output_model,
-                with_analysis=with_analysis,
-                analyze_template=analyze_template,
-                output_model_str=output_model.model_json_schema(),
-                output_lang=output_lang,
-                temperature=temperature,
-                logprobs=logprobs,
-                top_logprobs=top_logprobs,
-                validator=validator,
-                max_validation_retries=max_validation_retries,
-                priority=priority,
-                # Internal parameters
-                tool_name=tool_name,
-                user_prompt=None,
-                mode=None,
+            operator_output = await TheToolUtils.run_with_timeout(
+                self._operator.run(
+                    # User paramaeters
+                    text=prompt,
+                    output_model=output_model,
+                    with_analysis=with_analysis,
+                    analyze_template=analyze_template,
+                    output_model_str=output_model.model_json_schema(),
+                    output_lang=output_lang,
+                    temperature=temperature,
+                    logprobs=logprobs,
+                    top_logprobs=top_logprobs,
+                    validator=validator,
+                    max_validation_retries=max_validation_retries,
+                    priority=priority,
+                    # Internal parameters
+                    tool_name=tool_name,
+                    user_prompt=None,
+                    mode=None,
+                ),
+                timeout=timeout,
             )
 
             metadata = ToolOutputMetadata(
