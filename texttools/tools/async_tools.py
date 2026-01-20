@@ -718,7 +718,7 @@ class AsyncTheTool:
     async def translate(
         self,
         text: str,
-        target_language: str,
+        target_lang: str,
         use_chunker: bool = True,
         with_analysis: bool = False,
         user_prompt: str | None = None,
@@ -737,7 +737,7 @@ class AsyncTheTool:
 
         Arguments:
             text: The input text
-            target_language: The target language for translation
+            target_lang: The target language for translation
             use_chunker: Whether to use text chunker for large texts
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
@@ -767,7 +767,7 @@ class AsyncTheTool:
                         self._operator.run(
                             # User parameters
                             text=chunk,
-                            target_language=target_language,
+                            target_lang=target_lang,
                             with_analysis=with_analysis,
                             user_prompt=user_prompt,
                             temperature=temperature,
@@ -807,7 +807,7 @@ class AsyncTheTool:
                     self._operator.run(
                         # User parameters
                         text=text,
-                        target_language=target_language,
+                        target_lang=target_lang,
                         with_analysis=with_analysis,
                         user_prompt=user_prompt,
                         temperature=temperature,
