@@ -39,3 +39,7 @@ def main():
         max_validation_retries=5,
     )
     print(repr(keywords))
+
+
+if __name__ == "__main__":
+    main()
