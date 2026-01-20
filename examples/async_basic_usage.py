@@ -19,14 +19,11 @@ async def main():
     category_task = t.categorize(
         "سلام حالت چطوره؟",
         categories=["هیچکدام", "دینی", "فلسفه"],
-        timeout=0.5,
     )
     keywords_task = t.extract_keywords(
         "Tomorrow, we will be dead by the car crash", mode="auto"
     )
-    entities_task = t.extract_entities(
-        "We will be dead by the car crash", entities=["EVENT"]
-    )
+    entities_task = t.extract_entities("We will be dead by the car crash")
     detection_task = t.is_question("We will be dead by the car crash")
     question_task = t.to_question(
         "We will be dead by the car crash", mode="from_text", number_of_questions=2
@@ -34,19 +31,15 @@ async def main():
     merged_task = t.merge_questions(
         ["چرا ما موجوداتی اجتماعی هستیم؟", "چرا باید در کنار هم زندگی کنیم؟"],
         mode="stepwise",
-        with_analysis=True,
-        timeout=5.8,
     )
     augmentations_task = t.augment(
         "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
         mode="positive",
-        user_prompt="Be carefull",
     )
     summary_task = t.summarize("Tomorrow, we will be dead by the car crash")
-    translation_task = t.translate("سلام حالت چطوره؟", target_language="English")
+    translation_task = t.translate("سلام حالت چطوره؟", target_lang="English")
     propositionize_task = t.propositionize(
-        "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.",
-        output_lang="Persian",
+        "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد."
     )
     is_fact_task = t.is_fact(
         text="امام نهم در ایران به خاک سپرده شد",
