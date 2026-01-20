@@ -12,13 +12,14 @@ MODEL = os.getenv("MODEL")
 
 client = OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
 
-t = TheTool(client=client, model=MODEL)
+the_tool = TheTool(client=client, model=MODEL)
 
 
 def main():
     # Categorizer: list mode
-    category = t.categorize(
-        "سلام حالت چطوره؟", categories=["هیچکدام", "دینی", "فلسفه"], priority=3
+    category = the_tool.categorize(
+        "سلام حالت چطوره؟",
+        categories=["هیچکدام", "دینی", "فلسفه"],
     )
     print(repr(category))
 
@@ -32,31 +33,31 @@ def main():
     tree.add_node("ذهن و بدن", "فلسفه ذهن")
     tree.add_node("امکان و ضرورت", "متافیزیک")
 
-    categories = t.categorize(
+    categories = the_tool.categorize(
         "اراده قدرت مفهومی مهم در مابعد الطبیعه است که توسط نیچه مطرح شده",
         tree,
     )
     print(repr(categories))
 
-    keywords = t.extract_keywords(
+    keywords = the_tool.extract_keywords(
         "Tomorrow, we will be dead by the car crash", mode="count", number_of_keywords=3
     )
     print(repr(keywords))
 
-    entities = t.extract_entities(
+    entities = the_tool.extract_entities(
         "Ali will be dead by the car crash",
     )
     print(repr(entities))
 
-    detection = t.is_question("We will be dead by the car crash")
+    detection = the_tool.is_question("We will be dead by the car crash")
     print(repr(detection))
 
-    question = t.to_question(
+    question = the_tool.to_question(
         "We will be dead by the car crash", mode="from_text", number_of_questions=2
     )
     print(repr(question))
 
-    merged = t.merge_questions(
+    merged = the_tool.merge_questions(
         [
             "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
             "چرا ما باید در کنار هم زندگی کنیم؟",
@@ -65,24 +66,24 @@ def main():
     )
     print(repr(merged))
 
-    augmentation = t.augment(
+    augmentation = the_tool.augment(
         "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
         mode="positive",
     )
     print(repr(augmentation))
 
-    summary = t.summarize("Tomorrow, we will be dead by the car crash")
+    summary = the_tool.summarize("Tomorrow, we will be dead by the car crash")
     print(repr(summary))
 
-    translation = t.translate("سلام حالت چطوره؟", target_lang="English")
+    translation = the_tool.translate("سلام حالت چطوره؟", target_lang="English")
     print(repr(translation))
 
-    propositionize = t.propositionize(
+    propositionize = the_tool.propositionize(
         "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.",
     )
     print(repr(propositionize))
 
-    check_fact = t.is_fact(
+    check_fact = the_tool.is_fact(
         text="امام نهم در ایران به خاک سپرده شد",
         source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس است",
     )
@@ -97,7 +98,7 @@ def main():
                     Create one student with these info:
                     [{"name": str}, {"age": int}, {"std_id": int}]"""
 
-    student_info = t.run_custom(custom_prompt, Student)
+    student_info = the_tool.run_custom(custom_prompt, Student)
     print(repr(student_info))
 
 
