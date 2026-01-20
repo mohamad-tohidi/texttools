@@ -1,4 +1,4 @@
-from typing import Any, Literal, Type
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, create_model
 
@@ -54,7 +54,7 @@ class ReasonListStr(BaseModel):
 
 
 # Create CategorizerOutput with dynamic categories
-def create_dynamic_model(allowed_values: list[str]) -> Type[BaseModel]:
+def create_dynamic_model(allowed_values: list[str]) -> type[BaseModel]:
     literal_type = Literal[*allowed_values]
 
     CategorizerOutput = create_model(
