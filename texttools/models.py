@@ -23,7 +23,7 @@ class ToolOutput(BaseModel):
         return f"ToolOutput({self.model_dump_json(indent=2)})"
 
 
-class Node:
+class Node(BaseModel):
     def __init__(self, name: str, description: str, level: int, parent: Node | None):
         self.name = name
         self.description = description
