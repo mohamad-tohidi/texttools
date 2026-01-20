@@ -24,12 +24,11 @@ class ToolOutput(BaseModel):
 
 
 class Node(BaseModel):
-    def __init__(self, name: str, description: str, level: int, parent: Node | None):
-        self.name = name
-        self.description = description
-        self.level = level
-        self.parent = parent
-        self.children = {}
+    name: str
+    description: str
+    level: int
+    parent: Node | None
+    children: dict[str, Node] = {}
 
 
 class CategoryTree:
@@ -91,3 +90,42 @@ class CategoryTree:
 
         del node.parent.children[name]
         del self._all_nodes[name]
+
+    def dump_tree(
+        self,
+        name: str = "root",
+        include_parent: bool = False,
+        include_children_refs: bool = False,
+    ) -> dict[str, Any]:
+        node = self.get_node(name)
+
+        if not node:
+            return {"error": f"Node {name} not found"}
+
+        result = {
+            "name": node.name,
+            "description": node.description,
+            "level": node.level,
+            "children_count": len(node.children),
+        }
+
+        if include_parent:
+            result["parent"] = node.parent.name if node.parent else None
+
+        # Add children recursively
+        children_data = []
+        for child in node.children.values():
+            child_dict = self.dump_tree(
+                name=child.name,
+                include_parent=False,
+                include_children_refs=include_children_refs,
+            )
+            children_data.append(child_dict)
+
+        if children_data:
+            result["children"] = children_data
+
+        if include_children_refs:
+            result["children_names"] = list(node.children.keys())
+
+        return result
