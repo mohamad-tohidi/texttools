@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any, Type, TypeVar
+from typing import Any
 
 from openai import AsyncOpenAI
 from pydantic import BaseModel
@@ -7,9 +7,6 @@ from pydantic import BaseModel
 from ..exceptions import LLMError, PromptError, TextToolsError, ValidationError
 from ..internal_models import OperatorOutput
 from ..utils import OperatorUtils
-
-# Base Model type for output models
-T = TypeVar("T", bound=BaseModel)
 
 
 class AsyncOperator:
@@ -46,12 +43,12 @@ class AsyncOperator:
     async def _parse_completion(
         self,
         main_message: list[dict[str, str]],
-        output_model: Type[T],
+        output_model: type[BaseModel],
         temperature: float,
         logprobs: bool,
         top_logprobs: int,
         priority: int | None,
-    ) -> tuple[T, Any]:
+    ) -> tuple[BaseModel, Any]:
         """
         Parses a chat completion using OpenAI's structured output format.
         Returns both the parsed and the completion for logprobs.
@@ -103,7 +100,7 @@ class AsyncOperator:
         max_validation_retries: int | None,
         priority: int | None,
         tool_name: str,
-        output_model: Type[T],
+        output_model: type[BaseModel],
         mode: str | None,
         **extra_kwargs,
     ) -> OperatorOutput:
