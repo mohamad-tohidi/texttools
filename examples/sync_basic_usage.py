@@ -45,8 +45,6 @@ def main():
 
     entities = t.extract_entities(
         "Ali will be dead by the car crash",
-        entities=["EVENT"],
-        with_analysis=True,
     )
     print(repr(entities))
 
@@ -76,18 +74,17 @@ def main():
     summary = t.summarize("Tomorrow, we will be dead by the car crash")
     print(repr(summary))
 
-    translation = t.translate("سلام حالت چطوره؟", target_language="English")
+    translation = t.translate("سلام حالت چطوره؟", target_lang="English")
     print(repr(translation))
 
     propositionize = t.propositionize(
         "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.",
-        output_lang="Persian",
     )
     print(repr(propositionize))
 
     check_fact = t.is_fact(
         text="امام نهم در ایران به خاک سپرده شد",
-        source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست",
+        source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس است",
     )
     print(repr(check_fact))
 
