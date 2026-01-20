@@ -251,7 +251,7 @@ class AsyncTheTool:
     async def extract_entities(
         self,
         text: str,
-        entities: list[str] | None = None,
+        entities: list[str] = ["all named entities"],
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
@@ -291,8 +291,7 @@ class AsyncTheTool:
                 self._operator.run(
                     # User parameters
                     text=text,
-                    entities=entities
-                    or "all named entities (e.g., PER, ORG, LOC, DAT, etc.)",
+                    entities=entities,
                     with_analysis=with_analysis,
                     output_lang=output_lang,
                     user_prompt=user_prompt,
