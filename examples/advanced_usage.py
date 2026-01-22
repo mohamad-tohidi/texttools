@@ -24,7 +24,7 @@ def main():
         top_logprobs=3,
         priority=3,
     )
-    print(repr(category))
+    print(category.to_json())
 
     def validate(result: str) -> bool:
         return True if "هنرمندان" in result else False
@@ -38,7 +38,7 @@ def main():
         validator=validate,
         max_validation_retries=5,
     )
-    print(repr(keywords))
+    print(keywords.to_json())
 
 
 if __name__ == "__main__":
