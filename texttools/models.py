@@ -19,12 +19,6 @@ class ToolOutput(BaseModel):
     errors: list[str] = []
     metadata: ToolOutputMetadata | None = None
 
-    def __repr__(self) -> str:
-        return f"ToolOutput({self.model_dump_json(indent=2)})"
-
-    def __bool__(self) -> bool:
-        return self.is_successful()
-
     def is_successful(self) -> bool:
         return not self.errors and self.result is not None
 
