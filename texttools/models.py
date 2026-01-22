@@ -98,9 +98,8 @@ class CategoryTree:
         include_children_refs: bool = False,
     ) -> dict[str, Any]:
         node = self.get_node(name)
-
         if not node:
-            return {"error": f"Node {name} not found"}
+            raise ValueError(f"Category: {name} not found")
 
         result = {
             "name": node.name,
