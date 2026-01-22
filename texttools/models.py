@@ -22,6 +22,9 @@ class ToolOutput(BaseModel):
     def __repr__(self) -> str:
         return f"ToolOutput({self.model_dump_json(indent=2)})"
 
+    def __bool__(self) -> bool:
+        return self.result is not None and not self.errors
+
 
 class Node(BaseModel):
     name: str
