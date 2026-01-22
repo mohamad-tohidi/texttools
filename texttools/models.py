@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 class ToolOutputMetadata(BaseModel):
     tool_name: str
-    processed_at: datetime = datetime.now()
+    processed_at: datetime = Field(default_factory=datetime.now)
     execution_time: float | None = None
 
 
@@ -23,7 +23,16 @@ class ToolOutput(BaseModel):
         return f"ToolOutput({self.model_dump_json(indent=2)})"
 
     def __bool__(self) -> bool:
-        return self.result is not None and not self.errors
+        return self.is_successful()
+
+    def is_successful(self) -> bool:
+        return not self.errors and self.result is not None
+
+    def to_dict(self, exclude_none: bool = False) -> dict:
+        return self.model_dump(exclude_none=exclude_none)
+    
+    def to_json(self, indent: int = 2, exclude_none: bool = False) -> str:
+        return self.model_dump_json(indent=indent, exclude_none=exclude_none)
 
 
 class Node(BaseModel):
