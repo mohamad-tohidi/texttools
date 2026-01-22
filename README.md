@@ -89,7 +89,9 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
     - **`processed_at: datetime`**
     - **`execution_time: float`**
 
-**Note:** You can use `repr(ToolOutput)` to print your output with all the details.
+- Serialize output to JSON using the `to_json()` method.
+- Verify operation success with the `is_successful()` method.
+- Convert output to a dictionary with the `to_dict()` method.
 
 ---
 
