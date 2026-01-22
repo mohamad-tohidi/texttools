@@ -41,5 +41,18 @@ def main():
     print(keywords.to_json())
 
 
+    class Student(BaseModel):
+        result: list[dict[str, str]]
+
+    custom_prompt = """You are a random student information generator.
+                    You have to fill the a student's information randomly.
+                    They should be meaningful.
+                    Create one student with these info:
+                    [{"name": str}, {"age": int}, {"std_id": int}]"""
+    
+    student = the_tool.run_custom(custom_prompt, Student)
+    print(student.to_json())
+
+
 if __name__ == "__main__":
     main()
