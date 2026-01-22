@@ -115,7 +115,7 @@ model = "model_name"
 the_tool = TheTool(client=client, model=model)
 
 detection = the_tool.is_question("Is this project open source?")
-print(repr(detection))
+print(detection.to_json())
 ```
 
 ---
@@ -133,13 +133,13 @@ async def main():
 
     async_the_tool = AsyncTheTool(client=async_client, model=model)
     
-    translation_task = async_the_tool.translate("سلام، حالت چطوره؟", target_language="English")
+    translation_task = async_the_tool.translate("سلام، حالت چطوره؟", target_lang="English")
     keywords_task = async_the_tool.extract_keywords("This open source project is great for processing large datasets!")
 
     (translation, keywords) = await asyncio.gather(translation_task, keywords_task)
     
-    print(repr(translation))
-    print(repr(keywords))
+    print(translation.to_json())
+    print(keywords.to_json())
 
 asyncio.run(main())
 ```
