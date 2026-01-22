@@ -15,7 +15,7 @@ It provides ready-to-use utilities for **translation, question detection, catego
 
 ## ✨ Features
 
-TextTools provides a rich collection of high-level NLP utilities,
+TextTools provides a collection of high-level NLP utilities.
 Each tool is designed to work with structured outputs.
 
 - **`categorize()`** - Classify text into given categories
@@ -47,7 +47,7 @@ pip install -U hamtaa-texttools
 
 | Status | Meaning | Tools | Safe for Production? |
 |--------|---------|----------|-------------------|
-| **✅ Production** | Evaluated, tested, stable. | `categorize()` (list mode), `extract_keywords()`, `extract_entities()`, `is_question()`, `to_question()`, `merge_questions()`, `augment()`, `summarize()`, `run_custom()` | **Yes** - ready for reliable use. |
+| **✅ Production** | Evaluated and tested. | `categorize()` (list mode), `extract_keywords()`, `extract_entities()`, `is_question()`, `to_question()`, `merge_questions()`, `augment()`, `summarize()`, `run_custom()` | **Yes** - ready for reliable use. |
 | **🧪 Experimental** | Added to the package but **not fully evaluated**. | `categorize()` (tree mode), `translate()`, `propositionize()`, `is_fact()` | **Use with caution** |
 
 ---
@@ -146,7 +146,7 @@ asyncio.run(main())
 
 ---
 
-## 👍 Use Cases
+## ✅ Use Cases
 
 Use **TextTools** when you need to:
 
