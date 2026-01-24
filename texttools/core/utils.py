@@ -18,17 +18,24 @@ class OperatorUtils:
 
     @staticmethod
     @lru_cache(maxsize=32)
+    def _load_prompt_yaml(prompt_file: str) -> dict:
+        base_dir = Path(__file__).parent.parent / "prompts"
+        prompt_path = base_dir / prompt_file
+
+        if not prompt_path.exists():
+            raise PromptError(f"Prompt file not found: {prompt_file}")
+
+        try:
+            return yaml.safe_load(prompt_path.read_text(encoding="utf-8"))
+        except yaml.YAMLError as e:
+            raise PromptError(f"Invalid YAML in {prompt_file}: {e}")
+
+    @staticmethod
     def load_prompt(
         prompt_file: str, text: str, mode: str, **extra_kwargs
     ) -> dict[str, str]:
         try:
-            base_dir = Path(__file__).parent.parent / Path("prompts")
-            prompt_path = base_dir / prompt_file
-
-            if not prompt_path.exists():
-                raise PromptError(f"Prompt file not found: {prompt_file}")
-
-            data = yaml.safe_load(prompt_path.read_text(encoding="utf-8"))
+            data = OperatorUtils._load_prompt_yaml(prompt_file)
 
             if "main_template" not in data:
                 raise PromptError(f"Missing 'main_template' in {prompt_file}")
