@@ -52,7 +52,7 @@ async def main():
         text="امام نهم در ایران به خاک سپرده شد",
         source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست",
     )
-    results = await asyncio.gather(
+    outputs = await asyncio.gather(
         category_task,
         keywords_task,
         entities_task,
@@ -66,8 +66,8 @@ async def main():
         is_fact_task,
     )
 
-    for tool_output in results:
-        print(repr(tool_output))
+    for output in outputs:
+        print(output.to_json())
 
 
 if __name__ == "__main__":

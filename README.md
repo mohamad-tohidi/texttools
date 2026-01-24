@@ -15,7 +15,7 @@ It provides ready-to-use utilities for **translation, question detection, catego
 
 ## ✨ Features
 
-TextTools provides a rich collection of high-level NLP utilities,
+TextTools provides a collection of high-level NLP utilities.
 Each tool is designed to work with structured outputs.
 
 - **`categorize()`** - Classify text into given categories
@@ -47,7 +47,7 @@ pip install -U hamtaa-texttools
 
 | Status | Meaning | Tools | Safe for Production? |
 |--------|---------|----------|-------------------|
-| **✅ Production** | Evaluated, tested, stable. | `categorize()` (list mode), `extract_keywords()`, `extract_entities()`, `is_question()`, `to_question()`, `merge_questions()`, `augment()`, `summarize()`, `run_custom()` | **Yes** - ready for reliable use. |
+| **✅ Production** | Evaluated and tested. | `categorize()` (list mode), `extract_keywords()`, `extract_entities()`, `is_question()`, `to_question()`, `merge_questions()`, `augment()`, `summarize()`, `run_custom()` | **Yes** - ready for reliable use. |
 | **🧪 Experimental** | Added to the package but **not fully evaluated**. | `categorize()` (tree mode), `translate()`, `propositionize()`, `is_fact()` | **Use with caution** |
 
 ---
@@ -89,7 +89,9 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
     - **`processed_at: datetime`**
     - **`execution_time: float`**
 
-**Note:** You can use `repr(ToolOutput)` to print your output with all the details.
+- Serialize output to JSON using the `to_json()` method.
+- Verify operation success with the `is_successful()` method.
+- Convert output to a dictionary with the `to_dict()` method.
 
 ---
 
@@ -113,7 +115,7 @@ model = "model_name"
 the_tool = TheTool(client=client, model=model)
 
 detection = the_tool.is_question("Is this project open source?")
-print(repr(detection))
+print(detection.to_json())
 ```
 
 ---
@@ -131,20 +133,20 @@ async def main():
 
     async_the_tool = AsyncTheTool(client=async_client, model=model)
     
-    translation_task = async_the_tool.translate("سلام، حالت چطوره؟", target_language="English")
+    translation_task = async_the_tool.translate("سلام، حالت چطوره؟", target_lang="English")
     keywords_task = async_the_tool.extract_keywords("This open source project is great for processing large datasets!")
 
     (translation, keywords) = await asyncio.gather(translation_task, keywords_task)
     
-    print(repr(translation))
-    print(repr(keywords))
+    print(translation.to_json())
+    print(keywords.to_json())
 
 asyncio.run(main())
 ```
 
 ---
 
-## 👍 Use Cases
+## ✅ Use Cases
 
 Use **TextTools** when you need to:
 

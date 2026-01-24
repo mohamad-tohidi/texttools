@@ -2,8 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
-from pydantic import BaseModel
-from texttools import CategoryTree, TheTool
+from texttools import TheTool
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -16,90 +15,55 @@ the_tool = TheTool(client=client, model=MODEL)
 
 
 def main():
-    # Categorizer: list mode
-    category = the_tool.categorize(
+    outputs = []
+
+    outputs.append(the_tool.categorize(
         "سلام حالت چطوره؟",
         categories=["هیچکدام", "دینی", "فلسفه"],
-    )
-    print(repr(category))
+    ))
 
-    # Categorizer: tree mode
-    tree = CategoryTree()
-    tree.add_node("اخلاق", "root")
-    tree.add_node("معرفت شناسی", "root")
-    tree.add_node("متافیزیک", "root", description="اراده قدرت در حیطه متافیزیک است")
-    tree.add_node("فلسفه ذهن", "root")
-    tree.add_node("آگاهی", "فلسفه ذهن")
-    tree.add_node("ذهن و بدن", "فلسفه ذهن")
-    tree.add_node("امکان و ضرورت", "متافیزیک")
-
-    categories = the_tool.categorize(
-        "اراده قدرت مفهومی مهم در مابعد الطبیعه است که توسط نیچه مطرح شده",
-        tree,
-    )
-    print(repr(categories))
-
-    keywords = the_tool.extract_keywords(
+    outputs.append(the_tool.extract_keywords(
         "Tomorrow, we will be dead by the car crash", mode="count", number_of_keywords=3
-    )
-    print(repr(keywords))
+    ))
 
-    entities = the_tool.extract_entities(
+    outputs.append(the_tool.extract_entities(
         "Ali will be dead by the car crash",
-    )
-    print(repr(entities))
+    ))
 
-    detection = the_tool.is_question("We will be dead by the car crash")
-    print(repr(detection))
+    outputs.append(the_tool.is_question("We will be dead by the car crash"))
 
-    question = the_tool.to_question(
+    outputs.append(the_tool.to_question(
         "We will be dead by the car crash", mode="from_text", number_of_questions=2
-    )
-    print(repr(question))
+    ))
 
-    merged = the_tool.merge_questions(
+    outputs.append(the_tool.merge_questions(
         [
             "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
             "چرا ما باید در کنار هم زندگی کنیم؟",
         ],
         mode="simple",
-    )
-    print(repr(merged))
+    ))
 
-    augmentation = the_tool.augment(
+    outputs.append(the_tool.augment(
         "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
         mode="positive",
-    )
-    print(repr(augmentation))
+    ))
 
-    summary = the_tool.summarize("Tomorrow, we will be dead by the car crash")
-    print(repr(summary))
+    outputs.append(the_tool.summarize("Tomorrow, we will be dead by the car crash"))
 
-    translation = the_tool.translate("سلام حالت چطوره؟", target_lang="English")
-    print(repr(translation))
+    outputs.append(the_tool.translate("سلام حالت چطوره؟", target_lang="English"))
 
-    propositionize = the_tool.propositionize(
+    outputs.append(the_tool.propositionize(
         "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد.",
-    )
-    print(repr(propositionize))
+    ))
 
-    check_fact = the_tool.is_fact(
+    outputs.append(the_tool.is_fact(
         text="امام نهم در ایران به خاک سپرده شد",
         source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس است",
-    )
-    print(repr(check_fact))
+    ))
 
-    class Student(BaseModel):
-        result: list[dict[str, str]]
-
-    custom_prompt = """You are a random student information generator.
-                    You have to fill the a student's information randomly.
-                    They should be meaningful.
-                    Create one student with these info:
-                    [{"name": str}, {"age": int}, {"std_id": int}]"""
-
-    student_info = the_tool.run_custom(custom_prompt, Student)
-    print(repr(student_info))
+    for output in outputs:
+        print(output.to_json())
 
 
 if __name__ == "__main__":

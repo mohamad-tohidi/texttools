@@ -3,12 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ToolOutputMetadata(BaseModel):
     tool_name: str
-    processed_at: datetime = datetime.now()
+    processed_at: datetime = Field(default_factory=datetime.now)
     execution_time: float | None = None
 
 
@@ -19,8 +19,14 @@ class ToolOutput(BaseModel):
     errors: list[str] = []
     metadata: ToolOutputMetadata | None = None
 
-    def __repr__(self) -> str:
-        return f"ToolOutput({self.model_dump_json(indent=2)})"
+    def is_successful(self) -> bool:
+        return not self.errors and self.result is not None
+
+    def to_dict(self, exclude_none: bool = False) -> dict:
+        return self.model_dump(exclude_none=exclude_none)
+    
+    def to_json(self, indent: int = 2, exclude_none: bool = False) -> str:
+        return self.model_dump_json(indent=indent, exclude_none=exclude_none)
 
 
 class Node(BaseModel):
@@ -98,9 +104,8 @@ class CategoryTree:
         include_children_refs: bool = False,
     ) -> dict[str, Any]:
         node = self.get_node(name)
-
         if not node:
-            return {"error": f"Node {name} not found"}
+            raise ValueError(f"Category: {name} not found")
 
         result = {
             "name": node.name,

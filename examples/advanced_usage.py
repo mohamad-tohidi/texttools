@@ -2,7 +2,8 @@ import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
-from texttools import TheTool
+from pydantic import BaseModel
+from texttools import CategoryTree, TheTool
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -15,17 +16,28 @@ the_tool = TheTool(client=client, model=MODEL)
 
 
 def main():
+    # Run categorizer with CategoryTree
+    tree = CategoryTree()
+    tree.add_node("اخلاق", "root")
+    tree.add_node("معرفت شناسی", "root")
+    tree.add_node("متافیزیک", "root", description="اراده قدرت در حیطه متافیزیک است")
+    tree.add_node("فلسفه ذهن", "root")
+    tree.add_node("آگاهی", "فلسفه ذهن")
+    tree.add_node("ذهن و بدن", "فلسفه ذهن")
+    tree.add_node("امکان و ضرورت", "متافیزیک")
+
     category = the_tool.categorize(
-        "کانت در بسیاری از موارد اشتباه میکرد",
-        categories=["هیچکدام", "دینی", "فلسفه"],
+        "اراده قدرت مفهومی مهم در مابعد الطبیعه است که توسط نیچه مطرح شده",
+        tree,
         with_analysis=True,
         user_prompt="Consider proper names carefully",
         logprobs=True,
         top_logprobs=3,
         priority=3,
     )
-    print(repr(category))
+    print(category.to_json())
 
+    # Run keyword extractor with custom validator
     def validate(result: str) -> bool:
         return True if "هنرمندان" in result else False
 
@@ -38,7 +50,20 @@ def main():
         validator=validate,
         max_validation_retries=5,
     )
-    print(repr(keywords))
+    print(keywords.to_json())
+
+    # Run custom tool with an arbitraty structured output
+    class Student(BaseModel):
+        result: list[dict[str, str]]
+
+    custom_prompt = """You are a random student information generator.
+                    You have to fill the a student's information randomly.
+                    They should be meaningful.
+                    Create one student with these info:
+                    [{"name": str}, {"age": int}, {"std_id": int}]"""
+    
+    student = the_tool.run_custom(custom_prompt, Student)
+    print(student.to_json())
 
 
 if __name__ == "__main__":
