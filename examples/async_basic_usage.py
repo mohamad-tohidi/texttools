@@ -5,64 +5,75 @@ from dotenv import load_dotenv
 from openai import AsyncOpenAI
 from texttools import AsyncTheTool
 
+# Load environment variables
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 BASE_URL = os.getenv("BASE_URL")
 MODEL = os.getenv("MODEL")
 
+# Initialize clients
 client = AsyncOpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
-
 async_the_tool = AsyncTheTool(client=client, model=MODEL)
 
 
 async def main():
     category_task = async_the_tool.categorize(
-        "سلام حالت چطوره؟",
-        categories=["هیچکدام", "دینی", "فلسفه"],
+        "انسان‌ها به چه دلایلی فلسفه و هنر را توسعه داده‌اند و چه تاثیری بر جامعه دارند؟",
+        categories=["هیچکدام", "فلسفه", "علوم تجربی", "علوم اجتماعی"],
         timeout=4,
     )
     keywords_task = async_the_tool.extract_keywords(
-        "Tomorrow, we will be dead by the car crash", mode="auto", timeout=3
+        "Global warming is leading to melting glaciers, rising sea levels, and extreme weather events worldwide.",
+        mode="auto",
     )
     entities_task = async_the_tool.extract_entities(
-        "We will be dead by the car crash", timeout=1
+        "Marie Curie discovered radium and polonium, pioneering research in radioactivity.",
     )
-    detection_task = async_the_tool.is_question("We will be dead by the car crash")
-    question_task = async_the_tool.to_question(
-        "We will be dead by the car crash", mode="from_text", number_of_questions=2
+    is_question_task = async_the_tool.is_question(
+        "What are the consequences of deforestation on biodiversity?"
     )
-    merged_task = async_the_tool.merge_questions(
-        ["چرا ما موجوداتی اجتماعی هستیم؟", "چرا باید در کنار هم زندگی کنیم؟"],
+    questions_task = async_the_tool.to_question(
+        "Renewable energy sources like solar, wind, and hydro are crucial to reduce carbon emissions and combat climate change.",
+        mode="from_text",
+        number_of_questions=2,
+    )
+    merged_question_task = async_the_tool.merge_questions(
+        [
+            "چرا انسان‌ها در طول تاریخ تمدن ساخته‌اند؟",
+            "چه عواملی باعث پیشرفت علمی و فرهنگی جوامع شده‌اند؟",
+        ],
         mode="stepwise",
     )
-    augmentations_task = async_the_tool.augment(
-        "چرا ما انسان ها، موجوداتی اجتماعی هستیم؟",
+    augmented_task = async_the_tool.augment(
+        "انسان‌ها به دلیل کنجکاوی و تعامل اجتماعی، علم و هنر را توسعه داده‌اند.",
         mode="positive",
     )
     summary_task = async_the_tool.summarize(
-        "Tomorrow, we will be dead by the car crash"
+        "The research paper analyzes the psychological and social effects of remote work during prolonged periods of isolation."
     )
     translation_task = async_the_tool.translate(
-        "سلام حالت چطوره؟", target_lang="English"
+        "علم و تکنولوژی می‌تواند کیفیت زندگی انسان‌ها را به شکل چشمگیری ارتقا دهد.",
+        target_lang="English",
     )
-    propositionize_task = async_the_tool.propositionize(
-        "جنگ جهانی دوم در سال ۱۹۳۹ آغاز شد و آلمان به لهستان حمله کرد."
+    propositions_task = async_the_tool.propositionize(
+        "Alexander Fleming discovered penicillin in 1928, revolutionizing the treatment of bacterial infections."
     )
     is_fact_task = async_the_tool.is_fact(
-        text="امام نهم در ایران به خاک سپرده شد",
-        source_text="حرم مطهر امام رضا علیه السلام در مشهد مقدس هست",
+        text="The Eiffel Tower is located in Paris, France.",
+        source_text="The Eiffel Tower, an iron lattice tower, is situated on the Champ de Mars in Paris, France.",
     )
+
     outputs = await asyncio.gather(
         category_task,
         keywords_task,
         entities_task,
-        detection_task,
-        question_task,
-        merged_task,
-        augmentations_task,
+        is_question_task,
+        questions_task,
+        merged_question_task,
+        augmented_task,
         summary_task,
         translation_task,
-        propositionize_task,
+        propositions_task,
         is_fact_task,
     )
 

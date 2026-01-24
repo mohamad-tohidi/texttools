@@ -5,13 +5,14 @@ from openai import OpenAI
 from pydantic import BaseModel
 from texttools import CategoryTree, TheTool
 
+# Load environment variables
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 BASE_URL = os.getenv("BASE_URL")
 MODEL = os.getenv("MODEL")
 
+# Initialize clients
 client = OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
-
 the_tool = TheTool(client=client, model=MODEL)
 
 
@@ -59,9 +60,11 @@ def main():
     custom_prompt = """You are a random student information generator.
                     You have to fill the a student's information randomly.
                     They should be meaningful.
+                    Each field should be filled with specified type in the prompt.
+                    For example: name = Ali, age = 3, std_id = 1234
                     Create one student with these info:
                     [{"name": str}, {"age": int}, {"std_id": int}]"""
-    
+
     student = the_tool.run_custom(custom_prompt, Student)
     print(student.to_json())
 
