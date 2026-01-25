@@ -43,8 +43,6 @@ class AsyncTheTool:
         """
         Classify text into given categories
 
-        Important Note: category_tree mode is EXPERIMENTAL, you can use it but it isn't reliable.
-
         Arguments:
             text: The input text
             categories: The category list / category tree

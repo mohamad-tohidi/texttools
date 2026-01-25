@@ -47,8 +47,8 @@ pip install -U hamtaa-texttools
 
 | Status | Meaning | Tools | Safe for Production? |
 |--------|---------|----------|-------------------|
-| **✅ Production** | Evaluated and tested. | `categorize()` (list mode), `extract_keywords()`, `extract_entities()`, `is_question()`, `to_question()`, `merge_questions()`, `augment()`, `summarize()`, `run_custom()` | **Yes** - ready for reliable use. |
-| **🧪 Experimental** | Added to the package but **not fully evaluated**. | `categorize()` (tree mode), `translate()`, `propositionize()`, `is_fact()` | **Use with caution** |
+| **✅ Production** | Evaluated and tested. | `categorize()`, `extract_keywords()`, `extract_entities()`, `is_question()`, `to_question()`, `merge_questions()`, `augment()`, `summarize()`, `run_custom()` | **Yes** - ready for reliable use. |
+| **🧪 Experimental** | Added to the package but **not fully evaluated**. |  `translate()`, `propositionize()`, `is_fact()` | **Use with caution** |
 
 ---
 
