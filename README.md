@@ -54,6 +54,8 @@ pip install -U hamtaa-texttools
 
 ## ⚙️ Additional Parameters
 
+- **`raise_on_error: bool`** → (`TheTool/AsyncTheTool` parameter) Raise errors (True) or return them in output (False). Default is True.
+
 - **`with_analysis: bool`** → Adds a reasoning step before generating the final output.
 **Note:** This doubles token usage per call.
 

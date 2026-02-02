@@ -12,13 +12,14 @@ MODEL = os.getenv("MODEL")
 
 # Initialize clients
 client = OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
-the_tool = TheTool(client=client, model=MODEL)
+the_tool = TheTool(client=client, model=MODEL, raise_on_error=False)
 
 
 def main():
     category = the_tool.categorize(
         "انسان‌ها به چه دلایلی هنر را خلق می‌کنند و چه تاثیری بر جامعه دارد؟",
         categories=["هیچکدام", "فلسفه", "علوم تجربی", "علوم اجتماعی"],
+        logprobs=True,
     )
     print(category.to_json())
 

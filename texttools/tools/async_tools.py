@@ -23,8 +23,10 @@ class AsyncTheTool:
         self,
         client: AsyncOpenAI,
         model: str,
+        raise_on_error: bool = True,
     ):
         self._operator = AsyncOperator(client=client, model=model)
+        self.raise_on_error = raise_on_error
 
     async def categorize(
         self,
@@ -158,6 +160,9 @@ class AsyncTheTool:
                 )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -239,6 +244,9 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -318,6 +326,9 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -392,6 +403,9 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -473,6 +487,9 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -552,6 +569,9 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -630,6 +650,9 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -706,6 +729,9 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -834,6 +860,9 @@ class AsyncTheTool:
                 )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -912,6 +941,9 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -993,6 +1025,9 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -1073,6 +1108,9 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata

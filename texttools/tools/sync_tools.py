@@ -23,8 +23,10 @@ class TheTool:
         self,
         client: OpenAI,
         model: str,
+        raise_on_error: bool = True,
     ):
         self._operator = Operator(client=client, model=model)
+        self.raise_on_error = raise_on_error
 
     def categorize(
         self,
@@ -150,6 +152,9 @@ class TheTool:
                 )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -226,6 +231,9 @@ class TheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -300,6 +308,9 @@ class TheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -369,6 +380,9 @@ class TheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -445,6 +459,9 @@ class TheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -519,6 +536,9 @@ class TheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -592,6 +612,9 @@ class TheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -663,6 +686,9 @@ class TheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -783,6 +809,9 @@ class TheTool:
                 )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -856,6 +885,9 @@ class TheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -932,6 +964,9 @@ class TheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
@@ -1007,6 +1042,9 @@ class TheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            if self.raise_on_error:
+                raise
+
             metadata = ToolOutputMetadata(tool_name=tool_name)
             tool_output = ToolOutput(
                 errors=[f"{type(e).__name__}: {e}"], metadata=metadata
