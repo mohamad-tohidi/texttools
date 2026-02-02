@@ -1,7 +1,9 @@
+import logging
 import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
+
 from texttools import TheTool
 
 # Load environment variables
@@ -9,6 +11,9 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 BASE_URL = os.getenv("BASE_URL")
 MODEL = os.getenv("MODEL")
+
+# Set logger level
+logging.basicConfig(level=logging.INFO)
 
 # Initialize clients
 client = OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)

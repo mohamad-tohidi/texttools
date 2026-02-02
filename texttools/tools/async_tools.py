@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Callable
 from time import perf_counter
 from typing import Any, Literal
@@ -26,6 +27,7 @@ class AsyncTheTool:
         raise_on_error: bool = True,
     ):
         self._operator = AsyncOperator(client=client, model=model)
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.raise_on_error = raise_on_error
 
     async def categorize(
@@ -160,6 +162,8 @@ class AsyncTheTool:
                 )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 
@@ -244,6 +248,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 
@@ -326,6 +332,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 
@@ -403,6 +411,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 
@@ -487,6 +497,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 
@@ -569,6 +581,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 
@@ -650,6 +664,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 
@@ -729,6 +745,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 
@@ -860,6 +878,8 @@ class AsyncTheTool:
                 )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 
@@ -941,6 +961,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 
@@ -1025,6 +1047,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 
@@ -1108,6 +1132,8 @@ class AsyncTheTool:
             )
 
         except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+            self.logger.error(str(e))
+
             if self.raise_on_error:
                 raise
 

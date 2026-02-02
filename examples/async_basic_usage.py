@@ -1,8 +1,10 @@
 import asyncio
+import logging
 import os
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
+
 from texttools import AsyncTheTool
 
 # Load environment variables
@@ -14,6 +16,9 @@ MODEL = os.getenv("MODEL")
 # Initialize clients
 client = AsyncOpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
 async_the_tool = AsyncTheTool(client=client, model=MODEL)
+
+# Set logger level
+logging.basicConfig(level=logging.INFO)
 
 
 async def main():
