@@ -62,7 +62,6 @@ class AsyncTheTool:
 
         Returns:
             ToolOutput
-
         """
         tool_name = "categorize"
         start = perf_counter()
