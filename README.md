@@ -7,7 +7,10 @@
 
 **TextTools** is a high-level **NLP toolkit** built on top of **LLMs**.  
 
-It provides both **sync (`TheTool`)** and **async (`AsyncTheTool`)** APIs for maximum flexibility.
+It provides three API styles for maximum flexibility:
+- Sync API (`TheTool`) - Simple, sequential operations
+- Async API (`AsyncTheTool`) - High-performance async operations
+- Batch API (`BatchTheTool`) - Process multiple texts in parallel with built-in concurrency control
 
 It provides ready-to-use utilities for **translation, question detection, categorization, NER extraction, and more** - designed to help you integrate AI-powered text processing into your applications with minimal effort.
 
@@ -54,8 +57,6 @@ pip install -U hamtaa-texttools
 
 ## ⚙️ Additional Parameters
 
-- **`raise_on_error: bool`** → (`TheTool/AsyncTheTool`'s instance variable) Raise errors (True) or return them in output (False). Default is True.
-
 - **`with_analysis: bool`** → Adds a reasoning step before generating the final output.
 **Note:** This doubles token usage per call.
 
@@ -76,6 +77,9 @@ pip install -U hamtaa-texttools
 - **`timeout: float`** → Maximum time in seconds to wait for the response before raising a timeout error.  
 **Note:** This feature is only available in `AsyncTheTool`.
 
+- **`raise_on_error: bool`** → (`TheTool/AsyncTheTool`) Raise errors (True) or return them in output (False). Default is True.
+
+- **`max_concurrency: int`** → (`BatchTheTool` only) Maximum number of concurrent API calls. Default is 5.
 
 ---
 
@@ -95,13 +99,16 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
 - Verify operation success with the `is_successful()` method.
 - Convert output to a dictionary with the `to_dict()` method.
 
+**Note:** For BatchTheTool: Each method returns a list[ToolOutput] containing results for all input texts.
+
 ---
 
-## 🧨 Sync vs Async
-| Tool         | Style   | Use case                                    |
-|--------------|---------|---------------------------------------------|
-| `TheTool`    | Sync    | Simple scripts, sequential workflows        |
-| `AsyncTheTool` | Async | High-throughput apps, APIs, concurrent tasks |
+## 🧨 Sync vs Async vs Batch
+| Tool | Style | Use Case | Best For |
+|------|-------|----------|----------|
+| `TheTool` | **Sync** | Simple scripts, sequential workflows | • Quick prototyping<br>• Simple scripts<br>• Sequential processing<br>• Debugging |
+| `AsyncTheTool` | **Async** | High-throughput applications, APIs, concurrent tasks | • Web APIs<br>• Concurrent operations<br>• High-performance apps<br>• Real-time processing |
+| `BatchTheTool` | **Batch** | Process multiple texts efficiently with controlled concurrency | • Bulk processing<br>• Large datasets<br>• Parallel execution<br>• Resource optimization |
 
 ---
 
@@ -146,6 +153,35 @@ async def main():
 asyncio.run(main())
 ```
 
+## ⚡ Quick Start (Batch)
+
+```python
+import asyncio
+from openai import AsyncOpenAI
+from texttools import BatchTheTool
+
+async def main():
+    async_client = AsyncOpenAI(base_url="your_url", api_key="your_api_key")
+    model = "model_name"
+    
+    batch_the_tool = BatchTheTool(client=async_client, model=model, max_concurrency=3)
+    
+    categories = await batch_tool.categorize(
+        texts=[
+            "Climate change impacts on agriculture",
+            "Artificial intelligence in healthcare",
+            "Economic effects of remote work",
+            "Advancements in quantum computing",
+        ],
+        categories=["Science", "Technology", "Economics", "Environment"],
+    )
+    
+    for i, result in enumerate(categories):
+        print(f"Text {i+1}: {result.result}")
+
+asyncio.run(main())
+```
+
 ---
 
 ## ✅ Use Cases
@@ -154,4 +190,20 @@ Use **TextTools** when you need to:
 
 - 🔍 **Classify** large datasets quickly without model training   
 - 🧩 **Integrate** LLMs into production pipelines (structured outputs)  
-- 📊 **Analyze** large text collections using embeddings and categorization  
+- 📊 **Analyze** large text collections using embeddings and categorization
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions from the community! - see the [CONTRIBUTING](CONTRIBUTING.md) file for details.
+
+## 📚 Documentation
+
+For detailed documentation, architecture overview, and implementation details, please visit the [docs](docs) directory.
