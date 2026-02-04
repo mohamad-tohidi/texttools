@@ -86,21 +86,31 @@ pip install -U hamtaa-texttools
 ## 🧩 ToolOutput
 
 Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel with attributes:
+
 - **`result: Any`**
 - **`analysis: str`**
 - **`logprobs: list`**
 - **`errors: list[str]`**
-- **`ToolOutputMetadata`**  
+- **`ToolOutputMetadata`**
     - **`tool_name: str`**
     - **`processed_by: str`**
     - **`processed_at: datetime`**
     - **`execution_time: float`**
+    - **`token_usage: TokenUsage`**
+        - **`completion_usage: CompletionUsage`**
+            - **`prompt_tokens: int`**
+            - **`completion_tokens: int`**
+            - **`total_tokens: int`**
+        - **`analyze_usage: AnalyzeUsage`**
+            - **`prompt_tokens: int`**
+            - **`completion_tokens: int`**
+            - **`total_tokens: int`**
 
 - Serialize output to JSON using the `to_json()` method.
 - Verify operation success with the `is_successful()` method.
 - Convert output to a dictionary with the `to_dict()` method.
 
-**Note:** For BatchTheTool: Each method returns a list[ToolOutput] containing results for all input texts.
+**Note:** For BatchTheTool: Each method returns a `list[ToolOutput]` containing results for all input texts.
 
 ---
 
