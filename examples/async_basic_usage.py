@@ -15,7 +15,7 @@ MODEL = os.getenv("MODEL")
 
 # Initialize clients
 client = AsyncOpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
-async_the_tool = AsyncTheTool(client=client, model=MODEL)
+async_the_tool = AsyncTheTool(client=client, model=MODEL, raise_on_error=False)
 
 # Set logger level
 logging.basicConfig(level=logging.INFO)
