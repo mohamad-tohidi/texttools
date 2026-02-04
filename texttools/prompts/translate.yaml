@@ -3,7 +3,7 @@ main_template: |
   Output only the translated text.
 
   Respond only in JSON format:
-  {{"result": "string"}}
+  {{"result": "translated_text"}}
 
   Don't translate proper names, only transliterate them to {target_lang}
   
