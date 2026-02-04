@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 class ToolOutputMetadata(BaseModel):
     tool_name: str
+    processed_by: str | None = None
     processed_at: datetime = Field(default_factory=datetime.now)
     execution_time: float | None = None
 

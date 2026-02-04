@@ -32,6 +32,7 @@ class AsyncTheTool:
         self._operator = AsyncOperator(client=client, model=model)
         self.logger = logging.getLogger(self.__class__.__name__)
         self.raise_on_error = raise_on_error
+        self.model = model
 
     async def categorize(
         self,
@@ -94,7 +95,9 @@ class AsyncTheTool:
                 )
 
                 metadata = ToolOutputMetadata(
-                    tool_name=tool_name, execution_time=perf_counter() - start
+                    tool_name=tool_name,
+                    execution_time=perf_counter() - start,
+                    processed_by=self.model,
                 )
                 tool_output = ToolOutput(
                     result=operator_output.result,
@@ -154,7 +157,9 @@ class AsyncTheTool:
                         logprobs_list.extend(level_operator_output.logprobs)
 
                 metadata = ToolOutputMetadata(
-                    tool_name=tool_name, execution_time=(perf_counter() - start)
+                    tool_name=tool_name,
+                    execution_time=perf_counter() - start,
+                    processed_by=self.model,
                 )
                 tool_output = ToolOutput(
                     result=final_categories,
@@ -240,7 +245,9 @@ class AsyncTheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -324,7 +331,9 @@ class AsyncTheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -403,7 +412,9 @@ class AsyncTheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -489,7 +500,9 @@ class AsyncTheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -573,7 +586,9 @@ class AsyncTheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -656,7 +671,9 @@ class AsyncTheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -737,7 +754,9 @@ class AsyncTheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -837,7 +856,9 @@ class AsyncTheTool:
                         logprobs_list.extend(chunk_operator_output.logprobs)
 
                 metadata = ToolOutputMetadata(
-                    tool_name=tool_name, execution_time=perf_counter() - start
+                    tool_name=tool_name,
+                    execution_time=perf_counter() - start,
+                    processed_by=self.model,
                 )
                 tool_output = ToolOutput(
                     result=translation,
@@ -870,7 +891,9 @@ class AsyncTheTool:
                 )
 
                 metadata = ToolOutputMetadata(
-                    tool_name=tool_name, execution_time=perf_counter() - start
+                    tool_name=tool_name,
+                    execution_time=perf_counter() - start,
+                    processed_by=self.model,
                 )
                 tool_output = ToolOutput(
                     result=operator_output.result,
@@ -953,7 +976,9 @@ class AsyncTheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -1039,7 +1064,9 @@ class AsyncTheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -1124,7 +1151,9 @@ class AsyncTheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,

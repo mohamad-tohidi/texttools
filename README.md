@@ -92,6 +92,7 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
 - **`errors: list[str]`**
 - **`ToolOutputMetadata`**  
     - **`tool_name: str`**
+    - **`processed_by: str`**
     - **`processed_at: datetime`**
     - **`execution_time: float`**
 

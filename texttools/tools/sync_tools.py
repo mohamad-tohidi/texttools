@@ -32,6 +32,7 @@ class TheTool:
         self._operator = Operator(client=client, model=model)
         self.logger = logging.getLogger(self.__class__.__name__)
         self.raise_on_error = raise_on_error
+        self.model = model
 
     def categorize(
         self,
@@ -89,7 +90,9 @@ class TheTool:
                 )
 
                 metadata = ToolOutputMetadata(
-                    tool_name=tool_name, execution_time=perf_counter() - start
+                    tool_name=tool_name,
+                    execution_time=perf_counter() - start,
+                    processed_by=self.model,
                 )
                 tool_output = ToolOutput(
                     result=operator_output.result,
@@ -146,7 +149,9 @@ class TheTool:
                         logprobs_list.extend(level_operator_output.logprobs)
 
                 metadata = ToolOutputMetadata(
-                    tool_name=tool_name, execution_time=(perf_counter() - start)
+                    tool_name=tool_name,
+                    execution_time=perf_counter() - start,
+                    processed_by=self.model,
                 )
                 tool_output = ToolOutput(
                     result=final_categories,
@@ -227,7 +232,9 @@ class TheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -306,7 +313,9 @@ class TheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -380,7 +389,9 @@ class TheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -461,7 +472,9 @@ class TheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -540,7 +553,9 @@ class TheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -618,7 +633,9 @@ class TheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -694,7 +711,9 @@ class TheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -789,7 +808,9 @@ class TheTool:
                         logprobs_list.extend(chunk_operator_output.logprobs)
 
                 metadata = ToolOutputMetadata(
-                    tool_name=tool_name, execution_time=perf_counter() - start
+                    tool_name=tool_name,
+                    execution_time=perf_counter() - start,
+                    processed_by=self.model,
                 )
                 tool_output = ToolOutput(
                     result=translation,
@@ -819,7 +840,9 @@ class TheTool:
                 )
 
                 metadata = ToolOutputMetadata(
-                    tool_name=tool_name, execution_time=perf_counter() - start
+                    tool_name=tool_name,
+                    execution_time=perf_counter() - start,
+                    processed_by=self.model,
                 )
                 tool_output = ToolOutput(
                     result=operator_output.result,
@@ -897,7 +920,9 @@ class TheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -978,7 +1003,9 @@ class TheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -1058,7 +1085,9 @@ class TheTool:
             )
 
             metadata = ToolOutputMetadata(
-                tool_name=tool_name, execution_time=perf_counter() - start
+                tool_name=tool_name,
+                execution_time=perf_counter() - start,
+                processed_by=self.model,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
