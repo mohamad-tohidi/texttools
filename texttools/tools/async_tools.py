@@ -16,6 +16,7 @@ from ..core import (
     Str,
     TextToolsError,
     TheToolUtils,
+    TokenUsage,
     ValidationError,
     create_dynamic_model,
 )
@@ -98,6 +99,7 @@ class AsyncTheTool:
                     tool_name=tool_name,
                     execution_time=perf_counter() - start,
                     processed_by=self.model,
+                    token_usage=operator_output.token_usage,
                 )
                 tool_output = ToolOutput(
                     result=operator_output.result,
@@ -112,6 +114,7 @@ class AsyncTheTool:
                 final_categories = []
                 analysis = ""
                 logprobs_list = []
+                token_usage = TokenUsage()
 
                 for _ in range(levels):
                     if not parent_node.children:
@@ -155,11 +158,13 @@ class AsyncTheTool:
                         analysis += level_operator_output.analysis
                     if logprobs:
                         logprobs_list.extend(level_operator_output.logprobs)
+                    token_usage += level_operator_output.token_usage
 
                 metadata = ToolOutputMetadata(
                     tool_name=tool_name,
                     execution_time=perf_counter() - start,
                     processed_by=self.model,
+                    token_usage=token_usage,
                 )
                 tool_output = ToolOutput(
                     result=final_categories,
@@ -248,6 +253,7 @@ class AsyncTheTool:
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
                 processed_by=self.model,
+                token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -334,6 +340,7 @@ class AsyncTheTool:
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
                 processed_by=self.model,
+                token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -415,6 +422,7 @@ class AsyncTheTool:
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
                 processed_by=self.model,
+                token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -503,6 +511,7 @@ class AsyncTheTool:
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
                 processed_by=self.model,
+                token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -589,6 +598,7 @@ class AsyncTheTool:
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
                 processed_by=self.model,
+                token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -674,6 +684,7 @@ class AsyncTheTool:
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
                 processed_by=self.model,
+                token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -757,6 +768,7 @@ class AsyncTheTool:
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
                 processed_by=self.model,
+                token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -824,6 +836,7 @@ class AsyncTheTool:
                 translation = ""
                 analysis = ""
                 logprobs_list = []
+                token_usage = TokenUsage()
 
                 for chunk in chunks:
                     chunk_operator_output = await TheToolUtils.run_with_timeout(
@@ -854,11 +867,13 @@ class AsyncTheTool:
                         analysis += chunk_operator_output.analysis
                     if logprobs:
                         logprobs_list.extend(chunk_operator_output.logprobs)
+                    token_usage += chunk_operator_output.token_usage
 
                 metadata = ToolOutputMetadata(
                     tool_name=tool_name,
                     execution_time=perf_counter() - start,
                     processed_by=self.model,
+                    token_usage=token_usage,
                 )
                 tool_output = ToolOutput(
                     result=translation,
@@ -894,6 +909,7 @@ class AsyncTheTool:
                     tool_name=tool_name,
                     execution_time=perf_counter() - start,
                     processed_by=self.model,
+                    token_usage=operator_output.token_usage,
                 )
                 tool_output = ToolOutput(
                     result=operator_output.result,
@@ -979,6 +995,7 @@ class AsyncTheTool:
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
                 processed_by=self.model,
+                token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -1067,6 +1084,7 @@ class AsyncTheTool:
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
                 processed_by=self.model,
+                token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,
@@ -1154,6 +1172,7 @@ class AsyncTheTool:
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
                 processed_by=self.model,
+                token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
                 result=operator_output.result,

@@ -18,7 +18,9 @@ class AsyncOperator:
         self._client = client
         self._model = model
 
-    async def _analyze_completion(self, analyze_message: list[dict[str, str]]) -> str:
+    async def _analyze_completion(
+        self, analyze_message: list[dict[str, str]]
+    ) -> tuple[str, Any]:
         try:
             completion = await self._client.chat.completions.create(
                 model=self._model,
@@ -33,7 +35,7 @@ class AsyncOperator:
             if not analysis:
                 raise LLMError("Empty analysis response")
 
-            return analysis
+            return analysis, completion
 
         except Exception as e:
             if isinstance(e, (PromptError, LLMError)):
@@ -116,12 +118,15 @@ class AsyncOperator:
             )
 
             analysis: str | None = None
+            analyze_completion: Any = None
 
             if with_analysis:
                 analyze_message = OperatorUtils.build_message(
                     prompt_configs["analyze_template"]
                 )
-                analysis = await self._analyze_completion(analyze_message)
+                analysis, analyze_completion = await self._analyze_completion(
+                    analyze_message
+                )
 
             main_prompt = OperatorUtils.build_main_prompt(
                 prompt_configs["main_template"], analysis, output_lang, user_prompt
@@ -176,6 +181,9 @@ class AsyncOperator:
                 logprobs=OperatorUtils.extract_logprobs(completion)
                 if logprobs
                 else None,
+                token_usage=OperatorUtils.extract_token_usage(
+                    completion, analyze_completion
+                ),
             )
 
             return operator_output

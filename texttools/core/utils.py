@@ -9,6 +9,7 @@ from typing import Any
 import yaml
 
 from .exceptions import PromptError
+from .internal_models import AnalyzeUsage, CompletionUsage, TokenUsage
 
 
 class OperatorUtils:
@@ -147,6 +148,38 @@ class OperatorUtils:
     def get_retry_temp(base_temp: float) -> float:
         new_temp = base_temp + random.choice([-1, 1]) * random.uniform(0.1, 0.9)
         return max(0.0, min(new_temp, 1.5))
+
+    @staticmethod
+    def extract_token_usage(completion: Any, analyze_completion: Any) -> TokenUsage:
+        completion_usage = completion.usage
+        analyze_usage = analyze_completion.usage if analyze_completion else None
+
+        completion_usage_model = CompletionUsage(
+            prompt_tokens=getattr(completion_usage, "prompt_tokens", 00),
+            completion_tokens=getattr(completion_usage, "completion_tokens", 00),
+            total_tokens=getattr(completion_usage, "total_tokens", 00),
+        )
+        analyze_usage_model = AnalyzeUsage(
+            prompt_tokens=getattr(analyze_usage, "prompt_tokens", 0),
+            completion_tokens=getattr(analyze_usage, "completion_tokens", 0),
+            total_tokens=getattr(analyze_usage, "total_tokens", 0),
+        )
+        total_analyze_tokens = (
+            analyze_usage_model.prompt_tokens + analyze_usage_model.completion_tokens
+            if analyze_completion
+            else 0
+        )
+        total_tokens = (
+            completion_usage_model.prompt_tokens
+            + completion_usage_model.completion_tokens
+            + total_analyze_tokens
+        )
+
+        return TokenUsage(
+            completion_usage=completion_usage_model,
+            analyze_usage=analyze_usage_model,
+            total_tokens=total_tokens,
+        )
 
 
 class TheToolUtils:

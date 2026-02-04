@@ -5,6 +5,7 @@ from .internal_models import (
     ListStr,
     ReasonListStr,
     Str,
+    TokenUsage,
     create_dynamic_model,
 )
 from .operators import AsyncOperator, Operator
@@ -22,6 +23,7 @@ __all__ = [
     "ListStr",
     "ReasonListStr",
     "Str",
+    "TokenUsage",
     "create_dynamic_model",
     # Operators
     "AsyncOperator",

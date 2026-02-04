@@ -18,7 +18,9 @@ class Operator:
         self._client = client
         self._model = model
 
-    def _analyze_completion(self, analyze_message: list[dict[str, str]]) -> str:
+    def _analyze_completion(
+        self, analyze_message: list[dict[str, str]]
+    ) -> tuple[str, Any]:
         try:
             completion = self._client.chat.completions.create(
                 model=self._model,
@@ -33,7 +35,7 @@ class Operator:
             if not analysis:
                 raise LLMError("Empty analysis response")
 
-            return analysis
+            return analysis, completion
 
         except Exception as e:
             if isinstance(e, (PromptError, LLMError)):
@@ -114,12 +116,13 @@ class Operator:
             )
 
             analysis: str | None = None
+            analyze_completion: Any = None
 
             if with_analysis:
                 analyze_message = OperatorUtils.build_message(
                     prompt_configs["analyze_template"]
                 )
-                analysis = self._analyze_completion(analyze_message)
+                analysis, analyze_completion = self._analyze_completion(analyze_message)
 
             main_prompt = OperatorUtils.build_main_prompt(
                 prompt_configs["main_template"], analysis, output_lang, user_prompt
@@ -174,6 +177,9 @@ class Operator:
                 logprobs=OperatorUtils.extract_logprobs(completion)
                 if logprobs
                 else None,
+                token_usage=OperatorUtils.extract_token_usage(
+                    completion, analyze_completion
+                ),
             )
 
             return operator_output

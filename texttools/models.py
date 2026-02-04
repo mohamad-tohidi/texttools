@@ -5,12 +5,15 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from .core import TokenUsage
+
 
 class ToolOutputMetadata(BaseModel):
     tool_name: str
     processed_by: str | None = None
     processed_at: datetime = Field(default_factory=datetime.now)
     execution_time: float | None = None
+    token_usage: TokenUsage | None = None
 
 
 class ToolOutput(BaseModel):

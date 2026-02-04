@@ -1,12 +1,64 @@
+from __future__ import annotations
+
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field, create_model
+
+
+class CompletionUsage(BaseModel):
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+
+
+class AnalyzeUsage(BaseModel):
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+
+
+class TokenUsage(BaseModel):
+    completion_usage: CompletionUsage = CompletionUsage()
+    analyze_usage: AnalyzeUsage = AnalyzeUsage()
+    total_tokens: int = 0
+
+    def __add__(self, other: TokenUsage) -> TokenUsage:
+        new_completion_usage = CompletionUsage(
+            prompt_tokens=self.completion_usage.prompt_tokens
+            + other.completion_usage.prompt_tokens,
+            completion_tokens=self.completion_usage.completion_tokens
+            + other.completion_usage.completion_tokens,
+            total_tokens=self.completion_usage.total_tokens
+            + other.completion_usage.total_tokens,
+        )
+        new_analyze_usage = AnalyzeUsage(
+            prompt_tokens=self.analyze_usage.prompt_tokens
+            + other.analyze_usage.prompt_tokens,
+            completion_tokens=self.analyze_usage.completion_tokens
+            + other.analyze_usage.completion_tokens,
+            total_tokens=self.analyze_usage.total_tokens
+            + other.analyze_usage.total_tokens,
+        )
+        total_tokens = (
+            new_completion_usage.total_tokens + new_analyze_usage.total_tokens
+        )
+
+        return TokenUsage(
+            completion_usage=new_completion_usage,
+            analyze_usage=new_analyze_usage,
+            total_tokens=total_tokens,
+        )
 
 
 class OperatorOutput(BaseModel):
     result: Any
     analysis: str | None
     logprobs: list[dict[str, Any]] | None
+    token_usage: TokenUsage | None = None
+    prompt_tokens: int | None = None
+    completion_tokens: int | None = None
+    analysis_tokens: int | None = None
+    total_tokens: int | None = None
 
 
 class Str(BaseModel):

@@ -24,7 +24,6 @@ def main():
     category = the_tool.categorize(
         "انسان‌ها به چه دلایلی هنر را خلق می‌کنند و چه تاثیری بر جامعه دارد؟",
         categories=["هیچکدام", "فلسفه", "علوم تجربی", "علوم اجتماعی"],
-        logprobs=True,
     )
     print(category.to_json())
 
