@@ -5,17 +5,20 @@ from typing import Any, Literal
 
 from openai import OpenAI
 
-from ..core.exceptions import LLMError, PromptError, TextToolsError, ValidationError
-from ..core.internal_models import (
+from ..core import (
     Bool,
     ListDictStrStr,
     ListStr,
+    LLMError,
+    Operator,
+    PromptError,
     ReasonListStr,
     Str,
+    TextToolsError,
+    TheToolUtils,
+    ValidationError,
     create_dynamic_model,
 )
-from ..core.operators.sync_operator import Operator
-from ..core.utils import TheToolUtils
 from ..models import CategoryTree, ToolOutput, ToolOutputMetadata
 
 
