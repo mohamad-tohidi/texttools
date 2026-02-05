@@ -149,8 +149,10 @@ class TheTool:
 
                     chosen_category = level_operator_output.result
                     parent_node = categories.get_node(chosen_category)
+
                     if not parent_node:
                         break
+
                     final_categories.append(chosen_category)
 
                     if with_analysis:
