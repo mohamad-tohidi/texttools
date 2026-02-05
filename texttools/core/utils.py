@@ -110,13 +110,12 @@ class OperatorUtils:
         return [{"role": "user", "content": prompt}]
 
     @staticmethod
-    def extract_logprobs(completion: Any) -> list[dict]:
+    def extract_logprobs(completion: Any) -> list[dict[str, Any]]:
         """
         Extracts and filters logprobs from completion.
         Skips punctuation and structural tokens.
         """
         logprobs_data = []
-
         ignore_pattern = re.compile(r'^(result|[\s\[\]\{\}",:]+)$')
 
         for choice in completion.choices:
