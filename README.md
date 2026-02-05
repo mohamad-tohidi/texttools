@@ -105,6 +105,7 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
             - **`prompt_tokens: int`**
             - **`completion_tokens: int`**
             - **`total_tokens: int`**
+        - **`total_tokens: int`**
 
 - Serialize output to JSON using the `to_json()` method.
 - Verify operation success with the `is_successful()` method.
