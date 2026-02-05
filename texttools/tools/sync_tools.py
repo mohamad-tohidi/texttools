@@ -111,14 +111,14 @@ class TheTool:
                 )
 
             else:
-                levels = categories.get_level_count()
+                level_count = categories.get_level_count()
                 parent_node = categories.get_node("root")
                 final_categories = []
                 analysis = ""
                 logprobs_list = []
                 token_usage = TokenUsage()
 
-                for _ in range(levels):
+                for _ in range(level_count):
                     if not parent_node.children:
                         break
 
