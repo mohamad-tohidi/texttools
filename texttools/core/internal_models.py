@@ -54,6 +54,7 @@ class OperatorOutput(BaseModel):
     result: Any
     analysis: str | None
     logprobs: list[dict[str, Any]] | None
+    processed_by: str
     token_usage: TokenUsage | None = None
 
 

@@ -33,7 +33,6 @@ class TheTool:
         self._operator = Operator(client=client, model=model)
         self.logger = logging.getLogger(self.__class__.__name__)
         self.raise_on_error = raise_on_error
-        self.model = model
 
     def categorize(
         self,
@@ -93,7 +92,7 @@ class TheTool:
                 metadata = ToolOutputMetadata(
                     tool_name=tool_name,
                     execution_time=perf_counter() - start,
-                    processed_by=self.model,
+                    processed_by=operator_output.processed_by,
                     token_usage=operator_output.token_usage,
                 )
                 tool_output = ToolOutput(
@@ -155,7 +154,7 @@ class TheTool:
                 metadata = ToolOutputMetadata(
                     tool_name=tool_name,
                     execution_time=perf_counter() - start,
-                    processed_by=self.model,
+                    processed_by=level_operator_output.processed_by,
                     token_usage=token_usage,
                 )
                 tool_output = ToolOutput(
@@ -239,7 +238,7 @@ class TheTool:
             metadata = ToolOutputMetadata(
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
-                processed_by=self.model,
+                processed_by=operator_output.processed_by,
                 token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
@@ -321,7 +320,7 @@ class TheTool:
             metadata = ToolOutputMetadata(
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
-                processed_by=self.model,
+                processed_by=operator_output.processed_by,
                 token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
@@ -398,7 +397,7 @@ class TheTool:
             metadata = ToolOutputMetadata(
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
-                processed_by=self.model,
+                processed_by=operator_output.processed_by,
                 token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
@@ -482,7 +481,7 @@ class TheTool:
             metadata = ToolOutputMetadata(
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
-                processed_by=self.model,
+                processed_by=operator_output.processed_by,
                 token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
@@ -564,7 +563,7 @@ class TheTool:
             metadata = ToolOutputMetadata(
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
-                processed_by=self.model,
+                processed_by=operator_output.processed_by,
                 token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
@@ -645,7 +644,7 @@ class TheTool:
             metadata = ToolOutputMetadata(
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
-                processed_by=self.model,
+                processed_by=operator_output.processed_by,
                 token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
@@ -724,7 +723,7 @@ class TheTool:
             metadata = ToolOutputMetadata(
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
-                processed_by=self.model,
+                processed_by=operator_output.processed_by,
                 token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
@@ -824,7 +823,7 @@ class TheTool:
                 metadata = ToolOutputMetadata(
                     tool_name=tool_name,
                     execution_time=perf_counter() - start,
-                    processed_by=self.model,
+                    processed_by=chunk_operator_output.processed_by,
                     token_usage=token_usage,
                 )
                 tool_output = ToolOutput(
@@ -857,7 +856,7 @@ class TheTool:
                 metadata = ToolOutputMetadata(
                     tool_name=tool_name,
                     execution_time=perf_counter() - start,
-                    processed_by=self.model,
+                    processed_by=operator_output.processed_by,
                     token_usage=operator_output.token_usage,
                 )
                 tool_output = ToolOutput(
@@ -938,7 +937,7 @@ class TheTool:
             metadata = ToolOutputMetadata(
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
-                processed_by=self.model,
+                processed_by=operator_output.processed_by,
                 token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
@@ -1022,7 +1021,7 @@ class TheTool:
             metadata = ToolOutputMetadata(
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
-                processed_by=self.model,
+                processed_by=operator_output.processed_by,
                 token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(
@@ -1105,7 +1104,7 @@ class TheTool:
             metadata = ToolOutputMetadata(
                 tool_name=tool_name,
                 execution_time=perf_counter() - start,
-                processed_by=self.model,
+                processed_by=operator_output.processed_by,
                 token_usage=operator_output.token_usage,
             )
             tool_output = ToolOutput(

@@ -177,6 +177,7 @@ class Operator:
                 logprobs=OperatorUtils.extract_logprobs(completion)
                 if logprobs
                 else None,
+                processed_by=self._model,
                 token_usage=OperatorUtils.extract_token_usage(
                     completion, analyze_completion
                 ),
