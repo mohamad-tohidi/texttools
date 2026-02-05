@@ -15,6 +15,15 @@ class BatchTheTool:
         raise_on_error: bool = True,
         max_concurrency: int = 5,
     ):
+        """
+        Initialize the BatchTheTool instance.
+
+        Arguments:
+            client: An AsyncOpenAI client instance for making asynchronous API calls
+            model: The name of the model
+            raise_on_error: If True, raises exceptions on errors; if False, logs errors and continues
+            max_concurrency: Maximum number of concurrent API requests allowed
+        """
         self.tool = AsyncTheTool(client, model, raise_on_error)
         self.semaphore = asyncio.Semaphore(max_concurrency)
 

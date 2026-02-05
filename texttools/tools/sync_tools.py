@@ -30,6 +30,14 @@ class TheTool:
         model: str,
         raise_on_error: bool = True,
     ):
+        """
+        Initialize the TheTool instance.
+
+        Args:
+            client: An OpenAI client instance for making API calls
+            model: The name of the model
+            raise_on_error: If True, raises exceptions on errors; if False, logs errors and continues
+        """
         self._operator = Operator(client=client, model=model)
         self.logger = logging.getLogger(self.__class__.__name__)
         self.raise_on_error = raise_on_error

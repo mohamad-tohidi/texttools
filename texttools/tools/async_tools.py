@@ -30,6 +30,14 @@ class AsyncTheTool:
         model: str,
         raise_on_error: bool = True,
     ):
+        """
+        Initialize the AsyncTheTool instance.
+
+        Args:
+            client: An AsyncOpenAI client instance for making asynchronous API calls
+            model: The name of the model
+            raise_on_error: If True, raises exceptions on errors; if False, logs errors and continues
+        """
         self._operator = AsyncOperator(client=client, model=model)
         self.logger = logging.getLogger(self.__class__.__name__)
         self.raise_on_error = raise_on_error
