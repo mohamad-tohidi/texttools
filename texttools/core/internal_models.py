@@ -102,12 +102,12 @@ class ReasonListStr(BaseModel):
     )
 
 
-# Create CategorizerOutput with dynamic categories
-def create_dynamic_model(allowed_values: list[str]) -> type[BaseModel]:
+# Create a dynamic LiteralStr model
+def create_literal_model(allowed_values: list[str]) -> type[BaseModel]:
     literal_type = Literal[*allowed_values]
 
-    CategorizerOutput = create_model(
-        "CategorizerOutput",
+    LiteralStr = create_model(
+        "LiteralStr",
         reason=(
             str,
             Field(
@@ -117,4 +117,4 @@ def create_dynamic_model(allowed_values: list[str]) -> type[BaseModel]:
         result=(literal_type, Field(..., description="Predicted category label")),
     )
 
-    return CategorizerOutput
+    return LiteralStr

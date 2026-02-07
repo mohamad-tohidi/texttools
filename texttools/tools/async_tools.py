@@ -18,7 +18,7 @@ from ..core import (
     TheToolUtils,
     TokenUsage,
     ValidationError,
-    create_dynamic_model,
+    create_literal_model,
 )
 from ..models import CategoryTree, ToolOutput, ToolOutputMetadata
 
@@ -95,7 +95,7 @@ class AsyncTheTool:
                         priority=priority,
                         # Internal parameters
                         tool_name=tool_name,
-                        output_model=create_dynamic_model(categories),
+                        output_model=create_literal_model(categories),
                         mode=None,
                         output_lang=None,
                     ),
@@ -116,14 +116,14 @@ class AsyncTheTool:
                 )
 
             else:
-                level_count = categories.get_level_count()
+                max_depth = categories.get_max_depth()
                 parent_node = categories.get_node("root")
                 final_categories = []
                 analysis = ""
                 logprobs_list = []
                 token_usage = TokenUsage()
 
-                for _ in range(level_count):
+                for _ in range(max_depth):
                     if not parent_node.children:
                         break
 
@@ -148,7 +148,7 @@ class AsyncTheTool:
                             priority=priority,
                             # Internal parameters
                             tool_name=tool_name,
-                            output_model=create_dynamic_model(category_names),
+                            output_model=create_literal_model(category_names),
                             mode=None,
                             output_lang=None,
                         ),

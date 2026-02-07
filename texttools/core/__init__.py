@@ -6,7 +6,7 @@ from .internal_models import (
     ReasonListStr,
     Str,
     TokenUsage,
-    create_dynamic_model,
+    create_literal_model,
 )
 from .operators import AsyncOperator, Operator
 from .utils import OperatorUtils, TheToolUtils
@@ -24,7 +24,7 @@ __all__ = [
     "ReasonListStr",
     "Str",
     "TokenUsage",
-    "create_dynamic_model",
+    "create_literal_model",
     # Operators
     "AsyncOperator",
     "Operator",

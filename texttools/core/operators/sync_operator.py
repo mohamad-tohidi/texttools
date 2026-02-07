@@ -18,13 +18,11 @@ class Operator:
         self._client = client
         self._model = model
 
-    def _analyze_completion(
-        self, analyze_message: list[dict[str, str]]
-    ) -> tuple[str, Any]:
+    def _run_analysis(self, analysis_messages: list[dict[str, str]]) -> tuple[str, Any]:
         try:
             completion = self._client.chat.completions.create(
                 model=self._model,
-                messages=analyze_message,
+                messages=analysis_messages,
             )
 
             if not completion.choices:
@@ -42,9 +40,9 @@ class Operator:
                 raise
             raise LLMError(f"Analysis failed: {e}")
 
-    def _parse_completion(
+    def _run_completion(
         self,
-        main_message: list[dict[str, str]],
+        main_messages: list[dict[str, str]],
         output_model: type[BaseModel],
         temperature: float,
         logprobs: bool,
@@ -53,12 +51,12 @@ class Operator:
     ) -> tuple[BaseModel, Any]:
         """
         Parses a chat completion using OpenAI's structured output format.
-        Returns both the parsed and the completion for logprobs.
+        Returns both the parsed output and the completion for logprobs.
         """
         try:
             request_kwargs = {
                 "model": self._model,
-                "messages": main_message,
+                "messages": main_messages,
                 "response_format": output_model,
                 "temperature": temperature,
             }
@@ -75,12 +73,12 @@ class Operator:
             if not completion.choices:
                 raise LLMError("No choices returned from LLM")
 
-            parsed = completion.choices[0].message.parsed
+            parsed_output = completion.choices[0].message.parsed
 
-            if not parsed:
+            if not parsed_output:
                 raise LLMError("Failed to parse LLM response")
 
-            return parsed, completion
+            return parsed_output, completion
 
         except Exception as e:
             if isinstance(e, LLMError):
@@ -116,21 +114,21 @@ class Operator:
             )
 
             analysis: str | None = None
-            analyze_completion: Any = None
+            analysis_completion: Any = None
 
             if with_analysis:
-                analyze_message = OperatorUtils.build_message(
+                analysis_messages = OperatorUtils.build_message(
                     prompt_configs["analyze_template"]
                 )
-                analysis, analyze_completion = self._analyze_completion(analyze_message)
+                analysis, analysis_completion = self._run_analysis(analysis_messages)
 
             main_prompt = OperatorUtils.build_main_prompt(
                 prompt_configs["main_template"], analysis, output_lang, user_prompt
             )
-            main_message = OperatorUtils.build_message(main_prompt)
+            main_messages = OperatorUtils.build_message(main_prompt)
 
-            parsed, completion = self._parse_completion(
-                main_message,
+            parsed_output, main_completion = self._run_completion(
+                main_messages,
                 output_model,
                 temperature,
                 logprobs,
@@ -139,7 +137,7 @@ class Operator:
             )
 
             # Retry logic in case output validation fails
-            if validator and not validator(parsed.result):
+            if validator and not validator(parsed_output.result):
                 if (
                     not isinstance(max_validation_retries, int)
                     or max_validation_retries < 1
@@ -151,8 +149,8 @@ class Operator:
                     retry_temperature = OperatorUtils.get_retry_temp(temperature)
 
                     try:
-                        parsed, completion = self._parse_completion(
-                            main_message,
+                        parsed_output, main_completion = self._run_completion(
+                            main_messages,
                             output_model,
                             retry_temperature,
                             logprobs,
@@ -161,7 +159,7 @@ class Operator:
                         )
 
                         # Check if retry was successful
-                        if validator(parsed.result):
+                        if validator(parsed_output.result):
                             succeeded = True
                             break
 
@@ -172,14 +170,14 @@ class Operator:
                     raise ValidationError("Validation failed after all retries")
 
             operator_output = OperatorOutput(
-                result=parsed.result,
+                result=parsed_output.result,
                 analysis=analysis if with_analysis else None,
-                logprobs=OperatorUtils.extract_logprobs(completion)
+                logprobs=OperatorUtils.extract_logprobs(main_completion)
                 if logprobs
                 else None,
                 processed_by=self._model,
                 token_usage=OperatorUtils.extract_token_usage(
-                    completion, analyze_completion
+                    main_completion, analysis_completion
                 ),
             )
 

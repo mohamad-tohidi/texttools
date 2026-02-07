@@ -1,5 +1,5 @@
 import pytest
-from texttools.models import CategoryTree, Node
+from texttools.models import CategoryTree, CategoryNode
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def tree():
 
 
 def test_level_count(tree):
-    assert tree.get_level_count() == 3
+    assert tree.get_max_depth() == 3
 
 
 def test_none_node(tree):
@@ -25,7 +25,7 @@ def test_none_node(tree):
 
 
 def test_get_node(tree):
-    assert isinstance(tree.get_node("آگاهی"), Node)
+    assert isinstance(tree.get_node("آگاهی"), CategoryNode)
 
 
 def test_add_duplicate_node(tree):
