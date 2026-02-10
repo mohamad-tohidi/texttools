@@ -1,5 +1,6 @@
 import asyncio
-from typing import Any, Callable, Literal
+from collections.abc import Callable
+from typing import Any, Literal
 
 from openai import AsyncOpenAI
 
