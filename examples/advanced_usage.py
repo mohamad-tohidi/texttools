@@ -1,8 +1,10 @@
+import logging
 import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
+
 from texttools import CategoryTree, TheTool
 
 # Load environment variables
@@ -10,6 +12,9 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 BASE_URL = os.getenv("BASE_URL")
 MODEL = os.getenv("MODEL")
+
+# Set logger level
+logging.basicConfig(level=logging.DEBUG)
 
 # Initialize clients
 client = OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
@@ -32,8 +37,6 @@ def main():
         tree,
         with_analysis=True,
         user_prompt="Consider proper names carefully",
-        logprobs=True,
-        top_logprobs=3,
         priority=3,
     )
     print(category.to_json())
