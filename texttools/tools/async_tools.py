@@ -123,7 +123,9 @@ class AsyncTheTool:
                 logprobs_list = []
                 token_usage = TokenUsage()
 
-                for _ in range(max_depth):
+                for level in range(max_depth):
+                    self.logger.info(f"Processing level {level + 1} of the tree...")
+
                     if not parent_node.children:
                         break
 
@@ -132,6 +134,10 @@ class AsyncTheTool:
                         for name, node in parent_node.children.items()
                     ]
                     category_names = list(parent_node.children.keys())
+
+                    self.logger.info(
+                        f"Categories available in the current level: {category_names}"
+                    )
 
                     level_operator_output = await TheToolUtils.run_with_timeout(
                         self._operator.run(
@@ -157,6 +163,10 @@ class AsyncTheTool:
 
                     chosen_category = level_operator_output.result
                     parent_node = categories.get_node(chosen_category)
+
+                    self.logger.info(
+                        f"Chosen category in the current level: {chosen_category}"
+                    )
 
                     if not parent_node:
                         break
@@ -841,13 +851,17 @@ class AsyncTheTool:
 
         try:
             if len(text.split(" ")) > 1500 and use_chunker:
+                self.logger.info("Running translator using chunker...")
+
                 chunks = TheToolUtils.to_chunks(text, 1200, 0)
                 translation = ""
                 analysis = ""
                 logprobs_list = []
                 token_usage = TokenUsage()
 
-                for chunk in chunks:
+                for i, chunk in enumerate(chunks):
+                    self.logger.info(f"Processing chunk {i} of the input...")
+
                     chunk_operator_output = await TheToolUtils.run_with_timeout(
                         self._operator.run(
                             # User parameters
