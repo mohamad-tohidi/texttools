@@ -71,7 +71,7 @@ def main():
 
     translation = the_tool.translate(
         "علم و تکنولوژی می‌تواند زندگی انسان‌ها را به شکل چشمگیری بهبود دهد.",
-        target_lang="English",
+        target_language="English",
     )
     print(translation.to_json())
 

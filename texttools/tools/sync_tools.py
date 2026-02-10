@@ -769,7 +769,7 @@ class TheTool:
     def translate(
         self,
         text: str,
-        target_lang: str,
+        target_language: str,
         use_chunker: bool = True,
         with_analysis: bool = False,
         user_prompt: str | None = None,
@@ -787,7 +787,7 @@ class TheTool:
 
         Arguments:
             text: The input text
-            target_lang: The target language for translation
+            target_language: The target language for translation
             use_chunker: Whether to use text chunker for large texts
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
@@ -820,7 +820,7 @@ class TheTool:
                     chunk_operator_output = self._operator.run(
                         # User parameters
                         text=chunk,
-                        target_lang=target_lang,
+                        target_language=target_language,
                         with_analysis=with_analysis,
                         user_prompt=user_prompt,
                         temperature=temperature,
@@ -861,7 +861,7 @@ class TheTool:
                 operator_output = self._operator.run(
                     # User parameters
                     text=text,
-                    target_lang=target_lang,
+                    target_language=target_language,
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,
                     temperature=temperature,

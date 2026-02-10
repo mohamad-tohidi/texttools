@@ -58,7 +58,7 @@ async def main():
     )
     translation_task = async_the_tool.translate(
         "علم و تکنولوژی می‌تواند کیفیت زندگی انسان‌ها را به شکل چشمگیری ارتقا دهد.",
-        target_lang="English",
+        target_language="English",
     )
     propositions_task = async_the_tool.propositionize(
         "Alexander Fleming discovered penicillin in 1928, revolutionizing the treatment of bacterial infections."
