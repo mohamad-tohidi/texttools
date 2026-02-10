@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Callable
 from typing import Any
 
@@ -17,11 +18,14 @@ class AsyncOperator:
     def __init__(self, client: AsyncOpenAI, model: str):
         self._client = client
         self._model = model
+        self.logger = logging.getLogger(self.__class__.__name__)
 
     async def _run_analysis(
         self, analysis_messages: list[dict[str, str]]
     ) -> tuple[str, Any]:
         try:
+            self.logger.debug("Running analysis completion...")
+
             completion = await self._client.chat.completions.create(
                 model=self._model,
                 messages=analysis_messages,
@@ -56,6 +60,8 @@ class AsyncOperator:
         Returns both the parsed output and the completion for logprobs.
         """
         try:
+            self.logger.debug("Running main chat completion...")
+
             request_kwargs = {
                 "model": self._model,
                 "messages": main_messages,
@@ -77,6 +83,7 @@ class AsyncOperator:
             if not completion.choices:
                 raise LLMError("No choices returned from LLM")
 
+            self.logger.debug("Parsing the completion...")
             parsed_output = completion.choices[0].message.parsed
 
             if not parsed_output:
@@ -110,6 +117,8 @@ class AsyncOperator:
         Execute the LLM pipeline with the given input text.
         """
         try:
+            self.logger.debug("Loading the prompts...")
+
             prompt_configs = OperatorUtils.load_prompt(
                 prompt_file=tool_name + ".yaml",
                 text=text.strip(),
@@ -144,6 +153,8 @@ class AsyncOperator:
 
             # Retry logic in case output validation fails
             if validator and not validator(parsed_output.result):
+                self.logger.warning("Validation function failed, retrying...")
+
                 if (
                     not isinstance(max_validation_retries, int)
                     or max_validation_retries < 1
@@ -151,8 +162,12 @@ class AsyncOperator:
                     raise ValueError("max_validation_retries should be a positive int")
 
                 succeeded = False
-                for _ in range(max_validation_retries):
+                for i in range(max_validation_retries):
                     retry_temperature = OperatorUtils.get_retry_temp(temperature)
+
+                    self.logger.debug(
+                        f"Retry temp of retry number {i}: {retry_temperature}"
+                    )
 
                     try:
                         parsed_output, main_completion = await self._run_completion(
