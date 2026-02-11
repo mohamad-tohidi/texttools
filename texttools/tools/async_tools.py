@@ -10,14 +10,10 @@ from ..core import (
     Bool,
     ListDictStrStr,
     ListStr,
-    LLMError,
-    PromptError,
     ReasonListStr,
     Str,
-    TextToolsError,
     TheToolUtils,
     TokenUsage,
-    ValidationError,
     create_literal_model,
 )
 from ..models import CategoryTree, ToolOutput, ToolOutputMetadata
@@ -192,7 +188,7 @@ class AsyncTheTool:
                     metadata=metadata,
                 )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -281,7 +277,7 @@ class AsyncTheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -368,7 +364,7 @@ class AsyncTheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -450,7 +446,7 @@ class AsyncTheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -539,7 +535,7 @@ class AsyncTheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -626,7 +622,7 @@ class AsyncTheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -712,7 +708,7 @@ class AsyncTheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -796,7 +792,7 @@ class AsyncTheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -941,7 +937,7 @@ class AsyncTheTool:
                     metadata=metadata,
                 )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -1027,7 +1023,7 @@ class AsyncTheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -1116,7 +1112,7 @@ class AsyncTheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -1204,7 +1200,7 @@ class AsyncTheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:

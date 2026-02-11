@@ -9,15 +9,11 @@ from ..core import (
     Bool,
     ListDictStrStr,
     ListStr,
-    LLMError,
     Operator,
-    PromptError,
     ReasonListStr,
     Str,
-    TextToolsError,
     TheToolUtils,
     TokenUsage,
-    ValidationError,
     create_literal_model,
 )
 from ..models import CategoryTree, ToolOutput, ToolOutputMetadata
@@ -184,7 +180,7 @@ class TheTool:
                     metadata=metadata,
                 )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -268,7 +264,7 @@ class TheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -350,7 +346,7 @@ class TheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -427,7 +423,7 @@ class TheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -511,7 +507,7 @@ class TheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -593,7 +589,7 @@ class TheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -674,7 +670,7 @@ class TheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -753,7 +749,7 @@ class TheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -890,7 +886,7 @@ class TheTool:
                     metadata=metadata,
                 )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -971,7 +967,7 @@ class TheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -1055,7 +1051,7 @@ class TheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
@@ -1138,7 +1134,7 @@ class TheTool:
                 metadata=metadata,
             )
 
-        except (PromptError, LLMError, ValidationError, TextToolsError, Exception) as e:
+        except Exception as e:
             self.logger.error(str(e))
 
             if self.raise_on_error:
