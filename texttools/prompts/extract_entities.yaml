@@ -13,6 +13,10 @@ main_template: |
     ]
   }}
 
+  Respond only with a single JSON object,
+  using ASCII double quotes (") for keys and string delimiters.
+  Don't use “smart quotes” or any additional commentary.
+
   Here is the text:
   {text}
 

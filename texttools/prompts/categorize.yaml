@@ -20,6 +20,10 @@ main_template: |
   "result": "category_name",
   }}
 
+  Respond only with a single JSON object,
+  using ASCII double quotes (") for keys and string delimiters.
+  Don't use “smart quotes” or any additional commentary.
+
   Available categories:
   {category_list}
 

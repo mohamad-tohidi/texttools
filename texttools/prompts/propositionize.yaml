@@ -11,8 +11,12 @@ main_template: |
   - Preserve Logic: Keep conditions attached to their facts. Do not split a rule from its condition (e.g., "If X, then Y" should be one proposition).
   - No Redundancy: Do not extract summary statements that merely repeat facts already listed.
 
-    Respond only in JSON format:
-    {{"result": ["text1", "text2", ...]}}
+  Respond only in JSON format:
+  {{"result": ["text1", "text2", ...]}}
+
+  Respond only with a single JSON object,
+  using ASCII double quotes (") for keys and string delimiters.
+  Don't use “smart quotes” or any additional commentary.
 
   Here is the text:
   {text}
