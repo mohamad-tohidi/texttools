@@ -40,8 +40,6 @@ class Operator:
             return analysis, completion
 
         except Exception as e:
-            if isinstance(e, (PromptError, LLMError)):
-                raise
             raise LLMError(f"Analysis failed: {e}")
 
     def _run_completion(
@@ -88,8 +86,6 @@ class Operator:
             return parsed_output, completion
 
         except Exception as e:
-            if isinstance(e, LLMError):
-                raise
             raise LLMError(f"Completion failed: {e}")
 
     def run(
