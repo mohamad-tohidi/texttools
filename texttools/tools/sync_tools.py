@@ -75,9 +75,10 @@ class TheTool:
         try:
             if isinstance(categories, list):
                 operator_output = self._operator.run(
-                    # User parameters
+                    # Parameters used for prompt injection
                     text=text,
                     category_list=categories,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,
                     temperature=temperature,
@@ -131,9 +132,10 @@ class TheTool:
                     )
 
                     level_operator_output = self._operator.run(
-                        # User parameters
+                        # Parameters used for prompt injection
                         text=text,
                         category_list=category_list,
+                        # Parameters used for chat completions & operator usage
                         with_analysis=with_analysis,
                         user_prompt=user_prompt,
                         temperature=temperature,
@@ -233,10 +235,11 @@ class TheTool:
 
         try:
             operator_output = self._operator.run(
-                # User parameters
+                # Parameters used for prompt injection
                 text=text,
                 number_of_keywords=number_of_keywords,
                 mode=mode,
+                # Parameters used for chat completions & operator usage
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -315,9 +318,10 @@ class TheTool:
 
         try:
             operator_output = self._operator.run(
-                # User parameters
+                # Parameters used for prompt injection
                 text=text,
                 entities=entities,
+                # Parameters used for chat completions & operator usage
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -393,8 +397,9 @@ class TheTool:
 
         try:
             operator_output = self._operator.run(
-                # User parameters
+                # Parameters used for prompt injection
                 text=text,
+                # Parameters used for chat completions & operator usage
                 with_analysis=with_analysis,
                 user_prompt=user_prompt,
                 temperature=temperature,
@@ -476,10 +481,11 @@ class TheTool:
 
         try:
             operator_output = self._operator.run(
-                # User parameters
+                # Parameters used for prompt injection
                 text=text,
                 number_of_questions=number_of_questions,
                 mode=mode,
+                # Parameters used for chat completions & operator usage
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -559,9 +565,10 @@ class TheTool:
         try:
             text = ", ".join(text)
             operator_output = self._operator.run(
-                # User parameters
+                # Parameters used for prompt injection
                 text=text,
                 mode=mode,
+                # Parameters used for chat completions & operator usage
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -640,9 +647,10 @@ class TheTool:
 
         try:
             operator_output = self._operator.run(
-                # User parameters
+                # Parameters used for prompt injection
                 text=text,
                 mode=mode,
+                # Parameters used for chat completions & operator usage
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -719,8 +727,9 @@ class TheTool:
 
         try:
             operator_output = self._operator.run(
-                # User parameters
+                # Parameters used for prompt injection
                 text=text,
+                # Parameters used for chat completions & operator usage
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -814,9 +823,10 @@ class TheTool:
                     self.logger.info(f"Processing chunk {i + 1} of the input...")
 
                     chunk_operator_output = self._operator.run(
-                        # User parameters
+                        # Parameters used for prompt injection
                         text=chunk,
                         target_language=target_language,
+                        # Parameters used for chat completions & operator usage
                         with_analysis=with_analysis,
                         user_prompt=user_prompt,
                         temperature=temperature,
@@ -855,9 +865,10 @@ class TheTool:
 
             else:
                 operator_output = self._operator.run(
-                    # User parameters
+                    # Parameters used for prompt injection
                     text=text,
                     target_language=target_language,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,
                     temperature=temperature,
@@ -937,8 +948,9 @@ class TheTool:
 
         try:
             operator_output = self._operator.run(
-                # User parameters
+                # Parameters used for prompt injection
                 text=text,
+                # Parameters used for chat completions & operator usage
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -1020,9 +1032,10 @@ class TheTool:
 
         try:
             operator_output = self._operator.run(
-                # User parameters
+                # Parameters used for prompt injection
                 text=text,
                 source_text=source_text,
+                # Parameters used for chat completions & operator usage
                 with_analysis=with_analysis,
                 output_lang=output_lang,
                 user_prompt=user_prompt,
@@ -1105,6 +1118,7 @@ class TheTool:
                 # User paramaeters
                 text=prompt,
                 output_model=output_model,
+                # Parameters used for chat completions & operator usage
                 with_analysis=with_analysis,
                 analyze_template=analyze_template,
                 output_model_str=output_model.model_json_schema(),

@@ -78,9 +78,10 @@ class AsyncTheTool:
             if isinstance(categories, list):
                 operator_output = await TheToolUtils.run_with_timeout(
                     self._operator.run(
-                        # User parameters
+                        # Parameters used for prompt injection
                         text=text,
                         category_list=categories,
+                        # Parameters used for chat completions & operator usage
                         with_analysis=with_analysis,
                         user_prompt=user_prompt,
                         temperature=temperature,
@@ -137,9 +138,10 @@ class AsyncTheTool:
 
                     level_operator_output = await TheToolUtils.run_with_timeout(
                         self._operator.run(
-                            # User parameters
+                            # Parameters used for prompt injection
                             text=text,
                             category_list=category_list,
+                            # Parameters used for chat completions & operator usage
                             with_analysis=with_analysis,
                             user_prompt=user_prompt,
                             temperature=temperature,
@@ -244,8 +246,9 @@ class AsyncTheTool:
         try:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
-                    # User parameters
+                    # Parameters used for prompt injection
                     text=text,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     number_of_keywords=number_of_keywords,
                     mode=mode,
@@ -331,9 +334,10 @@ class AsyncTheTool:
         try:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
-                    # User parameters
+                    # Parameters used for prompt injection
                     text=text,
                     entities=entities,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     output_lang=output_lang,
                     user_prompt=user_prompt,
@@ -414,8 +418,9 @@ class AsyncTheTool:
         try:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
-                    # User parameters
+                    # Parameters used for prompt injection
                     text=text,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,
                     temperature=temperature,
@@ -502,10 +507,11 @@ class AsyncTheTool:
         try:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
-                    # User parameters
+                    # Parameters used for prompt injection
                     text=text,
                     number_of_questions=number_of_questions,
                     mode=mode,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     output_lang=output_lang,
                     user_prompt=user_prompt,
@@ -590,9 +596,10 @@ class AsyncTheTool:
             text = ", ".join(text)
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
-                    # User parameters
+                    # Parameters used for prompt injection
                     text=text,
                     mode=mode,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     output_lang=output_lang,
                     user_prompt=user_prompt,
@@ -676,9 +683,10 @@ class AsyncTheTool:
         try:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
-                    # User parameters
+                    # Parameters used for prompt injection
                     text=text,
                     mode=mode,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     output_lang=output_lang,
                     user_prompt=user_prompt,
@@ -760,8 +768,9 @@ class AsyncTheTool:
         try:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
-                    # User parameters
+                    # Parameters used for prompt injection
                     text=text,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     output_lang=output_lang,
                     user_prompt=user_prompt,
@@ -863,9 +872,10 @@ class AsyncTheTool:
 
                     chunk_operator_output = await TheToolUtils.run_with_timeout(
                         self._operator.run(
-                            # User parameters
+                            # Parameters used for prompt injection
                             text=chunk,
                             target_language=target_language,
+                            # Parameters used for chat completions & operator usage
                             with_analysis=with_analysis,
                             user_prompt=user_prompt,
                             temperature=temperature,
@@ -907,9 +917,10 @@ class AsyncTheTool:
             else:
                 operator_output = await TheToolUtils.run_with_timeout(
                     self._operator.run(
-                        # User parameters
+                        # Parameters used for prompt injection
                         text=text,
                         target_language=target_language,
+                        # Parameters used for chat completions & operator usage
                         with_analysis=with_analysis,
                         user_prompt=user_prompt,
                         temperature=temperature,
@@ -994,8 +1005,9 @@ class AsyncTheTool:
         try:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
-                    # User parameters
+                    # Parameters used for prompt injection
                     text=text,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     output_lang=output_lang,
                     user_prompt=user_prompt,
@@ -1082,9 +1094,10 @@ class AsyncTheTool:
         try:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
-                    # User parameters
+                    # Parameters used for prompt injection
                     text=text,
                     source_text=source_text,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     output_lang=output_lang,
                     user_prompt=user_prompt,
@@ -1172,6 +1185,7 @@ class AsyncTheTool:
                     # User paramaeters
                     text=prompt,
                     output_model=output_model,
+                    # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     analyze_template=analyze_template,
                     output_model_str=output_model.model_json_schema(),
