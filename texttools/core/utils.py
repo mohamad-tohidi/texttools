@@ -188,7 +188,7 @@ class TheToolUtils:
 
     @staticmethod
     def to_chunks(text: str, size: int, overlap: int) -> list[str]:
-        separators = ["\n\n", "\n", " ", ""]
+        separators = ["\n\n", "\n", ".", "?", "!", " ", ""]
         is_separator_regex = False
         keep_separator = True
         length_function = len
