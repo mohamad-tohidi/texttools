@@ -847,9 +847,12 @@ class AsyncTheTool:
 
         try:
             if len(text.split(" ")) > 1500 and use_chunker:
-                self.logger.info("Running translator using chunker...")
-
                 chunks = TheToolUtils.to_chunks(text, 1200, 0)
+
+                self.logger.info(
+                    f"Running translator using chunker with {len(chunks)} chunks..."
+                )
+
                 translation = ""
                 analysis = ""
                 logprobs_list = []
