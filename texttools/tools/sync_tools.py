@@ -811,7 +811,7 @@ class TheTool:
                 token_usage = TokenUsage()
 
                 for i, chunk in enumerate(chunks):
-                    self.logger.info(f"Processing chunk {i} of the input...")
+                    self.logger.info(f"Processing chunk {i + 1} of the input...")
 
                     chunk_operator_output = self._operator.run(
                         # User parameters
