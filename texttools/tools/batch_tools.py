@@ -16,7 +16,7 @@ class BatchTheTool:
         model: str,
         raise_on_error: bool = True,
         max_concurrency: int = 5,
-    ):
+    ) -> None:
         """
         Initialize the BatchTheTool instance.
 

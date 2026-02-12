@@ -15,7 +15,7 @@ class Operator:
     Core engine for running text-processing operations with an LLM.
     """
 
-    def __init__(self, client: OpenAI, model: str):
+    def __init__(self, client: OpenAI, model: str) -> None:
         self._client = client
         self._model = model
         self.logger = logging.getLogger(self.__class__.__name__)

@@ -25,7 +25,7 @@ class TheTool:
         client: OpenAI,
         model: str,
         raise_on_error: bool = True,
-    ):
+    ) -> None:
         """
         Initialize the TheTool instance.
 
