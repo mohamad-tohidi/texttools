@@ -39,7 +39,7 @@ def main():
         user_prompt="Consider proper names carefully",
         priority=3,
     )
-    print(category.to_json())
+    print(category.model_dump_json())
 
     # Run keyword extractor with custom validator
     def validate(result: str) -> bool:
@@ -54,7 +54,7 @@ def main():
         validator=validate,
         max_validation_retries=5,
     )
-    print(keywords.to_json())
+    print(keywords.model_dump_json())
 
     # Run custom tool with an arbitraty structured output
     class Student(BaseModel):
@@ -69,7 +69,7 @@ def main():
                     [{"name": str}, {"age": int}, {"std_id": int}]"""
 
     student = the_tool.run_custom(custom_prompt, Student)
-    print(student.to_json())
+    print(student.model_dump_json())
 
 
 if __name__ == "__main__":

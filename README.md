@@ -107,9 +107,9 @@ Every tool of `TextTools` returns a `ToolOutput` object which is a BaseModel wit
             - **`total_tokens: int`**
         - **`total_tokens: int`**
 
-- Serialize output to JSON using the `to_json()` method.
+- Serialize output to JSON using the `model_dump_json()` method.
 - Verify operation success with the `is_successful()` method.
-- Convert output to a dictionary with the `to_dict()` method.
+- Convert output to a dictionary with the `model_dump()` method.
 
 **Note:** For BatchTheTool: Each method returns a `list[ToolOutput]` containing results for all input texts.
 
@@ -136,7 +136,7 @@ model = "model_name"
 the_tool = TheTool(client=client, model=model)
 
 detection = the_tool.is_question("Is this project open source?")
-print(detection.to_json())
+print(detection.model_dump_json())
 ```
 
 ---
@@ -159,8 +159,8 @@ async def main():
 
     (translation, keywords) = await asyncio.gather(translation_task, keywords_task)
     
-    print(translation.to_json())
-    print(keywords.to_json())
+    print(translation.model_dump_json())
+    print(keywords.model_dump_json())
 
 asyncio.run(main())
 ```

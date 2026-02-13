@@ -26,12 +26,6 @@ class ToolOutput(BaseModel):
     def is_successful(self) -> bool:
         return not self.errors and self.result is not None
 
-    def to_dict(self, exclude_none: bool = False) -> dict:
-        return self.model_dump(exclude_none=exclude_none)
-
-    def to_json(self, indent: int = 2, exclude_none: bool = False) -> str:
-        return self.model_dump_json(indent=indent, exclude_none=exclude_none)
-
 
 class CategoryNode(BaseModel):
     name: str
