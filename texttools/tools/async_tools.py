@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from collections.abc import Callable
 from time import perf_counter
@@ -819,6 +820,7 @@ class AsyncTheTool:
         text: str,
         target_language: str,
         use_chunker: bool = True,
+        max_concurrent_chunks: int = 5,
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
@@ -838,6 +840,7 @@ class AsyncTheTool:
             text: The input text
             target_language: The target language for translation
             use_chunker: Whether to use text chunker for large texts
+            max_concurrent_chunks: Maximum number of chunks to process in parallel when chunking is enabled
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
             temperature: Controls randomness
@@ -862,49 +865,52 @@ class AsyncTheTool:
                     f"Running translator using chunker with {len(chunks)} chunks..."
                 )
 
+                semaphore = asyncio.Semaphore(max_concurrent_chunks)
+
+                # Function to process chunks independently
+                async def process_chunk(chunk, i):
+                    async with semaphore:
+                        self.logger.info(f"Processing chunk {i + 1} of the input...")
+                        return await TheToolUtils.run_with_timeout(
+                            self._operator.run(
+                                text=chunk,
+                                target_language=target_language,
+                                with_analysis=with_analysis,
+                                user_prompt=user_prompt,
+                                temperature=temperature,
+                                logprobs=logprobs,
+                                top_logprobs=top_logprobs,
+                                validator=validator,
+                                max_validation_retries=max_validation_retries,
+                                priority=priority,
+                                tool_name=tool_name,
+                                output_model=Str,
+                                mode=None,
+                                output_lang=None,
+                            ),
+                            timeout=timeout,
+                        )
+
+                tasks = [process_chunk(chunk, i) for i, chunk in enumerate(chunks)]
+                chunk_outputs = await asyncio.gather(*tasks)
+
                 translation = ""
                 analysis = ""
                 logprobs_list = []
                 token_usage = TokenUsage()
 
-                for i, chunk in enumerate(chunks):
-                    self.logger.info(f"Processing chunk {i + 1} of the input...")
-
-                    chunk_operator_output = await TheToolUtils.run_with_timeout(
-                        self._operator.run(
-                            # Parameters used for prompt injection
-                            text=chunk,
-                            target_language=target_language,
-                            # Parameters used for chat completions & operator usage
-                            with_analysis=with_analysis,
-                            user_prompt=user_prompt,
-                            temperature=temperature,
-                            logprobs=logprobs,
-                            top_logprobs=top_logprobs,
-                            validator=validator,
-                            max_validation_retries=max_validation_retries,
-                            priority=priority,
-                            # Internal parameters
-                            tool_name=tool_name,
-                            output_model=Str,
-                            mode=None,
-                            output_lang=None,
-                        ),
-                        timeout=timeout,
-                    )
-
-                    translation += chunk_operator_output.result + "\n"
-
+                for chunk_output in chunk_outputs:
+                    translation += chunk_output.result + "\n"
                     if with_analysis:
-                        analysis += chunk_operator_output.analysis
+                        analysis += chunk_output.analysis
                     if logprobs:
-                        logprobs_list.extend(chunk_operator_output.logprobs)
-                    token_usage += chunk_operator_output.token_usage
+                        logprobs_list.extend(chunk_output.logprobs)
+                    token_usage += chunk_output.token_usage
 
                 metadata = ToolOutputMetadata(
                     tool_name=tool_name,
                     execution_time=perf_counter() - start,
-                    processed_by=chunk_operator_output.processed_by,
+                    processed_by=chunk_outputs[0].processed_by,
                     token_usage=token_usage,
                 )
                 tool_output = ToolOutput(
