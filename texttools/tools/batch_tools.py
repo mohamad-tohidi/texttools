@@ -4,6 +4,7 @@ from collections.abc import Callable
 from typing import Any, Literal
 
 from openai import AsyncOpenAI
+from pydantic import BaseModel
 
 from ..models import CategoryTree, ToolOutput
 from .async_tools import AsyncTheTool
@@ -296,7 +297,7 @@ class BatchTheTool:
     async def to_question(
         self,
         texts: list[str],
-        number_of_questions: int,
+        number_of_questions: int = 1,
         mode: Literal["from_text", "from_subject"] = "from_text",
         with_analysis: bool = False,
         output_lang: str | None = None,
@@ -771,7 +772,7 @@ class BatchTheTool:
     async def run_custom(
         self,
         prompts: list[str],
-        output_model: Any,
+        output_model: BaseModel,
         with_analysis: bool = False,
         analyze_template: str | None = None,
         output_lang: str | None = None,
