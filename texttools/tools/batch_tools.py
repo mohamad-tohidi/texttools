@@ -566,6 +566,7 @@ class BatchTheTool:
         texts: list[str],
         target_language: str,
         use_chunker: bool = True,
+        max_concurrent_chunks: int = 5,
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
@@ -585,6 +586,7 @@ class BatchTheTool:
             texts: The input texts
             target_language: The target language for translation
             use_chunker: Whether to use text chunker for large texts
+            max_concurrent_chunks: Maximum number of chunks to process in parallel when chunking is enabled
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
             temperature: Controls randomness
@@ -612,6 +614,7 @@ class BatchTheTool:
                     text=text,
                     target_language=target_language,
                     use_chunker=use_chunker,
+                    max_concurrent_chunks=max_concurrent_chunks,
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,
                     temperature=temperature,
