@@ -4,6 +4,7 @@ from time import perf_counter
 from typing import Any, Literal
 
 from openai import OpenAI
+from pydantic import BaseModel
 
 from ..core import (
     Bool,
@@ -1085,7 +1086,7 @@ class TheTool:
     def run_custom(
         self,
         prompt: str,
-        output_model: Any,
+        output_model: BaseModel,
         with_analysis: bool = False,
         analyze_template: str | None = None,
         output_lang: str | None = None,
