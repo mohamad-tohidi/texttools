@@ -474,7 +474,7 @@ class AsyncTheTool:
     async def to_question(
         self,
         text: str,
-        number_of_questions: int,
+        number_of_questions: int = 1,
         mode: Literal["from_text", "from_subject"] = "from_text",
         with_analysis: bool = False,
         output_lang: str | None = None,
