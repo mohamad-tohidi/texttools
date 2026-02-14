@@ -241,6 +241,11 @@ class AsyncTheTool:
         Returns:
             ToolOutput
         """
+        if mode != "count" and number_of_keywords:
+            self.logger.warning(
+                "You have set 'number_of_keywords' but didn't use 'count' mode, so it will be ignored"
+            )
+
         tool_name = "extract_keywords"
         start = perf_counter()
 
