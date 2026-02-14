@@ -98,7 +98,7 @@ class BatchTheTool:
     async def extract_keywords(
         self,
         texts: list[str],
-        mode: Literal["auto", "threshold", "count"],
+        mode: Literal["auto", "threshold", "count"] = "auto",
         number_of_keywords: int | None = None,
         with_analysis: bool = False,
         output_lang: str | None = None,
@@ -297,7 +297,7 @@ class BatchTheTool:
         self,
         texts: list[str],
         number_of_questions: int,
-        mode: Literal["from_text", "from_subject"],
+        mode: Literal["from_text", "from_subject"] = "from_text",
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
@@ -366,7 +366,7 @@ class BatchTheTool:
     async def merge_questions(
         self,
         texts: list[list[str]],
-        mode: Literal["simple", "stepwise"],
+        mode: Literal["simple", "stepwise"] = "simple",
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
@@ -433,7 +433,7 @@ class BatchTheTool:
     async def augment(
         self,
         texts: list[str],
-        mode: Literal["positive", "negative", "hard_negative"],
+        mode: Literal["positive", "negative", "hard_negative"] = "positive",
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
