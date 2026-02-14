@@ -51,7 +51,7 @@ class BatchTheTool:
 
         Arguments:
             texts: The input texts
-            categories: The category list / category tree
+            categories: The category list or category tree
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
             temperature: Controls randomness
