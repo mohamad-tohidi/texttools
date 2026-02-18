@@ -74,9 +74,7 @@ class AsyncOperator:
             if priority is not None:
                 request_kwargs["extra_body"] = {"priority": priority}
 
-            completion = await self._client.beta.chat.completions.parse(
-                **request_kwargs
-            )
+            completion = await self._client.chat.completions.parse(**request_kwargs)
 
             if not completion.choices:
                 raise LLMError("No choices returned from LLM")
