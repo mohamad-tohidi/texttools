@@ -4,6 +4,7 @@ from collections.abc import Callable
 from typing import Any, Literal
 
 from openai import AsyncOpenAI
+from tqdm import tqdm
 
 from ..models import CategoryTree, ToolOutput
 from .async_tools import AsyncTheTool
@@ -69,12 +70,10 @@ class BatchTheTool:
 
         self.logger.info(f"Starting batch tool with {len(texts)} texts...")
 
-        processed = 0
         total = len(texts)
+        pbar = tqdm(total=total, desc="Categorizing...", unit="text")
 
         async def _throttled_task(text: str) -> ToolOutput:
-            nonlocal processed
-
             async with self.semaphore:
                 result = await self.tool.categorize(
                     text=text,
@@ -90,13 +89,13 @@ class BatchTheTool:
                     priority=priority,
                     timeout=timeout,
                 )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
+            pbar.update(1)
             return result
 
         tasks = [_throttled_task(t) for t in texts]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        pbar.close()
+        return results
 
     async def extract_keywords(
         self,
@@ -140,12 +139,10 @@ class BatchTheTool:
 
         self.logger.info(f"Starting batch tool with {len(texts)} texts...")
 
-        processed = 0
         total = len(texts)
+        pbar = tqdm(total=total, desc="Extracting Keywords...", unit="text")
 
         async def _throttled_task(text: str) -> ToolOutput:
-            nonlocal processed
-
             async with self.semaphore:
                 result = await self.tool.extract_keywords(
                     text=text,
@@ -163,13 +160,13 @@ class BatchTheTool:
                     priority=priority,
                     timeout=timeout,
                 )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
+            pbar.update(1)
             return result
 
         tasks = [_throttled_task(t) for t in texts]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        pbar.close()
+        return results
 
     async def extract_entities(
         self,
@@ -211,12 +208,10 @@ class BatchTheTool:
 
         self.logger.info(f"Starting batch tool with {len(texts)} texts...")
 
-        processed = 0
         total = len(texts)
+        pbar = tqdm(total=total, desc="Extracting Entities...", unit="text")
 
         async def _throttled_task(text: str) -> ToolOutput:
-            nonlocal processed
-
             async with self.semaphore:
                 result = await self.tool.extract_entities(
                     text=text,
@@ -233,13 +228,13 @@ class BatchTheTool:
                     priority=priority,
                     timeout=timeout,
                 )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
+            pbar.update(1)
             return result
 
         tasks = [_throttled_task(t) for t in texts]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        pbar.close()
+        return results
 
     async def is_question(
         self,
@@ -277,12 +272,10 @@ class BatchTheTool:
 
         self.logger.info(f"Starting batch tool with {len(texts)} texts...")
 
-        processed = 0
         total = len(texts)
+        pbar = tqdm(total=total, desc="Detecting Questions...", unit="text")
 
         async def _throttled_task(text: str) -> ToolOutput:
-            nonlocal processed
-
             async with self.semaphore:
                 result = await self.tool.is_question(
                     text=text,
@@ -297,13 +290,13 @@ class BatchTheTool:
                     priority=priority,
                     timeout=timeout,
                 )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
+            pbar.update(1)
             return result
 
         tasks = [_throttled_task(t) for t in texts]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        pbar.close()
+        return results
 
     async def to_question(
         self,
@@ -347,12 +340,10 @@ class BatchTheTool:
 
         self.logger.info(f"Starting batch tool with {len(texts)} texts...")
 
-        processed = 0
         total = len(texts)
+        pbar = tqdm(total=total, desc="Generating Questions...", unit="text")
 
         async def _throttled_task(text: str) -> ToolOutput:
-            nonlocal processed
-
             async with self.semaphore:
                 result = await self.tool.to_question(
                     text=text,
@@ -370,13 +361,13 @@ class BatchTheTool:
                     priority=priority,
                     timeout=timeout,
                 )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
+            pbar.update(1)
             return result
 
         tasks = [_throttled_task(t) for t in texts]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        pbar.close()
+        return results
 
     async def merge_questions(
         self,
@@ -418,11 +409,10 @@ class BatchTheTool:
 
         self.logger.info(f"Starting batch tool with {len(texts)} texts...")
 
-        processed = 0
         total = len(texts)
+        pbar = tqdm(total=total, desc="Merging Questions...", unit="text")
 
         async def _throttled_task(texts: list[str]) -> ToolOutput:
-            nonlocal processed
 
             async with self.semaphore:
                 result = await self.tool.merge_questions(
@@ -440,13 +430,13 @@ class BatchTheTool:
                     priority=priority,
                     timeout=timeout,
                 )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
+            pbar.update(1)
             return result
 
         tasks = [_throttled_task(t) for t in texts]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        pbar.close()
+        return results
 
     async def augment(
         self,
@@ -488,12 +478,10 @@ class BatchTheTool:
 
         self.logger.info(f"Starting batch tool with {len(texts)} texts...")
 
-        processed = 0
         total = len(texts)
+        pbar = tqdm(total=total, desc="Augmenting...", unit="text")
 
         async def _throttled_task(text: str) -> ToolOutput:
-            nonlocal processed
-
             async with self.semaphore:
                 result = await self.tool.augment(
                     text=text,
@@ -510,13 +498,13 @@ class BatchTheTool:
                     priority=priority,
                     timeout=timeout,
                 )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
+            pbar.update(1)
             return result
 
         tasks = [_throttled_task(t) for t in texts]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        pbar.close()
+        return results
 
     async def summarize(
         self,
@@ -556,12 +544,10 @@ class BatchTheTool:
 
         self.logger.info(f"Starting batch tool with {len(texts)} texts...")
 
-        processed = 0
         total = len(texts)
+        pbar = tqdm(total=total, desc="Summarizing...", unit="text")
 
         async def _throttled_task(text: str) -> ToolOutput:
-            nonlocal processed
-
             async with self.semaphore:
                 result = await self.tool.summarize(
                     text=text,
@@ -577,13 +563,13 @@ class BatchTheTool:
                     priority=priority,
                     timeout=timeout,
                 )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
+            pbar.update(1)
             return result
 
         tasks = [_throttled_task(t) for t in texts]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        pbar.close()
+        return results
 
     async def translate(
         self,
@@ -629,12 +615,10 @@ class BatchTheTool:
 
         self.logger.info(f"Starting batch tool with {len(texts)} texts...")
 
-        processed = 0
         total = len(texts)
+        pbar = tqdm(total=total, desc="Translating...", unit="text")
 
         async def _throttled_task(text: str) -> ToolOutput:
-            nonlocal processed
-
             async with self.semaphore:
                 result = await self.tool.translate(
                     text=text,
@@ -652,13 +636,13 @@ class BatchTheTool:
                     priority=priority,
                     timeout=timeout,
                 )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
+            pbar.update(1)
             return result
 
         tasks = [_throttled_task(t) for t in texts]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        pbar.close()
+        return results
 
     async def propositionize(
         self,
@@ -700,12 +684,10 @@ class BatchTheTool:
 
         self.logger.info(f"Starting batch tool with {len(texts)} texts...")
 
-        processed = 0
         total = len(texts)
+        pbar = tqdm(total=total, desc="Propositionizing...", unit="text")
 
         async def _throttled_task(text: str) -> ToolOutput:
-            nonlocal processed
-
             async with self.semaphore:
                 result = await self.tool.propositionize(
                     text=text,
@@ -721,13 +703,13 @@ class BatchTheTool:
                     priority=priority,
                     timeout=timeout,
                 )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
+            pbar.update(1)
             return result
 
         tasks = [_throttled_task(t) for t in texts]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        pbar.close()
+        return results
 
     async def is_fact(
         self,
@@ -771,11 +753,10 @@ class BatchTheTool:
 
         self.logger.info(f"Starting batch tool with {len(texts)} texts...")
 
-        processed = 0
         total = len(texts)
+        pbar = tqdm(total=total, desc="Checking Facts...", unit="text")
 
         async def _throttled_task(text: str, source_text: str) -> ToolOutput:
-            nonlocal processed
 
             async with self.semaphore:
                 result = await self.tool.is_fact(
@@ -793,10 +774,10 @@ class BatchTheTool:
                     priority=priority,
                     timeout=timeout,
                 )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
+            pbar.update(1)
             return result
 
         tasks = [_throttled_task(t, s) for t, s in zip(texts, source_texts)]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        pbar.close()
+        return results
