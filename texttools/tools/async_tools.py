@@ -47,6 +47,7 @@ class AsyncTheTool:
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -63,6 +64,7 @@ class AsyncTheTool:
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -81,7 +83,7 @@ class AsyncTheTool:
                 operator_output = await TheToolUtils.run_with_timeout(
                     self._operator.run(
                         # Parameters used for prompt injection
-                        text=text,
+                        text=TheToolUtils.normalize(text) if normalize else text,
                         category_list=categories,
                         # Parameters used for chat completions & operator usage
                         with_analysis=with_analysis,
@@ -141,7 +143,7 @@ class AsyncTheTool:
                     level_operator_output = await TheToolUtils.run_with_timeout(
                         self._operator.run(
                             # Parameters used for prompt injection
-                            text=text,
+                            text=TheToolUtils.normalize(text) if normalize else text,
                             category_list=category_list,
                             # Parameters used for chat completions & operator usage
                             with_analysis=with_analysis,
@@ -214,6 +216,7 @@ class AsyncTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -232,6 +235,7 @@ class AsyncTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -254,7 +258,7 @@ class AsyncTheTool:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # Parameters used for prompt injection
-                    text=text,
+                    text=TheToolUtils.normalize(text) if normalize else text,
                     # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     number_of_keywords=number_of_keywords,
@@ -308,6 +312,7 @@ class AsyncTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -325,6 +330,7 @@ class AsyncTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -342,7 +348,7 @@ class AsyncTheTool:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # Parameters used for prompt injection
-                    text=text,
+                    text=TheToolUtils.normalize(text) if normalize else text,
                     entities=entities,
                     # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
@@ -394,6 +400,7 @@ class AsyncTheTool:
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -409,6 +416,7 @@ class AsyncTheTool:
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -426,7 +434,7 @@ class AsyncTheTool:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # Parameters used for prompt injection
-                    text=text,
+                    text=TheToolUtils.normalize(text) if normalize else text,
                     # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,
@@ -480,6 +488,7 @@ class AsyncTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -498,6 +507,7 @@ class AsyncTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -515,7 +525,7 @@ class AsyncTheTool:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # Parameters used for prompt injection
-                    text=text,
+                    text=TheToolUtils.normalize(text) if normalize else text,
                     number_of_questions=number_of_questions,
                     mode=mode,
                     # Parameters used for chat completions & operator usage
@@ -569,6 +579,7 @@ class AsyncTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -586,6 +597,7 @@ class AsyncTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -604,7 +616,7 @@ class AsyncTheTool:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # Parameters used for prompt injection
-                    text=text,
+                    text=TheToolUtils.normalize(text) if normalize else text,
                     mode=mode,
                     # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
@@ -657,6 +669,7 @@ class AsyncTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -674,6 +687,7 @@ class AsyncTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -691,7 +705,7 @@ class AsyncTheTool:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # Parameters used for prompt injection
-                    text=text,
+                    text=TheToolUtils.normalize(text) if normalize else text,
                     mode=mode,
                     # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
@@ -743,6 +757,7 @@ class AsyncTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -759,6 +774,7 @@ class AsyncTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -776,7 +792,7 @@ class AsyncTheTool:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # Parameters used for prompt injection
-                    text=text,
+                    text=TheToolUtils.normalize(text) if normalize else text,
                     # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     output_lang=output_lang,
@@ -830,6 +846,7 @@ class AsyncTheTool:
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -850,6 +867,7 @@ class AsyncTheTool:
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -879,7 +897,9 @@ class AsyncTheTool:
                         self.logger.info(f"Processing chunk {i + 1} of the input...")
                         return await TheToolUtils.run_with_timeout(
                             self._operator.run(
-                                text=chunk,
+                                text=TheToolUtils.normalize(chunk)
+                                if normalize
+                                else chunk,
                                 target_language=target_language,
                                 with_analysis=with_analysis,
                                 user_prompt=user_prompt,
@@ -930,7 +950,7 @@ class AsyncTheTool:
                 operator_output = await TheToolUtils.run_with_timeout(
                     self._operator.run(
                         # Parameters used for prompt injection
-                        text=text,
+                        text=TheToolUtils.normalize(text) if normalize else text,
                         target_language=target_language,
                         # Parameters used for chat completions & operator usage
                         with_analysis=with_analysis,
@@ -983,6 +1003,7 @@ class AsyncTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -1001,6 +1022,7 @@ class AsyncTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -1018,7 +1040,7 @@ class AsyncTheTool:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # Parameters used for prompt injection
-                    text=text,
+                    text=TheToolUtils.normalize(text) if normalize else text,
                     # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,
                     output_lang=output_lang,
@@ -1071,6 +1093,7 @@ class AsyncTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -1090,6 +1113,7 @@ class AsyncTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -1107,7 +1131,7 @@ class AsyncTheTool:
             operator_output = await TheToolUtils.run_with_timeout(
                 self._operator.run(
                     # Parameters used for prompt injection
-                    text=text,
+                    text=TheToolUtils.normalize(text) if normalize else text,
                     source_text=source_text,
                     # Parameters used for chat completions & operator usage
                     with_analysis=with_analysis,

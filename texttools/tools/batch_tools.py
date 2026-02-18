@@ -39,6 +39,7 @@ class BatchTheTool:
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -55,6 +56,7 @@ class BatchTheTool:
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -81,6 +83,7 @@ class BatchTheTool:
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,
                     temperature=temperature,
+                    normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
                     validator=validator,
@@ -105,6 +108,7 @@ class BatchTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -123,6 +127,7 @@ class BatchTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -151,6 +156,7 @@ class BatchTheTool:
                     output_lang=output_lang,
                     user_prompt=user_prompt,
                     temperature=temperature,
+                    normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
                     validator=validator,
@@ -174,6 +180,7 @@ class BatchTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -191,6 +198,7 @@ class BatchTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -218,6 +226,7 @@ class BatchTheTool:
                     output_lang=output_lang,
                     user_prompt=user_prompt,
                     temperature=temperature,
+                    normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
                     validator=validator,
@@ -239,6 +248,7 @@ class BatchTheTool:
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -254,6 +264,7 @@ class BatchTheTool:
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -279,6 +290,7 @@ class BatchTheTool:
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,
                     temperature=temperature,
+                    normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
                     validator=validator,
@@ -303,6 +315,7 @@ class BatchTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -321,6 +334,7 @@ class BatchTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -349,6 +363,7 @@ class BatchTheTool:
                     output_lang=output_lang,
                     user_prompt=user_prompt,
                     temperature=temperature,
+                    normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
                     validator=validator,
@@ -372,6 +387,7 @@ class BatchTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -389,6 +405,7 @@ class BatchTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -416,6 +433,7 @@ class BatchTheTool:
                     output_lang=output_lang,
                     user_prompt=user_prompt,
                     temperature=temperature,
+                    normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
                     validator=validator,
@@ -439,6 +457,7 @@ class BatchTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -456,6 +475,7 @@ class BatchTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -483,6 +503,7 @@ class BatchTheTool:
                     output_lang=output_lang,
                     user_prompt=user_prompt,
                     temperature=temperature,
+                    normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
                     validator=validator,
@@ -505,6 +526,7 @@ class BatchTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -521,6 +543,7 @@ class BatchTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -547,6 +570,7 @@ class BatchTheTool:
                     output_lang=output_lang,
                     user_prompt=user_prompt,
                     temperature=temperature,
+                    normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
                     validator=validator,
@@ -571,6 +595,7 @@ class BatchTheTool:
         with_analysis: bool = False,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -591,6 +616,7 @@ class BatchTheTool:
             with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -619,6 +645,7 @@ class BatchTheTool:
                     with_analysis=with_analysis,
                     user_prompt=user_prompt,
                     temperature=temperature,
+                    normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
                     validator=validator,
@@ -641,6 +668,7 @@ class BatchTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -659,6 +687,7 @@ class BatchTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -685,6 +714,7 @@ class BatchTheTool:
                     output_lang=output_lang,
                     user_prompt=user_prompt,
                     temperature=temperature,
+                    normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
                     validator=validator,
@@ -708,6 +738,7 @@ class BatchTheTool:
         output_lang: str | None = None,
         user_prompt: str | None = None,
         temperature: float | None = 0.0,
+        normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
@@ -727,6 +758,7 @@ class BatchTheTool:
             output_lang: Forces the model to respond in a specific language
             user_prompt: Additional instructions
             temperature: Controls randomness
+            normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
             validator: Custom validation function to validate the output
@@ -754,6 +786,7 @@ class BatchTheTool:
                     output_lang=output_lang,
                     user_prompt=user_prompt,
                     temperature=temperature,
+                    normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
                     validator=validator,
