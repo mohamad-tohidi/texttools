@@ -45,12 +45,12 @@ class TheTool:
         categories: list[str] | CategoryTree,
         with_analysis: bool = False,
         user_prompt: str | None = None,
-        temperature: float | None = 0.0,
+        temperature: float = 0.0,
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
@@ -206,12 +206,12 @@ class TheTool:
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
-        temperature: float | None = 0.0,
+        temperature: float = 0.0,
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
@@ -297,12 +297,12 @@ class TheTool:
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
-        temperature: float | None = 0.0,
+        temperature: float = 0.0,
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
@@ -380,12 +380,12 @@ class TheTool:
         text: str,
         with_analysis: bool = False,
         user_prompt: str | None = None,
-        temperature: float | None = 0.0,
+        temperature: float = 0.0,
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
@@ -463,12 +463,12 @@ class TheTool:
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
-        temperature: float | None = 0.0,
+        temperature: float = 0.0,
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
@@ -549,12 +549,12 @@ class TheTool:
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
-        temperature: float | None = 0.0,
+        temperature: float = 0.0,
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
@@ -634,12 +634,12 @@ class TheTool:
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
-        temperature: float | None = 0.0,
+        temperature: float = 0.0,
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
@@ -717,12 +717,12 @@ class TheTool:
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
-        temperature: float | None = 0.0,
+        temperature: float = 0.0,
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
@@ -800,12 +800,12 @@ class TheTool:
         use_chunker: bool = True,
         with_analysis: bool = False,
         user_prompt: str | None = None,
-        temperature: float | None = 0.0,
+        temperature: float = 0.0,
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
@@ -940,12 +940,12 @@ class TheTool:
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
-        temperature: float | None = 0.0,
+        temperature: float = 0.0,
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
@@ -1025,12 +1025,12 @@ class TheTool:
         with_analysis: bool = False,
         output_lang: str | None = None,
         user_prompt: str | None = None,
-        temperature: float | None = 0.0,
+        temperature: float = 0.0,
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
@@ -1112,11 +1112,11 @@ class TheTool:
         with_analysis: bool = False,
         analyze_template: str | None = None,
         output_lang: str | None = None,
-        temperature: float | None = None,
+        temperature: float = 0.0,
         logprobs: bool | None = None,
         top_logprobs: int = 3,
         validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int | None = None,
+        max_validation_retries: int = 3,
         priority: int | None = None,
     ) -> ToolOutput:
         """
