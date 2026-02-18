@@ -69,6 +69,8 @@ pip install -U hamtaa-texttools
 
 - **`temperature: float`** → Determines how creative the model should respond. Takes a float number between `0.0` and `2.0`.
 
+- **`normalize: bool`** → Whether to apply text cleaning (removing separator lines and normalizing quotation marks) before sending to the LLM.
+
 - **`validator: Callable (Experimental)`** → Forces the tool to validate the output result based on your validator function. Validator should return a boolean. If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can also specify `max_validation_retries=<N>`.
 
 - **`priority: int (Experimental)`** → Affects processing order in queues.  
