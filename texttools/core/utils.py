@@ -290,3 +290,24 @@ class TheToolUtils:
             return await asyncio.wait_for(coro, timeout=timeout)
         except asyncio.TimeoutError:
             raise TimeoutError(f"Operation exceeded timeout of {timeout} seconds")
+
+    @staticmethod
+    def normalize(text: str) -> str:
+        # Remove separators
+        text = "\n".join(
+            line
+            for line in text.splitlines()
+            if line.strip() and not all(c == "*" for c in line.strip())
+        )
+        text = "\n".join(
+            line
+            for line in text.splitlines()
+            if line.strip() and not all(c == "-" for c in line.strip())
+        )
+
+        # Normalize quotes
+        trans = str.maketrans(
+            {"\u201c": '"', "\u201d": '"', "\u2018": "'", "\u2019": "'"}
+        )
+        text = ("" if text is None else str(text)).translate(trans)
+        return text
