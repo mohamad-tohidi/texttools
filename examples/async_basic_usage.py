@@ -83,7 +83,7 @@ async def main():
     )
 
     for output in outputs:
-        print(output.model_dump_json())
+        print(output.model_dump_json(indent=2))
 
 
 if __name__ == "__main__":

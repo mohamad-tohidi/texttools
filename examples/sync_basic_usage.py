@@ -25,29 +25,29 @@ def main():
         "انسان‌ها به چه دلایلی هنر را خلق می‌کنند و چه تاثیری بر جامعه دارد؟",
         categories=["هیچکدام", "فلسفه", "علوم تجربی", "علوم اجتماعی"],
     )
-    print(category.model_dump_json())
+    print(category.model_dump_json(indent=2))
 
     keywords = the_tool.extract_keywords(
         "Climate change is causing unprecedented weather patterns, rising sea levels, and global ecological disruptions.",
         mode="count",
         number_of_keywords=3,
     )
-    print(keywords.model_dump_json())
+    print(keywords.model_dump_json(indent=2))
 
     entities = the_tool.extract_entities(
         "Albert Einstein developed the theory of relativity, which revolutionized modern physics.",
     )
-    print(entities.model_dump_json())
+    print(entities.model_dump_json(indent=2))
 
     is_question = the_tool.is_question("What are the main causes of global warming?")
-    print(is_question.model_dump_json())
+    print(is_question.model_dump_json(indent=2))
 
     questions = the_tool.to_question(
         "Renewable energy sources like solar and wind are essential to reduce carbon emissions.",
         mode="from_text",
         number_of_questions=2,
     )
-    print(questions.model_dump_json())
+    print(questions.model_dump_json(indent=2))
 
     merged_question = the_tool.merge_questions(
         [
@@ -56,35 +56,35 @@ def main():
         ],
         mode="simple",
     )
-    print(merged_question.model_dump_json())
+    print(merged_question.model_dump_json(indent=2))
 
     augmented = the_tool.augment(
         "انسان‌ها به دلیل نیاز به شناخت جهان و تعامل اجتماعی، هنر و زبان را توسعه داده‌اند.",
         mode="positive",
     )
-    print(augmented.model_dump_json())
+    print(augmented.model_dump_json(indent=2))
 
     summary = the_tool.summarize(
         "The novel explores the psychological effects of isolation during long space missions and the human drive to adapt and survive."
     )
-    print(summary.model_dump_json())
+    print(summary.model_dump_json(indent=2))
 
     translation = the_tool.translate(
         "علم و تکنولوژی می‌تواند زندگی انسان‌ها را به شکل چشمگیری بهبود دهد.",
         target_language="English",
     )
-    print(translation.model_dump_json())
+    print(translation.model_dump_json(indent=2))
 
     propositions = the_tool.propositionize(
         "Isaac Newton formulated the laws of motion and universal gravitation, laying the foundation for classical mechanics."
     )
-    print(propositions.model_dump_json())
+    print(propositions.model_dump_json(indent=2))
 
     is_fact = the_tool.is_fact(
         text="The Great Wall of China stretches over 21,000 kilometers.",
         source_text="Historical surveys indicate that the Great Wall of China extends approximately 21,196 kilometers across northern China.",
     )
-    print(is_fact.model_dump_json())
+    print(is_fact.model_dump_json(indent=2))
 
 
 if __name__ == "__main__":
