@@ -4,7 +4,6 @@ from collections.abc import Callable
 from typing import Any, Literal
 
 from openai import AsyncOpenAI
-from pydantic import BaseModel
 
 from ..models import CategoryTree, ToolOutput
 from .async_tools import AsyncTheTool
@@ -800,71 +799,4 @@ class BatchTheTool:
             return result
 
         tasks = [_throttled_task(t, s) for t, s in zip(texts, source_texts)]
-        return await asyncio.gather(*tasks)
-
-    async def run_custom(
-        self,
-        prompts: list[str],
-        output_model: BaseModel,
-        with_analysis: bool = False,
-        analyze_template: str | None = None,
-        output_lang: str | None = None,
-        temperature: float = 0.0,
-        logprobs: bool | None = None,
-        top_logprobs: int = 3,
-        validator: Callable[[Any], bool] | None = None,
-        max_validation_retries: int = 3,
-        priority: int | None = None,
-        timeout: float | None = None,
-    ) -> list[ToolOutput]:
-        """
-        Custom tool that can do almost anything for multiple prompts
-
-        Arguments:
-            prompts: The user prompts
-            output_model: Pydantic BaseModel used for structured output
-            with_analysis: Adds a reasoning step before generating the final output. Note: This doubles token usage per call
-            analyze_template: The analyze template used for reasoning analysis
-            output_lang: Forces the model to respond in a specific language
-            temperature: Controls randomness
-            logprobs: Whether to return token probability information
-            top_logprobs: Number of top token alternatives to return if logprobs enabled
-            validator: Custom validation function to validate the output
-            max_validation_retries: Maximum number of retry attempts if validation fails
-            priority: Task execution priority (if enabled by vLLM and the model)
-            timeout: Maximum time in seconds to wait for the response before raising a timeout error
-
-        Returns:
-            list[ToolOutput]
-        """
-
-        self.logger.info(f"Starting batch tool with {len(prompts)} prompts...")
-
-        processed = 0
-        total = len(prompts)
-
-        async def _throttled_task(prompt: str) -> ToolOutput:
-            nonlocal processed
-
-            async with self.semaphore:
-                result = await self.tool.run_custom(
-                    prompt=prompt,
-                    output_model=output_model,
-                    with_analysis=with_analysis,
-                    analyze_template=analyze_template,
-                    output_lang=output_lang,
-                    temperature=temperature,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            processed += 1
-            if processed % self.max_concurrency == 0 or processed == total:
-                self.logger.info(f"Processed {processed}/{total}")
-            return result
-
-        tasks = [_throttled_task(p) for p in prompts]
         return await asyncio.gather(*tasks)
