@@ -305,9 +305,24 @@ class TheToolUtils:
             if line.strip() and not all(c == "-" for c in line.strip())
         )
 
-        # Normalize quotes
         trans = str.maketrans(
-            {"\u201c": '"', "\u201d": '"', "\u2018": "'", "\u2019": "'"}
+            {
+                # Quotes (existing)
+                "\u201c": '"',
+                "\u201d": '"',
+                "\u2018": "'",
+                "\u2019": "'",
+                # Additional typographic punctuation
+                "\u2013": "-",
+                "\u2014": "-",
+                "\u2026": "...",
+                "\u00a0": " ",
+                "\u200b": None,
+            }
         )
         text = ("" if text is None else str(text)).translate(trans)
+
+        # Collapse multiple spaces and tabs
+        text = re.sub(r"[ \t]+", " ", text)
+
         return text
