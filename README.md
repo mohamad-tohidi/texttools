@@ -71,6 +71,9 @@ pip install -U hamtaa-texttools
 
 - **`normalize: bool`** → Whether to apply text cleaning (removing separator lines and normalizing quotation marks) before sending to the LLM.
 
+- **`max_completion_tokens: int`** → Limits the maximum number of tokens to generate in the completion.  
+**Note:** If the token limit is reached before the completion finishes, an error will be raised.
+
 - **`validator: Callable (Experimental)`** → Forces the tool to validate the output result based on your validator function. Validator should return a boolean. If the validator fails, TheTool will retry to get another output by modifying `temperature`. You can also specify `max_validation_retries=<N>`.
 
 - **`priority: int (Experimental)`** → Affects processing order in queues.  
@@ -79,11 +82,9 @@ pip install -U hamtaa-texttools
 - **`timeout: float`** → Maximum time in seconds to wait for the response before raising a timeout error.  
 **Note:** This feature is only available in `AsyncTheTool`.
 
-- **`raise_on_error: bool`** → (`TheTool/AsyncTheTool`) Raise errors (True) or return them in output (False). Default is True.
-
-- **`max_concurrency: int`** → (`BatchTheTool` only) Maximum number of concurrent API calls. Default is 5.
-
 ---
+
+
 
 ## 🧩 ToolOutput
 
