@@ -20,14 +20,27 @@ class Operator:
         self._model = model
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def _run_analysis(self, analysis_messages: list[dict[str, str]]) -> tuple[str, Any]:
+    def _run_analysis(
+        self,
+        analysis_messages: list[dict[str, str]],
+        max_completion_tokens: int | None,
+        priority: int | None,
+    ) -> tuple[str, Any]:
         try:
             self.logger.debug("Running analysis completion...")
 
-            completion = self._client.chat.completions.create(
-                model=self._model,
-                messages=analysis_messages,
-            )
+            request_kwargs = {
+                "model": self._model,
+                "messages": analysis_messages,
+            }
+
+            if max_completion_tokens:
+                request_kwargs["max_completion_tokens"] = max_completion_tokens
+
+            if priority is not None:
+                request_kwargs["extra_body"] = {"priority": priority}
+
+            completion = self._client.chat.completions.create(**request_kwargs)
 
             if not completion.choices:
                 raise LLMError("No choices returned from LLM")
@@ -130,7 +143,9 @@ class Operator:
                 analysis_messages = OperatorUtils.build_message(
                     prompt_configs["analyze_template"]
                 )
-                analysis, analysis_completion = self._run_analysis(analysis_messages)
+                analysis, analysis_completion = self._run_analysis(
+                    analysis_messages, max_completion_tokens, priority
+                )
 
             main_prompt = OperatorUtils.build_main_prompt(
                 prompt_configs["main_template"], analysis, output_lang, user_prompt
