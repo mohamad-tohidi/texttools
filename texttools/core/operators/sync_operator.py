@@ -49,6 +49,7 @@ class Operator:
         temperature: float,
         logprobs: bool,
         top_logprobs: int,
+        max_completion_tokens: int | None,
         priority: int | None,
     ) -> tuple[BaseModel, Any]:
         """
@@ -68,6 +69,9 @@ class Operator:
             if logprobs:
                 request_kwargs["logprobs"] = True
                 request_kwargs["top_logprobs"] = top_logprobs
+
+            if max_completion_tokens:
+                request_kwargs["max_completion_tokens"] = max_completion_tokens
 
             if priority is not None:
                 request_kwargs["extra_body"] = {"priority": priority}
@@ -97,6 +101,7 @@ class Operator:
         temperature: float,
         logprobs: bool,
         top_logprobs: int,
+        max_completion_tokens: int | None,
         validator: Callable[[Any], bool] | None,
         max_validation_retries: int | None,
         priority: int | None,
@@ -138,6 +143,7 @@ class Operator:
                 temperature,
                 logprobs,
                 top_logprobs,
+                max_completion_tokens,
                 priority,
             )
 

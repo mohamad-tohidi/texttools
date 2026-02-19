@@ -42,6 +42,7 @@ class BatchTheTool:
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int = 3,
         priority: int | None = None,
@@ -59,6 +60,7 @@ class BatchTheTool:
             normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
+            max_completion_tokens: Maximum number of tokens to generate in the completion
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -84,6 +86,7 @@ class BatchTheTool:
                     normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
+                    max_completion_tokens=max_completion_tokens,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
@@ -109,6 +112,7 @@ class BatchTheTool:
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int = 3,
         priority: int | None = None,
@@ -128,6 +132,7 @@ class BatchTheTool:
             normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
+            max_completion_tokens: Maximum number of tokens to generate in the completion
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -155,6 +160,7 @@ class BatchTheTool:
                     normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
+                    max_completion_tokens=max_completion_tokens,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
@@ -179,6 +185,7 @@ class BatchTheTool:
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int = 3,
         priority: int | None = None,
@@ -197,6 +204,7 @@ class BatchTheTool:
             normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
+            max_completion_tokens: Maximum number of tokens to generate in the completion
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -223,6 +231,7 @@ class BatchTheTool:
                     normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
+                    max_completion_tokens=max_completion_tokens,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
@@ -245,6 +254,7 @@ class BatchTheTool:
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int = 3,
         priority: int | None = None,
@@ -261,6 +271,7 @@ class BatchTheTool:
             normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
+            max_completion_tokens: Maximum number of tokens to generate in the completion
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -285,6 +296,7 @@ class BatchTheTool:
                     normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
+                    max_completion_tokens=max_completion_tokens,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
@@ -310,6 +322,7 @@ class BatchTheTool:
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int = 3,
         priority: int | None = None,
@@ -329,6 +342,7 @@ class BatchTheTool:
             normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
+            max_completion_tokens: Maximum number of tokens to generate in the completion
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -356,6 +370,7 @@ class BatchTheTool:
                     normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
+                    max_completion_tokens=max_completion_tokens,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
@@ -380,6 +395,7 @@ class BatchTheTool:
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int = 3,
         priority: int | None = None,
@@ -398,6 +414,7 @@ class BatchTheTool:
             normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
+            max_completion_tokens: Maximum number of tokens to generate in the completion
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -425,6 +442,7 @@ class BatchTheTool:
                     normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
+                    max_completion_tokens=max_completion_tokens,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
@@ -449,6 +467,7 @@ class BatchTheTool:
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int = 3,
         priority: int | None = None,
@@ -467,6 +486,7 @@ class BatchTheTool:
             normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
+            max_completion_tokens: Maximum number of tokens to generate in the completion
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -493,6 +513,7 @@ class BatchTheTool:
                     normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
+                    max_completion_tokens=max_completion_tokens,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
@@ -516,6 +537,7 @@ class BatchTheTool:
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int = 3,
         priority: int | None = None,
@@ -533,6 +555,7 @@ class BatchTheTool:
             normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
+            max_completion_tokens: Maximum number of tokens to generate in the completion
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -558,6 +581,7 @@ class BatchTheTool:
                     normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
+                    max_completion_tokens=max_completion_tokens,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
@@ -583,6 +607,7 @@ class BatchTheTool:
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int = 3,
         priority: int | None = None,
@@ -604,6 +629,7 @@ class BatchTheTool:
             normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
+            max_completion_tokens: Maximum number of tokens to generate in the completion
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -631,6 +657,7 @@ class BatchTheTool:
                     normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
+                    max_completion_tokens=max_completion_tokens,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
@@ -654,6 +681,7 @@ class BatchTheTool:
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int = 3,
         priority: int | None = None,
@@ -673,6 +701,7 @@ class BatchTheTool:
             normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
+            max_completion_tokens: Maximum number of tokens to generate in the completion
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -698,6 +727,7 @@ class BatchTheTool:
                     normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
+                    max_completion_tokens=max_completion_tokens,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
@@ -722,6 +752,7 @@ class BatchTheTool:
         normalize: bool = True,
         logprobs: bool = False,
         top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
         validator: Callable[[Any], bool] | None = None,
         max_validation_retries: int = 3,
         priority: int | None = None,
@@ -742,6 +773,7 @@ class BatchTheTool:
             normalize: Whether to apply text normalization before sending to the LLM
             logprobs: Whether to return token probability information
             top_logprobs: Number of top token alternatives to return if logprobs enabled
+            max_completion_tokens: Maximum number of tokens to generate in the completion
             validator: Custom validation function to validate the output
             max_validation_retries: Maximum number of retry attempts if validation fails
             priority: Task execution priority (if enabled by vLLM and the model)
@@ -769,6 +801,7 @@ class BatchTheTool:
                     normalize=normalize,
                     logprobs=logprobs,
                     top_logprobs=top_logprobs,
+                    max_completion_tokens=max_completion_tokens,
                     validator=validator,
                     max_validation_retries=max_validation_retries,
                     priority=priority,
