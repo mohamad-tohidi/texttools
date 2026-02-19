@@ -187,6 +187,7 @@ class Operator:
                             retry_temperature,
                             logprobs,
                             top_logprobs,
+                            max_completion_tokens=max_completion_tokens,
                             priority=priority,
                         )
 
