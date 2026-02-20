@@ -5,10 +5,6 @@ main_template: |
   Respond only in JSON format:
   {{"result": "translated_text"}}
 
-  Respond only with a single JSON object,
-  using ASCII double quotes (") for keys and string delimiters.
-  Don't use “smart quotes” or any additional commentary.
-
   Don't translate proper names, only transliterate them to {target_language}
   
   Translate the following text to {target_language}:

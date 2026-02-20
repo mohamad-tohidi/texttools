@@ -3,10 +3,7 @@ main_template: |
   
   Respond only in JSON format:
   {output_model_str}
-
-  Respond only with a single JSON object,
-  using ASCII double quotes (") for keys and string delimiters.
-  Don't use “smart quotes” or any additional commentary.
+  
 
 analyze_template: |
   {analyze_template}
