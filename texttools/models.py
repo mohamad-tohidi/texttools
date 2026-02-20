@@ -21,7 +21,7 @@ class ToolOutput(BaseModel):
     analysis: str | None = None
     logprobs: list[dict[str, Any]] | None = None
     errors: list[str] = []
-    metadata: ToolOutputMetadata | None = None
+    metadata: ToolOutputMetadata
 
     def is_successful(self) -> bool:
         return not self.errors and self.result is not None
@@ -71,21 +71,6 @@ class CategoryTree:
         parent.children[name] = new_node
         self._all_nodes[name] = new_node
 
-    def _find_parent(self, name: str) -> CategoryNode | None:
-        def traverse(node: CategoryNode) -> CategoryNode | None:
-            if name in node.children:
-                return node
-            for child in node.children.values():
-                found = traverse(child)
-                if found:
-                    return found
-            return None
-
-        if name == "root":
-            return None
-
-        return traverse(self._root)
-
     def remove_node(self, name: str, remove_children: bool = True) -> None:
         if name == "root":
             raise ValueError("Cannot remove the root node")
@@ -123,6 +108,14 @@ class CategoryTree:
     def dump_tree(self) -> dict:
         return self._root.model_dump()
 
+    @classmethod
+    def from_dict(cls, root: dict) -> CategoryTree:
+        tree = cls()
+        tree._root = CategoryNode.model_validate(root)
+        tree._all_nodes = {}
+        tree._index_subtree(tree._root)
+        return tree
+
     def _index_subtree(self, node: CategoryNode):
         if node.name in self._all_nodes:
             raise ValueError(f"Duplicate node name: {node.name}")
@@ -132,10 +125,17 @@ class CategoryTree:
         for child in node.children.values():
             self._index_subtree(child)
 
-    @classmethod
-    def from_dict(cls, root: dict) -> CategoryTree:
-        tree = cls()
-        tree._root = CategoryNode.model_validate(root)
-        tree._all_nodes = {}
-        tree._index_subtree(tree._root)
-        return tree
+    def _find_parent(self, name: str) -> CategoryNode | None:
+        def traverse(node: CategoryNode) -> CategoryNode | None:
+            if name in node.children:
+                return node
+            for child in node.children.values():
+                found = traverse(child)
+                if found:
+                    return found
+            return None
+
+        if name == "root":
+            return None
+
+        return traverse(self._root)
