@@ -55,51 +55,30 @@ class OperatorOutput(BaseModel):
     analysis: str | None
     logprobs: list[dict[str, Any]] | None
     processed_by: str
-    token_usage: TokenUsage | None = None
+    token_usage: TokenUsage
 
 
 class Str(BaseModel):
-    result: str = Field(
-        ..., description="The output string", json_schema_extra={"example": "text"}
-    )
+    result: str = Field(..., description="The output string")
 
 
 class Bool(BaseModel):
-    result: bool = Field(
-        ...,
-        description="Boolean indicating the output state",
-        json_schema_extra={"example": True},
-    )
+    result: bool = Field(..., description="Boolean indicating the output state")
 
 
 class ListStr(BaseModel):
-    result: list[str] = Field(
-        ...,
-        description="The output list of strings",
-        json_schema_extra={"example": ["text_1", "text_2", "text_3"]},
-    )
+    result: list[str] = Field(..., description="The output list of strings")
 
 
 class ListDictStrStr(BaseModel):
     result: list[dict[str, str]] = Field(
-        ...,
-        description="List of dictionaries containing string key-value pairs",
-        json_schema_extra={
-            "example": [
-                {"text": "Mohammad", "type": "PER"},
-                {"text": "Iran", "type": "LOC"},
-            ]
-        },
+        ..., description="List of dictionaries containing string key-value pairs"
     )
 
 
 class ReasonListStr(BaseModel):
     reason: str = Field(..., description="Thinking process that led to the output")
-    result: list[str] = Field(
-        ...,
-        description="The output list of strings",
-        json_schema_extra={"example": ["text_1", "text_2", "text_3"]},
-    )
+    result: list[str] = Field(..., description="The output list of strings")
 
 
 # Create a dynamic LiteralStr model
