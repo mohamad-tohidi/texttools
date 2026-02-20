@@ -1,10 +1,12 @@
 import logging
+import warnings
 from collections.abc import Callable
 from time import perf_counter
 from typing import Any, Literal
 
 from openai import OpenAI
 from pydantic import BaseModel
+from typing_extensions import deprecated
 
 from ..core import (
     Bool,
@@ -1226,3 +1228,169 @@ class TheTool:
             )
 
         return tool_output
+
+    @deprecated("Use to_question() instead")
+    def text_to_question(
+        self,
+        text: str,
+        number_of_questions: int = 1,
+        with_analysis: bool = False,
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float = 0.0,
+        normalize: bool = True,
+        logprobs: bool = False,
+        top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
+        validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int = 3,
+        priority: int | None = None,
+    ) -> ToolOutput:
+        """
+        Use to_question() instead
+        """
+        warnings.warn(
+            "text_to_question is deprecated; use to_question()",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.to_question(
+            text=text,
+            number_of_questions=number_of_questions,
+            mode="from_text",
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+        )
+
+    @deprecated("Use to_question() instead")
+    def subject_to_question(
+        self,
+        text: str,
+        number_of_questions: int = 1,
+        with_analysis: bool = False,
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float = 0.0,
+        normalize: bool = True,
+        logprobs: bool = False,
+        top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
+        validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int = 3,
+        priority: int | None = None,
+    ) -> ToolOutput:
+        """
+        Use to_question() instead
+        """
+        warnings.warn(
+            "subject_to_question is deprecated; use to_question()",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.to_question(
+            text=text,
+            number_of_questions=number_of_questions,
+            mode="from_subject",
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+        )
+
+    @deprecated("Use augment() instead")
+    def rewrite(
+        self,
+        text: str,
+        mode: Literal["positive", "negative", "hard_negative"] = "positive",
+        with_analysis: bool = False,
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float = 0.0,
+        normalize: bool = True,
+        logprobs: bool = False,
+        top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
+        validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int = 3,
+        priority: int | None = None,
+    ) -> ToolOutput:
+        """
+        Use augment() instead
+        """
+        warnings.warn(
+            "rewrite is deprecated; use augment()",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.augment(
+            text=text,
+            mode=mode,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+        )
+
+    @deprecated("Use is_fact() instead")
+    def check_fact(
+        self,
+        text: str,
+        source_text: str,
+        with_analysis: bool = False,
+        output_lang: str | None = None,
+        user_prompt: str | None = None,
+        temperature: float = 0.0,
+        normalize: bool = True,
+        logprobs: bool = False,
+        top_logprobs: int = 3,
+        max_completion_tokens: int | None = None,
+        validator: Callable[[Any], bool] | None = None,
+        max_validation_retries: int = 3,
+        priority: int | None = None,
+    ) -> ToolOutput:
+        """
+        Use is_fact() instead
+        """
+        warnings.warn(
+            "check_fact is deprecated; use is_fact()",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.is_fact(
+            text=text,
+            source_text=source_text,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+        )
