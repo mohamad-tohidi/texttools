@@ -307,7 +307,7 @@ class TheToolUtils:
 
         trans = str.maketrans(
             {
-                # Quotes (existing)
+                # Quotes
                 "\u201c": '"',
                 "\u201d": '"',
                 "\u2018": "'",
