@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from collections.abc import Callable
-from typing import Any, Literal
+from typing import Any, Awaitable, Literal
 
 from openai import AsyncOpenAI
 from tqdm import tqdm
@@ -31,6 +31,46 @@ class BatchTheTool:
         self.max_concurrency = max_concurrency
         self.semaphore = asyncio.Semaphore(max_concurrency)
         self.logger = logging.getLogger(self.__class__.__name__)
+
+    async def _run_batch(
+        self,
+        inputs: list[str | tuple | list],
+        coro_func: Callable[..., Awaitable[ToolOutput]],
+        desc: str,
+        **fixed_kwargs,
+    ) -> list[ToolOutput]:
+        """
+        Process a batch of inputs with throttled concurrency and a progress bar.
+
+        Args:
+            inputs: List where each element is either a single argument (str)
+                    or a tuple/list of multiple arguments (e.g., (text, source_text)).
+            coro_func: The async tool method to call (e.g., self.tool.categorize).
+            desc: Description shown in the progress bar.
+            **fixed_kwargs: Keyword arguments that are the same for every call
+                            (e.g., temperature, timeout).
+
+        Returns:
+            List of ToolOutput objects.
+        """
+        total = len(inputs)
+        with tqdm(total=total, desc=desc, unit="text") as pbar:
+
+            async def throttled_task(*args):
+                async with self.semaphore:
+                    result = await coro_func(*args, **fixed_kwargs)
+                    pbar.update(1)
+                    return result
+
+            tasks = []
+            for inp in inputs:
+                if isinstance(inp, (tuple, list)):
+                    tasks.append(throttled_task(*inp))
+                else:
+                    tasks.append(throttled_task(inp))
+
+            results = await asyncio.gather(*tasks)
+        return results
 
     async def categorize(
         self,
@@ -69,36 +109,25 @@ class BatchTheTool:
         Returns:
             list[ToolOutput]
         """
+        self.logger.info(f"Starting batch categorize with {len(texts)} texts...")
 
-        self.logger.info(f"Starting batch tool with {len(texts)} texts...")
-
-        total = len(texts)
-        pbar = tqdm(total=total, desc="Categorizing...", unit="text")
-
-        async def _throttled_task(text: str) -> ToolOutput:
-            async with self.semaphore:
-                result = await self.tool.categorize(
-                    text=text,
-                    categories=categories,
-                    with_analysis=with_analysis,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    normalize=normalize,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    max_completion_tokens=max_completion_tokens,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            pbar.update(1)
-            return result
-
-        tasks = [_throttled_task(t) for t in texts]
-        results = await asyncio.gather(*tasks)
-        pbar.close()
-        return results
+        return await self._run_batch(
+            inputs=texts,
+            coro_func=self.tool.categorize,
+            desc="Categorizing...",
+            categories=categories,
+            with_analysis=with_analysis,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            timeout=timeout,
+        )
 
     async def extract_keywords(
         self,
@@ -141,38 +170,27 @@ class BatchTheTool:
         Returns:
             list[ToolOutput]
         """
+        self.logger.info(f"Starting batch extract_keywords with {len(texts)} texts...")
 
-        self.logger.info(f"Starting batch tool with {len(texts)} texts...")
-
-        total = len(texts)
-        pbar = tqdm(total=total, desc="Extracting Keywords...", unit="text")
-
-        async def _throttled_task(text: str) -> ToolOutput:
-            async with self.semaphore:
-                result = await self.tool.extract_keywords(
-                    text=text,
-                    mode=mode,
-                    number_of_keywords=number_of_keywords,
-                    with_analysis=with_analysis,
-                    output_lang=output_lang,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    normalize=normalize,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    max_completion_tokens=max_completion_tokens,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            pbar.update(1)
-            return result
-
-        tasks = [_throttled_task(t) for t in texts]
-        results = await asyncio.gather(*tasks)
-        pbar.close()
-        return results
+        return await self._run_batch(
+            inputs=texts,
+            coro_func=self.tool.extract_keywords,
+            desc="Extracting Keywords...",
+            mode=mode,
+            number_of_keywords=number_of_keywords,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            timeout=timeout,
+        )
 
     async def extract_entities(
         self,
@@ -213,37 +231,26 @@ class BatchTheTool:
         Returns:
             list[ToolOutput]
         """
+        self.logger.info(f"Starting batch extract_entities with {len(texts)} texts...")
 
-        self.logger.info(f"Starting batch tool with {len(texts)} texts...")
-
-        total = len(texts)
-        pbar = tqdm(total=total, desc="Extracting Entities...", unit="text")
-
-        async def _throttled_task(text: str) -> ToolOutput:
-            async with self.semaphore:
-                result = await self.tool.extract_entities(
-                    text=text,
-                    entities=entities,
-                    with_analysis=with_analysis,
-                    output_lang=output_lang,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    normalize=normalize,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    max_completion_tokens=max_completion_tokens,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            pbar.update(1)
-            return result
-
-        tasks = [_throttled_task(t) for t in texts]
-        results = await asyncio.gather(*tasks)
-        pbar.close()
-        return results
+        return await self._run_batch(
+            inputs=texts,
+            coro_func=self.tool.extract_entities,
+            desc="Extracting Entities...",
+            entities=entities,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            timeout=timeout,
+        )
 
     async def is_question(
         self,
@@ -280,35 +287,24 @@ class BatchTheTool:
         Returns:
             list[ToolOutput]
         """
+        self.logger.info(f"Starting batch is_question with {len(texts)} texts...")
 
-        self.logger.info(f"Starting batch tool with {len(texts)} texts...")
-
-        total = len(texts)
-        pbar = tqdm(total=total, desc="Detecting Questions...", unit="text")
-
-        async def _throttled_task(text: str) -> ToolOutput:
-            async with self.semaphore:
-                result = await self.tool.is_question(
-                    text=text,
-                    with_analysis=with_analysis,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    normalize=normalize,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    max_completion_tokens=max_completion_tokens,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            pbar.update(1)
-            return result
-
-        tasks = [_throttled_task(t) for t in texts]
-        results = await asyncio.gather(*tasks)
-        pbar.close()
-        return results
+        return await self._run_batch(
+            inputs=texts,
+            coro_func=self.tool.is_question,
+            desc="Detecting Questions...",
+            with_analysis=with_analysis,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            timeout=timeout,
+        )
 
     async def to_question(
         self,
@@ -351,38 +347,27 @@ class BatchTheTool:
         Returns:
             list[ToolOutput]
         """
+        self.logger.info(f"Starting batch to_question with {len(texts)} texts...")
 
-        self.logger.info(f"Starting batch tool with {len(texts)} texts...")
-
-        total = len(texts)
-        pbar = tqdm(total=total, desc="Generating Questions...", unit="text")
-
-        async def _throttled_task(text: str) -> ToolOutput:
-            async with self.semaphore:
-                result = await self.tool.to_question(
-                    text=text,
-                    number_of_questions=number_of_questions,
-                    mode=mode,
-                    with_analysis=with_analysis,
-                    output_lang=output_lang,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    normalize=normalize,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    max_completion_tokens=max_completion_tokens,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            pbar.update(1)
-            return result
-
-        tasks = [_throttled_task(t) for t in texts]
-        results = await asyncio.gather(*tasks)
-        pbar.close()
-        return results
+        return await self._run_batch(
+            inputs=texts,
+            coro_func=self.tool.to_question,
+            desc="Generating Questions...",
+            number_of_questions=number_of_questions,
+            mode=mode,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            timeout=timeout,
+        )
 
     async def merge_questions(
         self,
@@ -423,38 +408,26 @@ class BatchTheTool:
         Returns:
             list[ToolOutput]
         """
+        self.logger.info(f"Starting batch merge_questions with {len(texts)} groups...")
 
-        self.logger.info(f"Starting batch tool with {len(texts)} texts...")
-
-        total = len(texts)
-        pbar = tqdm(total=total, desc="Merging Questions...", unit="text")
-
-        async def _throttled_task(texts: list[str]) -> ToolOutput:
-
-            async with self.semaphore:
-                result = await self.tool.merge_questions(
-                    text=texts,
-                    mode=mode,
-                    with_analysis=with_analysis,
-                    output_lang=output_lang,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    normalize=normalize,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    max_completion_tokens=max_completion_tokens,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            pbar.update(1)
-            return result
-
-        tasks = [_throttled_task(t) for t in texts]
-        results = await asyncio.gather(*tasks)
-        pbar.close()
-        return results
+        return await self._run_batch(
+            inputs=texts,
+            coro_func=self.tool.merge_questions,
+            desc="Merging Questions...",
+            mode=mode,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            timeout=timeout,
+        )
 
     async def augment(
         self,
@@ -495,37 +468,26 @@ class BatchTheTool:
         Returns:
             list[ToolOutput]
         """
+        self.logger.info(f"Starting batch augment with {len(texts)} texts...")
 
-        self.logger.info(f"Starting batch tool with {len(texts)} texts...")
-
-        total = len(texts)
-        pbar = tqdm(total=total, desc="Augmenting...", unit="text")
-
-        async def _throttled_task(text: str) -> ToolOutput:
-            async with self.semaphore:
-                result = await self.tool.augment(
-                    text=text,
-                    mode=mode,
-                    with_analysis=with_analysis,
-                    output_lang=output_lang,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    normalize=normalize,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    max_completion_tokens=max_completion_tokens,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            pbar.update(1)
-            return result
-
-        tasks = [_throttled_task(t) for t in texts]
-        results = await asyncio.gather(*tasks)
-        pbar.close()
-        return results
+        return await self._run_batch(
+            inputs=texts,
+            coro_func=self.tool.augment,
+            desc="Augmenting...",
+            mode=mode,
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            timeout=timeout,
+        )
 
     async def summarize(
         self,
@@ -564,36 +526,25 @@ class BatchTheTool:
         Returns:
             list[ToolOutput]
         """
+        self.logger.info(f"Starting batch summarize with {len(texts)} texts...")
 
-        self.logger.info(f"Starting batch tool with {len(texts)} texts...")
-
-        total = len(texts)
-        pbar = tqdm(total=total, desc="Summarizing...", unit="text")
-
-        async def _throttled_task(text: str) -> ToolOutput:
-            async with self.semaphore:
-                result = await self.tool.summarize(
-                    text=text,
-                    with_analysis=with_analysis,
-                    output_lang=output_lang,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    normalize=normalize,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    max_completion_tokens=max_completion_tokens,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            pbar.update(1)
-            return result
-
-        tasks = [_throttled_task(t) for t in texts]
-        results = await asyncio.gather(*tasks)
-        pbar.close()
-        return results
+        return await self._run_batch(
+            inputs=texts,
+            coro_func=self.tool.summarize,
+            desc="Summarizing...",
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            timeout=timeout,
+        )
 
     async def translate(
         self,
@@ -638,38 +589,27 @@ class BatchTheTool:
         Returns:
             list[ToolOutput]
         """
+        self.logger.info(f"Starting batch translate with {len(texts)} texts...")
 
-        self.logger.info(f"Starting batch tool with {len(texts)} texts...")
-
-        total = len(texts)
-        pbar = tqdm(total=total, desc="Translating...", unit="text")
-
-        async def _throttled_task(text: str) -> ToolOutput:
-            async with self.semaphore:
-                result = await self.tool.translate(
-                    text=text,
-                    target_language=target_language,
-                    use_chunker=use_chunker,
-                    max_concurrent_chunks=max_concurrent_chunks,
-                    with_analysis=with_analysis,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    normalize=normalize,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    max_completion_tokens=max_completion_tokens,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            pbar.update(1)
-            return result
-
-        tasks = [_throttled_task(t) for t in texts]
-        results = await asyncio.gather(*tasks)
-        pbar.close()
-        return results
+        return await self._run_batch(
+            inputs=texts,
+            coro_func=self.tool.translate,
+            desc="Translating...",
+            target_language=target_language,
+            use_chunker=use_chunker,
+            max_concurrent_chunks=max_concurrent_chunks,
+            with_analysis=with_analysis,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            timeout=timeout,
+        )
 
     async def propositionize(
         self,
@@ -710,36 +650,25 @@ class BatchTheTool:
         Returns:
             list[ToolOutput]
         """
+        self.logger.info(f"Starting batch propositionize with {len(texts)} texts...")
 
-        self.logger.info(f"Starting batch tool with {len(texts)} texts...")
-
-        total = len(texts)
-        pbar = tqdm(total=total, desc="Propositionizing...", unit="text")
-
-        async def _throttled_task(text: str) -> ToolOutput:
-            async with self.semaphore:
-                result = await self.tool.propositionize(
-                    text=text,
-                    with_analysis=with_analysis,
-                    output_lang=output_lang,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    normalize=normalize,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    max_completion_tokens=max_completion_tokens,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            pbar.update(1)
-            return result
-
-        tasks = [_throttled_task(t) for t in texts]
-        results = await asyncio.gather(*tasks)
-        pbar.close()
-        return results
+        return await self._run_batch(
+            inputs=texts,
+            coro_func=self.tool.propositionize,
+            desc="Propositionizing...",
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            timeout=timeout,
+        )
 
     async def is_fact(
         self,
@@ -782,35 +711,23 @@ class BatchTheTool:
         Returns:
             list[ToolOutput]
         """
+        self.logger.info(f"Starting batch is_fact with {len(texts)} texts...")
 
-        self.logger.info(f"Starting batch tool with {len(texts)} texts...")
-
-        total = len(texts)
-        pbar = tqdm(total=total, desc="Checking Facts...", unit="text")
-
-        async def _throttled_task(text: str, source_text: str) -> ToolOutput:
-
-            async with self.semaphore:
-                result = await self.tool.is_fact(
-                    text=text,
-                    source_text=source_text,
-                    with_analysis=with_analysis,
-                    output_lang=output_lang,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    normalize=normalize,
-                    logprobs=logprobs,
-                    top_logprobs=top_logprobs,
-                    max_completion_tokens=max_completion_tokens,
-                    validator=validator,
-                    max_validation_retries=max_validation_retries,
-                    priority=priority,
-                    timeout=timeout,
-                )
-            pbar.update(1)
-            return result
-
-        tasks = [_throttled_task(t, s) for t, s in zip(texts, source_texts)]
-        results = await asyncio.gather(*tasks)
-        pbar.close()
-        return results
+        inputs = list(zip(texts, source_texts))
+        return await self._run_batch(
+            inputs=inputs,
+            coro_func=self.tool.is_fact,
+            desc="Checking Facts...",
+            with_analysis=with_analysis,
+            output_lang=output_lang,
+            user_prompt=user_prompt,
+            temperature=temperature,
+            normalize=normalize,
+            logprobs=logprobs,
+            top_logprobs=top_logprobs,
+            max_completion_tokens=max_completion_tokens,
+            validator=validator,
+            max_validation_retries=max_validation_retries,
+            priority=priority,
+            timeout=timeout,
+        )
