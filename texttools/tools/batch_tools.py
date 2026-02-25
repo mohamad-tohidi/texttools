@@ -567,8 +567,6 @@ class BatchTheTool:
         """
         Translate texts between languages
 
-        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
-
         Arguments:
             texts: The input texts
             target_language: The target language for translation

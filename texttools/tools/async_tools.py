@@ -885,8 +885,6 @@ class AsyncTheTool:
         """
         Translate text between languages
 
-        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
-
         Arguments:
             text: The input text
             target_language: The target language for translation
@@ -1232,6 +1230,8 @@ class AsyncTheTool:
     ) -> ToolOutput:
         """
         Custom tool that can do almost anything
+
+        Important Note: This tool is EXPERIMENTAL, you can use it but it isn't reliable.
 
         Arguments:
             prompt: The user prompt
