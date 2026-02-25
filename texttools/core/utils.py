@@ -1,5 +1,4 @@
 import asyncio
-import math
 import random
 import re
 from functools import lru_cache
@@ -110,38 +109,15 @@ class OperatorUtils:
         return [{"role": "user", "content": prompt}]
 
     @staticmethod
-    def extract_logprobs(completion: Any) -> list[dict[str, Any]]:
-        """
-        Extracts and filters logprobs from completion.
-        Skips punctuation and structural tokens.
-        """
-        logprobs_data = []
-        ignore_pattern = re.compile(r'^(result|[\s\[\]\{\}",:]+)$')
-
+    def extract_logprobs(completion: Any) -> list[Any]:
+        logprobs_list = []
         for choice in completion.choices:
             if not getattr(choice, "logprobs", None):
                 raise ValueError("Your model does not support logprobs")
 
-            for logprob_item in choice.logprobs.content:
-                if ignore_pattern.match(logprob_item.token):
-                    continue
-                token_entry = {
-                    "token": logprob_item.token,
-                    "prob": round(math.exp(logprob_item.logprob), 8),
-                    "top_alternatives": [],
-                }
-                for alt in logprob_item.top_logprobs:
-                    if ignore_pattern.match(alt.token):
-                        continue
-                    token_entry["top_alternatives"].append(
-                        {
-                            "token": alt.token,
-                            "prob": round(math.exp(alt.logprob), 8),
-                        }
-                    )
-                logprobs_data.append(token_entry)
+            logprobs_list.append(choice.logprobs)
 
-        return logprobs_data
+        return logprobs_list
 
     @staticmethod
     def get_retry_temp(base_temp: float) -> float:
