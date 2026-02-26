@@ -35,7 +35,7 @@ class BatchTheTool:
     async def _run_batch(
         self,
         inputs: list[str | tuple | list],
-        coro_func: Callable[..., Awaitable[ToolOutput]],
+        coro: Callable[..., Awaitable[ToolOutput]],
         desc: str,
         **fixed_kwargs,
     ) -> list[ToolOutput]:
@@ -43,12 +43,9 @@ class BatchTheTool:
         Process a batch of inputs with throttled concurrency and a progress bar.
 
         Args:
-            inputs: List where each element is either a single argument (str)
-                    or a tuple/list of multiple arguments (e.g., (text, source_text)).
-            coro_func: The async tool method to call (e.g., self.tool.categorize).
+            inputs: List where each element is either a single argument or multiple arguments.
+            coro: The async tool method to call (e.g., self.tool.categorize).
             desc: Description shown in the progress bar.
-            **fixed_kwargs: Keyword arguments that are the same for every call
-                            (e.g., temperature, timeout).
 
         Returns:
             List of ToolOutput objects.
@@ -58,7 +55,7 @@ class BatchTheTool:
 
             async def throttled_task(*args):
                 async with self.semaphore:
-                    result = await coro_func(*args, **fixed_kwargs)
+                    result = await coro(*args, **fixed_kwargs)
                     pbar.update(1)
                     return result
 
@@ -113,7 +110,7 @@ class BatchTheTool:
 
         return await self._run_batch(
             inputs=texts,
-            coro_func=self.tool.categorize,
+            coro=self.tool.categorize,
             desc="Categorizing...",
             categories=categories,
             with_analysis=with_analysis,
@@ -174,7 +171,7 @@ class BatchTheTool:
 
         return await self._run_batch(
             inputs=texts,
-            coro_func=self.tool.extract_keywords,
+            coro=self.tool.extract_keywords,
             desc="Extracting Keywords...",
             mode=mode,
             number_of_keywords=number_of_keywords,
@@ -235,7 +232,7 @@ class BatchTheTool:
 
         return await self._run_batch(
             inputs=texts,
-            coro_func=self.tool.extract_entities,
+            coro=self.tool.extract_entities,
             desc="Extracting Entities...",
             entities=entities,
             with_analysis=with_analysis,
@@ -291,7 +288,7 @@ class BatchTheTool:
 
         return await self._run_batch(
             inputs=texts,
-            coro_func=self.tool.is_question,
+            coro=self.tool.is_question,
             desc="Detecting Questions...",
             with_analysis=with_analysis,
             user_prompt=user_prompt,
@@ -351,7 +348,7 @@ class BatchTheTool:
 
         return await self._run_batch(
             inputs=texts,
-            coro_func=self.tool.to_question,
+            coro=self.tool.to_question,
             desc="Generating Questions...",
             number_of_questions=number_of_questions,
             mode=mode,
@@ -412,7 +409,7 @@ class BatchTheTool:
 
         return await self._run_batch(
             inputs=texts,
-            coro_func=self.tool.merge_questions,
+            coro=self.tool.merge_questions,
             desc="Merging Questions...",
             mode=mode,
             with_analysis=with_analysis,
@@ -472,7 +469,7 @@ class BatchTheTool:
 
         return await self._run_batch(
             inputs=texts,
-            coro_func=self.tool.augment,
+            coro=self.tool.augment,
             desc="Augmenting...",
             mode=mode,
             with_analysis=with_analysis,
@@ -530,7 +527,7 @@ class BatchTheTool:
 
         return await self._run_batch(
             inputs=texts,
-            coro_func=self.tool.summarize,
+            coro=self.tool.summarize,
             desc="Summarizing...",
             with_analysis=with_analysis,
             output_lang=output_lang,
@@ -591,7 +588,7 @@ class BatchTheTool:
 
         return await self._run_batch(
             inputs=texts,
-            coro_func=self.tool.translate,
+            coro=self.tool.translate,
             desc="Translating...",
             target_language=target_language,
             use_chunker=use_chunker,
@@ -652,7 +649,7 @@ class BatchTheTool:
 
         return await self._run_batch(
             inputs=texts,
-            coro_func=self.tool.propositionize,
+            coro=self.tool.propositionize,
             desc="Propositionizing...",
             with_analysis=with_analysis,
             output_lang=output_lang,
@@ -714,7 +711,7 @@ class BatchTheTool:
         inputs = list(zip(texts, source_texts))
         return await self._run_batch(
             inputs=inputs,
-            coro_func=self.tool.is_fact,
+            coro=self.tool.is_fact,
             desc="Checking Facts...",
             with_analysis=with_analysis,
             output_lang=output_lang,
