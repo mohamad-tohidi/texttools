@@ -81,7 +81,6 @@ class ReasonListStr(BaseModel):
     result: list[str] = Field(..., description="The output list of strings")
 
 
-# Create a dynamic LiteralStr model
 def create_literal_model(allowed_values: list[str]) -> type[BaseModel]:
     literal_type = Literal[*allowed_values]
 

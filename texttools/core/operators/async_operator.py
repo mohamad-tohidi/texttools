@@ -65,10 +65,6 @@ class AsyncOperator:
         max_completion_tokens: int | None,
         priority: int | None,
     ) -> tuple[BaseModel, Any]:
-        """
-        Parses a chat completion using OpenAI's structured output format.
-        Returns both the parsed output and the completion for logprobs.
-        """
         try:
             self.logger.debug("Running main chat completion...")
 
@@ -94,7 +90,6 @@ class AsyncOperator:
             if not completion.choices:
                 raise LLMError("No choices returned from LLM")
 
-            self.logger.debug("Parsing the completion...")
             parsed_output = completion.choices[0].message.parsed
 
             if not parsed_output:
@@ -136,8 +131,8 @@ class AsyncOperator:
                 **extra_kwargs,
             )
 
-            analysis: str | None = None
-            analysis_completion: Any = None
+            analysis = None
+            analysis_completion = None
 
             if with_analysis:
                 analysis_messages = OperatorUtils.build_message(
