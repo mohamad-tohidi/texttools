@@ -105,6 +105,7 @@ class BatchTheTool:
 
         Returns:
             list[ToolOutput]
+                result: str | list[str] - The predicted category label (or list of labels when using a category tree) for each input text
         """
         self.logger.info(f"Starting batch categorize with {len(texts)} texts...")
 
@@ -166,6 +167,7 @@ class BatchTheTool:
 
         Returns:
             list[ToolOutput]
+                result: list[str] - List of extracted keywords for each input text
         """
         self.logger.info(f"Starting batch extract_keywords with {len(texts)} texts...")
 
@@ -227,6 +229,7 @@ class BatchTheTool:
 
         Returns:
             list[ToolOutput]
+                result: list[dict[str, str]] - List of dictionaries containing entity types and their text spans for each input text
         """
         self.logger.info(f"Starting batch extract_entities with {len(texts)} texts...")
 
@@ -283,6 +286,7 @@ class BatchTheTool:
 
         Returns:
             list[ToolOutput]
+                result: bool - True if the input is a question, False otherwise, for each input text
         """
         self.logger.info(f"Starting batch is_question with {len(texts)} texts...")
 
@@ -343,6 +347,7 @@ class BatchTheTool:
 
         Returns:
             list[ToolOutput]
+                result: list[str] - List of generated questions for each input text
         """
         self.logger.info(f"Starting batch to_question with {len(texts)} texts...")
 
@@ -404,6 +409,7 @@ class BatchTheTool:
 
         Returns:
             list[ToolOutput]
+                result: str - The merged question for each group
         """
         self.logger.info(f"Starting batch merge_questions with {len(texts)} groups...")
 
@@ -464,6 +470,7 @@ class BatchTheTool:
 
         Returns:
             list[ToolOutput]
+                result: str - The augmented (rewritten) text for each input text
         """
         self.logger.info(f"Starting batch augment with {len(texts)} texts...")
 
@@ -522,6 +529,7 @@ class BatchTheTool:
 
         Returns:
             list[ToolOutput]
+                result: str - The generated summary for each input text
         """
         self.logger.info(f"Starting batch summarize with {len(texts)} texts...")
 
@@ -583,6 +591,7 @@ class BatchTheTool:
 
         Returns:
             list[ToolOutput]
+                result: str - The translated text for each input text
         """
         self.logger.info(f"Starting batch translate with {len(texts)} texts...")
 
@@ -644,6 +653,7 @@ class BatchTheTool:
 
         Returns:
             list[ToolOutput]
+                result: list[str] - List of atomic propositions (independent meaningful sentences) for each input text
         """
         self.logger.info(f"Starting batch propositionize with {len(texts)} texts...")
 
@@ -705,6 +715,7 @@ class BatchTheTool:
 
         Returns:
             list[ToolOutput]
+                result: bool - True if the statement is supported by the source text, False otherwise, for each pair
         """
         self.logger.info(f"Starting batch is_fact with {len(texts)} texts...")
 

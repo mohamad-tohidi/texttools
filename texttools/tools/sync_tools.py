@@ -75,6 +75,7 @@ class TheTool:
 
         Returns:
             ToolOutput
+                result: str | list[str] - The predicted category label (or list of labels when using a category tree)
         """
         tool_name = "categorize"
         start = perf_counter()
@@ -242,6 +243,7 @@ class TheTool:
 
         Returns:
             ToolOutput
+                result: list[str] - List of extracted keywords
         """
         if mode != "count" and number_of_keywords:
             self.logger.warning(
@@ -335,6 +337,7 @@ class TheTool:
 
         Returns:
             ToolOutput
+                result: list[dict[str, str]] - List of dictionaries containing entity types and their text spans
         """
         tool_name = "extract_entities"
         start = perf_counter()
@@ -419,6 +422,7 @@ class TheTool:
 
         Returns:
             ToolOutput
+                result: bool - True if the input is a question, False otherwise
         """
         tool_name = "is_question"
         start = perf_counter()
@@ -508,6 +512,7 @@ class TheTool:
 
         Returns:
             ToolOutput
+                result: list[str] - List of generated questions
         """
         tool_name = "to_question"
         start = perf_counter()
@@ -596,6 +601,7 @@ class TheTool:
 
         Returns:
             ToolOutput
+                result: str - The merged question
         """
         tool_name = "merge_questions"
         start = perf_counter()
@@ -684,6 +690,7 @@ class TheTool:
 
         Returns:
             ToolOutput
+                result: str - The augmented (rewritten) text
         """
         tool_name = "augment"
         start = perf_counter()
@@ -769,6 +776,7 @@ class TheTool:
 
         Returns:
             ToolOutput
+                result: str - The generated summary
         """
         tool_name = "summarize"
         start = perf_counter()
@@ -856,6 +864,7 @@ class TheTool:
 
         Returns:
             ToolOutput
+                result: str - The translated text
         """
         tool_name = "translate"
         start = perf_counter()
@@ -999,6 +1008,7 @@ class TheTool:
 
         Returns:
             ToolOutput
+                result: list[str] - List of atomic propositions (independent meaningful sentences)
         """
         tool_name = "propositionize"
         start = perf_counter()
@@ -1088,6 +1098,7 @@ class TheTool:
 
         Returns:
             ToolOutput
+                result: bool - True if the statement is supported by the source text, False otherwise
         """
         tool_name = "is_fact"
         start = perf_counter()
