@@ -20,7 +20,7 @@ class ToolOutput(BaseModel):
     result: Any = None
     analysis: str | None = None
     logprobs: list[dict[str, Any]] | None = None
-    errors: list[str] = []
+    errors: list[str] = Field(default_factory=list)
     metadata: ToolOutputMetadata
 
     def is_successful(self) -> bool:
